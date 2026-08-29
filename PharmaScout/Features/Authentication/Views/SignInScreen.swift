@@ -13,6 +13,12 @@ struct SignInScreen: View {
     @State private var isPasswordHidden: Bool = true
     @State private var isSignInDisabled: Bool = true
     
+    let authService: AuthService
+    
+    init(authSerivce: AuthService) {
+        self.authService = authSerivce
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
@@ -88,7 +94,7 @@ struct SignInScreen: View {
                 .foregroundStyle(.theme.textSecondary)
             
             CustomNavLink {
-                SignUpScreen()
+                SignUpScreen(authService: authService)
             } label: {
                 Text("Sign Up")
                     .foregroundStyle(.theme.primary)
@@ -96,13 +102,13 @@ struct SignInScreen: View {
             }
             
         }
-        .padding(.top, Spacing.large)
+        .padding(.top, Spacing.xLarge)
     }
 }
 
 #Preview {
     CustomNavStack {
-        SignInScreen()
+        SignInScreen(authSerivce: MockAuthService.sample)
             .customNavBarVisibility(true)
     }
 }

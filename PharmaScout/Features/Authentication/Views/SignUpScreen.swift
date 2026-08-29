@@ -8,12 +8,13 @@
 import SwiftUI
 
 struct SignUpScreen: View {
-    @State private var name: String = ""
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var confirmPassword: String = ""
-    @State private var isPasswordHidden: Bool = true
-    @State private var isCreateAccountDisabled: Bool = true
+    private let authService: AuthService
+    @State private var vm: SignUpViewModel
+    
+    init(authService: AuthService) {
+        self.authService = authService
+        self._vm = State(wrappedValue: SignUpViewModel(authService: authService))
+    }
     
     var body: some View {
         ScrollView {
@@ -29,6 +30,30 @@ struct SignUpScreen: View {
                 alreadyHaveAnAccountSection
             }
             .padding(.horizontal, Spacing.xxLarge)
+            .alert(
+                "Sign Up Failed",
+                isPresented: .init(get: {
+                    vm.signUpError != nil
+                }, set: { newValue in
+                    if !newValue {
+                        vm.signUpError = nil
+                    }
+                }),
+                presenting: vm.signUpError
+            ) { _ in
+                
+            } message: { error in
+                switch error {
+                case .emailAlreadyExists:
+                    Text("This email is already registered. Try signing in instead.")
+                case .weakPassword:
+                    Text("Your password is too weak. Please choose a stronger password.")
+                case .emailRateLimit:
+                    Text("Too many attempts. Please wait a while before trying again.")
+                default:
+                    Text("Something went wrong. Please try again later.")
+                }
+            }
         }
     }
     
@@ -54,16 +79,18 @@ struct SignUpScreen: View {
     
     private var formSection: some View {
         VStack(alignment: .leading, spacing: Spacing.large) {
-            LabeledTextFieldView(title: $name, label: "Full name", placeholder: "Enter your name")
+            LabeledTextFieldView(title: $vm.name, label: "Full name", placeholder: "Enter your name")
             
-            LabeledTextFieldView(title: $email, label: "Email", placeholder: "name@email.com")
+            LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
             
-            LabeledSecureFieldView(title: $password, label: "Password", isInputHidden: $isPasswordHidden)
+            LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
             
-            LabeledSecureFieldView(title: $confirmPassword, label: "Confirm password", isInputHidden: $isPasswordHidden)
+            LabeledSecureFieldView(title: $vm.confirmPassword, label: "Confirm password", isInputHidden: $vm.isPasswordHidden)
             
-            PrimaryButtonView(title: "Create Account", isDisabled: isCreateAccountDisabled) {
-                
+            PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled) {
+                Task {
+                    await vm.signUp()//mohammedshaat.it@gmai.com
+                }
             }
                 .padding(.vertical, Spacing.medium)
         }
@@ -91,7 +118,7 @@ struct SignUpScreen: View {
                 .foregroundStyle(.theme.textSecondary)
             
             CustomNavLink {
-                SignInScreen()
+                SignInScreen(authSerivce: authService)
             } label: {
                 Text("Sign In")
                     .foregroundStyle(.theme.primary)
@@ -99,13 +126,13 @@ struct SignUpScreen: View {
             }
 
         }
-        .padding(.top, Spacing.large)
+        .padding(.top, Spacing.xLarge)
     }
 }
 
 #Preview {
     CustomNavStack {
-        SignUpScreen()
+        SignUpScreen(authService: MockAuthService.sample)
             .customNavBarVisibility(true)
     }
 }

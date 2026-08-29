@@ -32,7 +32,6 @@ struct LabeledSecureFieldView: View {
                         isInputHidden.toggle()
                     }
             }
-            .font(.title)
             .readFrame { geo in
                 if height == 0 {
                     height = geo.size.height

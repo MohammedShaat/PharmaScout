@@ -10,6 +10,12 @@ import SwiftUI
 struct WelcomeScreen: View {
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
+    let authService: AuthService
+    
+    init(authSerivce: AuthService) {
+        self.authService = authSerivce
+    }
+    
     var body: some View {
         CustomNavStack {
             VStack {
@@ -70,7 +76,7 @@ struct WelcomeScreen: View {
     private var buttonsSection: some View {
         VStack(spacing: Spacing.xLarge) {
             CustomNavLink {
-                SignUpScreen()
+                SignUpScreen(authService: authService)
             } label: {
                 PrimaryButtonLabelView(title: "Get Started")
                     .frame(maxWidth: 400)
@@ -85,5 +91,5 @@ struct WelcomeScreen: View {
 }
 
 #Preview {
-    WelcomeScreen()
+    WelcomeScreen(authSerivce: MockAuthService.sample)
 }
