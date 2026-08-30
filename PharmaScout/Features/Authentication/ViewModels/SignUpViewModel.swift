@@ -38,7 +38,7 @@ class SignUpViewModel {
             
             let user = try await authService.signUp(email: email, password: password)
             confirmationSent = true
-            print(user.email)
+            print("Confirmation sent to ", user.email)
             
         } catch let authError as SignUpError {
             signUpError = authError
@@ -49,6 +49,10 @@ class SignUpViewModel {
         }
         
         isLoading = false
+    }
+    
+    func resend() async {
+        await signUp()
     }
     
     private func checkInputsAreValid() throws {

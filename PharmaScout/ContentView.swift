@@ -9,7 +9,9 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        SignUpScreen(authService: DefaultAuthService())
+        CustomNavStack {
+            SignUpScreen(authService: DefaultAuthService())
+        }
     }
 }
 

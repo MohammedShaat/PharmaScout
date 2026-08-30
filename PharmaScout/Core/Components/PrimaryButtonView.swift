@@ -10,27 +10,29 @@ import SwiftUI
 struct PrimaryButtonView: View {
     let title: String
     var isDisabled: Bool = false
+    var isLoading: Bool = false
     var action: (() -> Void)? = nil
     
     var body: some View {
         Group {
-            if isDisabled {
-                PrimaryButtonLabelView(title: title, isDisabled: true)
+            if isDisabled || isLoading {
+                PrimaryButtonLabelView(title: title, isDisabled: isDisabled, isLoading: isLoading)
             } else {
                 PrimaryButtonLabelView(title: title)
                     .clickable(action: action)
             }
         }
         .frame(maxWidth: 400)
-        .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
-    VStack(spacing: 50) {
+    VStack(spacing: 30) {
         PrimaryButtonView(title: "Click me")
         
         PrimaryButtonView(title: "Click me", isDisabled: true)
+        
+        PrimaryButtonView(title: "Click me", isLoading: true)
     }
         .padding()
 }

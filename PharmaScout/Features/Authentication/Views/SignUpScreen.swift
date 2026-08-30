@@ -30,29 +30,9 @@ struct SignUpScreen: View {
                 alreadyHaveAnAccountSection
             }
             .padding(.horizontal, Spacing.xxLarge)
-            .alert(
-                "Sign Up Failed",
-                isPresented: .init(get: {
-                    vm.signUpError != nil
-                }, set: { newValue in
-                    if !newValue {
-                        vm.signUpError = nil
-                    }
-                }),
-                presenting: vm.signUpError
-            ) { _ in
-                
-            } message: { error in
-                switch error {
-                case .emailAlreadyExists:
-                    Text("This email is already registered. Try signing in instead.")
-                case .weakPassword:
-                    Text("Your password is too weak. Please choose a stronger password.")
-                case .emailRateLimit:
-                    Text("Too many attempts. Please wait a while before trying again.")
-                default:
-                    Text("Something went wrong. Please try again later.")
-                }
+            .errorAlert(title: "Sign Up Failed", error: $vm.signUpError)
+            .navigationDestination(isPresented: $vm.confirmationSent) {
+                EmailConfirmationScreen(viewModel: vm)
             }
         }
     }
@@ -80,14 +60,18 @@ struct SignUpScreen: View {
     private var formSection: some View {
         VStack(alignment: .leading, spacing: Spacing.large) {
             LabeledTextFieldView(title: $vm.name, label: "Full name", placeholder: "Enter your name")
+                .textInputAutocapitalization(.words)
             
             LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
+                .textInputAutocapitalization(.never)
             
             LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
+                .textInputAutocapitalization(.never)
             
             LabeledSecureFieldView(title: $vm.confirmPassword, label: "Confirm password", isInputHidden: $vm.isPasswordHidden)
+                .textInputAutocapitalization(.never)
             
-            PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled) {
+            PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled, isLoading: vm.isLoading) {
                 Task {
                     await vm.signUp()//mohammedshaat.it@gmai.com
                 }
