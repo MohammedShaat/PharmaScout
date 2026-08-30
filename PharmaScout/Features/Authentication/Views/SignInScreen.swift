@@ -22,7 +22,7 @@ struct SignInScreen: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 0) {
-                inlineHeaderSection
+//                inlineHeaderSection
                 
                 descriptionSection
                 

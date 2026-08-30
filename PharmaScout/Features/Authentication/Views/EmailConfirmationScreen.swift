@@ -11,6 +11,7 @@ struct EmailConfirmationScreen: View {
     @Bindable var vm: SignUpViewModel
     
     @Environment(\.dismiss) private var dismiss
+    @State private var refreshTrigger: Bool = .random()
     
     init(viewModel: SignUpViewModel) {
         self.vm = viewModel
@@ -27,7 +28,6 @@ struct EmailConfirmationScreen: View {
             actionsSection
         }
         .padding(.horizontal, Spacing.xxLarge)
-        .onAppear(perform: vm.startCountdown)
     }
     
     private var infoSection: some View {
@@ -69,22 +69,29 @@ struct EmailConfirmationScreen: View {
                 }
             }
             
-            HStack(spacing: 0) {
-                Text("Resend confirmation email")
-                    .foregroundStyle(vm.remainingSec > 0 ? .theme.textSecondary : .theme.textPrimary)
-                    .clickable(isDisabled: vm.remainingSec > 0) {
-                        Task {
-                            await vm.resend()
-                        }
-                    }
-                
-                if vm.remainingSec > 0 {
-                    Text(" in \(vm.remainingSec.formatted(.number.precision(.fractionLength(0))))s")
+            TimelineView(.periodic(from: .now, by: 1)) { context in
+                HStack(spacing: 0) {
+                    Text("Resend confirmation email")
                         .foregroundStyle(.theme.textPrimary)
+                        .clickable(isDisabled: !vm.canResend) {
+                            Task {
+                                await vm.resend()
+                            }
+                        }
+                    
+                    let seconds = vm.resendAvailableAfter?.timeIntervalSince(context.date) ?? 0
+                    
+                    if !vm.canResend {
+                        HStack(spacing: 0) {
+                            Text(" in ")
+                            Text(Duration.seconds(seconds).formatted(.time(pattern: .minuteSecond)))
+                        }
+                        .foregroundStyle(.theme.textPrimary)
+                    }
                 }
+                .font(.headline)
+                .padding(.vertical, Spacing.large)
             }
-            .font(.headline)
-            .padding(.vertical, Spacing.large)
             
             
             HStack(spacing: Spacing.xLarge) {

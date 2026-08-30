@@ -25,26 +25,32 @@ class SignUpViewModel {
     
     var confirmationSent: Bool = false
     
+    private let resendInterval: Double = 60
+    private(set) var resendAvailableAfter: Date?
+    var canResend: Bool {
+        Date.now > (resendAvailableAfter ?? .distantPast)
+    }
+    
     init(authService: AuthService) {
         self.authService = authService
-        
     }
     
     func signUp() async {
         isLoading = true
-        confirmationSent = false
 
         do {
             try checkInputsAreValid()
             
             let user = try await authService.signUp(email: email, password: password)
+            
             confirmationSent = true
-            startCountdown()
+            updateResendAvailability()
             print("Confirmation sent to ", user.email)
             
         } catch let authError as SignUpError {
             signUpError = authError
             print("Failed to sign up (AuthError)\n", authError)
+            
         } catch {
             signUpError = .unknown(error)
             print("Failed to sign up\n", error)
@@ -60,43 +66,14 @@ class SignUpViewModel {
         guard doPasswordsMatch() else { throw SignUpError.passwordNotMatch }
     }
     
-    
-    
-    private var nextDate: Date?
-    private let intervalSec: Double = 60
-    private var timer: Timer?
-    private(set) var remainingSec: Double = 0
-    
     func resend() async {
-        if remainingSec <= 0 && !isLoading {
-            startCountdown()
+        if canResend && !isLoading {
             await signUp()
         }
     }
     
-    func startCountdown() {
-        timer?.invalidate()
-        nextDate = .now.addingTimeInterval(intervalSec)
-        
-        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            
-            self.remainingSec = max(0, nextDate?.timeIntervalSinceNow ?? 0)
-            
-            if self.remainingSec <= 0 {
-                stopCountdown()
-            }
-        }
-    }
-    
-    func stopCountdown() {
-        timer?.invalidate()
-        timer = nil
-        remainingSec = 0
-    }
-    
-    deinit {
-        stopCountdown()
+    private func updateResendAvailability() {
+        resendAvailableAfter = .now.addingTimeInterval(resendInterval)
     }
 }
 

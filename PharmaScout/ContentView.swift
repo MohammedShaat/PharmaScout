@@ -10,8 +10,9 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         CustomNavStack {
-//            SignUpScreen(authService: DefaultAuthService())
-            EmailConfirmationScreen(viewModel: .sample)
+            SignUpScreen(authService: DefaultAuthService())
+//            SignUpScreen(authService: MockAuthService())
+//            EmailConfirmationScreen(viewModel: .sample)
         }
     }
 }
