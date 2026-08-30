@@ -27,6 +27,7 @@ struct EmailConfirmationScreen: View {
             actionsSection
         }
         .padding(.horizontal, Spacing.xxLarge)
+        .onAppear(perform: vm.startCountdown)
     }
     
     private var infoSection: some View {
@@ -61,17 +62,29 @@ struct EmailConfirmationScreen: View {
     
     private var actionsSection: some View {
         VStack(spacing: 0) {
-            PrimaryButtonView(title: "Open Mail")
+            if let url = URL(string: "mailto:"),
+               UIApplication.shared.canOpenURL(url) {
+                PrimaryButtonView(title: "Open Mail") {
+                    UIApplication.shared.open(url)
+                }
+            }
             
+            HStack(spacing: 0) {
                 Text("Resend confirmation email")
-                    .foregroundStyle(.theme.textPrimary)
-                    .font(.headline)
-                    .padding(.vertical, Spacing.large)
-                    .clickable {
+                    .foregroundStyle(vm.remainingSec > 0 ? .theme.textSecondary : .theme.textPrimary)
+                    .clickable(isDisabled: vm.remainingSec > 0) {
                         Task {
                             await vm.resend()
                         }
                     }
+                
+                if vm.remainingSec > 0 {
+                    Text(" in \(vm.remainingSec.formatted(.number.precision(.fractionLength(0))))s")
+                        .foregroundStyle(.theme.textPrimary)
+                }
+            }
+            .font(.headline)
+            .padding(.vertical, Spacing.large)
             
             
             HStack(spacing: Spacing.xLarge) {

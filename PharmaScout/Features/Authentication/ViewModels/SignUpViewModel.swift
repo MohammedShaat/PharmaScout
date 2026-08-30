@@ -24,9 +24,10 @@ class SignUpViewModel {
     var signUpError: SignUpError?
     
     var confirmationSent: Bool = false
-
+    
     init(authService: AuthService) {
         self.authService = authService
+        
     }
     
     func signUp() async {
@@ -38,6 +39,7 @@ class SignUpViewModel {
             
             let user = try await authService.signUp(email: email, password: password)
             confirmationSent = true
+            startCountdown()
             print("Confirmation sent to ", user.email)
             
         } catch let authError as SignUpError {
@@ -51,15 +53,50 @@ class SignUpViewModel {
         isLoading = false
     }
     
-    func resend() async {
-        await signUp()
-    }
-    
     private func checkInputsAreValid() throws {
         guard isNameValid() else { throw SignUpError.nameInvalid }
         guard isEmailValid() else { throw SignUpError.emailInvalid }
         guard isPasswordValid() else { throw SignUpError.weakPassword }
         guard doPasswordsMatch() else { throw SignUpError.passwordNotMatch }
+    }
+    
+    
+    
+    private var nextDate: Date?
+    private let intervalSec: Double = 60
+    private var timer: Timer?
+    private(set) var remainingSec: Double = 0
+    
+    func resend() async {
+        if remainingSec <= 0 && !isLoading {
+            startCountdown()
+            await signUp()
+        }
+    }
+    
+    func startCountdown() {
+        timer?.invalidate()
+        nextDate = .now.addingTimeInterval(intervalSec)
+        
+        timer = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            guard let self else { return }
+            
+            self.remainingSec = max(0, nextDate?.timeIntervalSinceNow ?? 0)
+            
+            if self.remainingSec <= 0 {
+                stopCountdown()
+            }
+        }
+    }
+    
+    func stopCountdown() {
+        timer?.invalidate()
+        timer = nil
+        remainingSec = 0
+    }
+    
+    deinit {
+        stopCountdown()
     }
 }
 
