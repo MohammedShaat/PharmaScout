@@ -23,18 +23,14 @@ struct DefaultAuthService: AuthService {
             
         } catch let authError as AuthError {
             switch authError.errorCode {
-            case .emailExists:
-                throw SignUpError.emailAlreadyExists
-                
-            case .weakPassword:
-                throw SignUpError.weakPassword
-                
-            case .overEmailSendRateLimit:
-                throw SignUpError.emailRateLimit
-                
-            default:
-                throw SignUpError.unknown(authError)
+            case .emailExists: throw SignUpError.emailAlreadyExists
+            case .weakPassword: throw SignUpError.weakPassword
+            case .overEmailSendRateLimit: throw SignUpError.emailRateLimit
+            default: throw SignUpError.unknown(authError)
             }
+            
+        } catch let urlError as URLError {
+            throw NetworkError.mapURLError(urlError)
         }
     }
 }

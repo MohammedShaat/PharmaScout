@@ -21,7 +21,7 @@ class SignUpViewModel {
     }
     
     private(set) var isLoading: Bool = false
-    var signUpError: SignUpError?
+    var signUpError: AppError?
     
     var confirmationSent: Bool = false
     
@@ -47,12 +47,16 @@ class SignUpViewModel {
             updateResendAvailability()
             print("Confirmation sent to ", user.email)
             
-        } catch let authError as SignUpError {
-            signUpError = authError
-            print("Failed to sign up (AuthError)\n", authError)
+        } catch let signUpError as SignUpError {
+            self.signUpError = signUpError
+            print("Failed to sign up (AuthError)\n", signUpError)
+            
+        } catch let urlError as URLError {
+            signUpError = NetworkError.mapURLError(urlError)
+            print("Failed to sign up (URLError)\n", urlError)
             
         } catch {
-            signUpError = .unknown(error)
+            signUpError = UnknownError.unKnown(error)
             print("Failed to sign up\n", error)
         }
         

@@ -28,6 +28,7 @@ struct EmailConfirmationScreen: View {
             actionsSection
         }
         .padding(.horizontal, Spacing.xxLarge)
+        .errorAlert(title: "Failed to resend", error: $vm.signUpError)
     }
     
     private var infoSection: some View {

@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct ErrorAlert<T: LocalizedError>: ViewModifier {
+struct ErrorAlert: ViewModifier {
     let title: String
-    @Binding var presenting: T?
+    @Binding var presenting: AppError?
     
     func body(content: Content) -> some View {
         content
@@ -20,14 +20,14 @@ struct ErrorAlert<T: LocalizedError>: ViewModifier {
             ) { _ in
                 
             } message: { error in
-                Text(error.errorDescription ?? "Something went wrong. Please try again later.")
+                Text(error.errorDescription)
             }
 
     }
 }
 
 extension View {
-    func errorAlert<T: LocalizedError>(title: String, error: Binding<T?>) -> some View {
+    func errorAlert(title: String, error: Binding<AppError?>) -> some View {
         modifier(ErrorAlert(title: title, presenting: error))
     }
 }
