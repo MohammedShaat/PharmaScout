@@ -9,11 +9,18 @@ import Foundation
 import Supabase
 
 struct DefaultAuthService: AuthService {
-    let auth = SupabaseManager.shared.client.auth
+    private let auth = SupabaseManager.shared.client.auth
+    
+    let authState: AsyncStream<AuthState>
+    
+    init() {
+        authState = Self.authChangesStream(authClient: auth)
+    }
     
     func signUp(email: String, password: String) async throws -> AppUser {
         do {
-            let authResponse = try await auth.signUp(email: email, password: password)
+            let url = DeepLink.emailConfirmation.url
+            let authResponse = try await auth.signUp(email: email, password: password, redirectTo: url)
             
             guard let email = authResponse.user.email else {
                 throw SignUpError.missingEmail
@@ -33,6 +40,38 @@ struct DefaultAuthService: AuthService {
             throw NetworkError.mapURLError(urlError)
         }
     }
+    
+    func handle(url: URL) {
+        auth.handle(url)
+    }
 }
 
-
+extension DefaultAuthService {
+    static func authChangesStream(authClient: AuthClient) -> AsyncStream<AuthState> {
+        AsyncStream { continuation in
+            Task {
+                for await (event, session) in authClient.authStateChanges {
+                    switch event {
+                    case .initialSession:
+                        if session?.user != nil {
+                            continuation.yield(.authenticated)
+                        } else {
+                            continuation.yield(.non)
+                        }
+                        
+                    case .signedIn:
+                        if session?.user != nil {
+                            continuation.yield(.authenticated)
+                        }
+                        
+                    case .signedOut:
+                        continuation.yield(.non)
+                        
+                    default:
+                        continue
+                    }
+                }
+            }
+        }
+    }
+}

@@ -11,7 +11,8 @@ import SwiftUI
 struct PharmaScoutApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(authService: DefaultAuthService())
+//            ContentView(authService: MockAuthService())
         }
     }
 }

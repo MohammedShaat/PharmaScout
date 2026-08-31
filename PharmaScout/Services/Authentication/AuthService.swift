@@ -9,4 +9,9 @@ import Foundation
 
 protocol AuthService {
     func signUp(email: String, password: String) async throws -> AppUser
+    
+    func handle(url: URL)
+    
+    var authState: AsyncStream<AuthState> { get }
 }
+

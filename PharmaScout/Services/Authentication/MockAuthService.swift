@@ -9,9 +9,18 @@ import Foundation
 import Supabase
 
 struct MockAuthService: AuthService {
-    let auth = SupabaseManager.shared.client.auth
+    let authState: AsyncStream<AuthState> = AsyncStream { continuation in
+        continuation.yield(.authenticated)
+    }
     
     func signUp(email: String, password: String) async throws -> AppUser {
-        AppUser(email: "pharmascout@gmail.com")
+        AppUser(email: "pharmascout@email.com")
+    }
+    
+    func handle(url: URL) {
+        
     }
 }
+
+
+
