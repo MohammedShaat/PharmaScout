@@ -16,10 +16,11 @@ struct LabeledSecureFieldView: View {
     @State private var height: CGFloat = 0
     
     var body: some View {
-        TextFieldContainer(label: label) {
+        TextFieldContainer(label: label, capitalization: .never) {
             HStack {
                 if isInputHidden {
                     tintedSecuredField
+                        .textInputAutocapitalization(.never)
                 } else {
                     TextFieldTintedPlaceholder(title: $title, placeholder: placeholder)
                 }

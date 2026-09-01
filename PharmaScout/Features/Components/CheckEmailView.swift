@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-struct EmailConfirmationScreen: View {
-    @Bindable var vm: SignUpViewModel
+struct CheckEmailView: View {
+    let emailPurposeText: String
+    let instructionText: String
+    let email: String
+    let resendAvailableAfter: Date
+    let canResend: () -> Bool
+    let onResendClicked: () -> Void
     
     @Environment(\.dismiss) private var dismiss
-    @State private var refreshTrigger: Bool = .random()
-    
-    init(viewModel: SignUpViewModel) {
-        self.vm = viewModel
-    }
     
     var body: some View {
         VStack {
@@ -28,34 +28,28 @@ struct EmailConfirmationScreen: View {
             actionsSection
         }
         .padding(.horizontal, Spacing.xxLarge)
-        .errorAlert(title: "Failed to resend", error: $vm.signUpError)
     }
     
     private var infoSection: some View {
         VStack(spacing: Spacing.large) {
-            Circle()
-                .fill(.theme.success.opacity(0.3))
-                .frame(width: 150)
-                .overlay {
-                    Image(.mail)
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 80)
-                }
+            CircularIconView(image: .mail, bgSize: 130, iconSize: 70, bgColor: .theme.success.opacity(0.2))
             
-            Text("Email confirmation sent")
+            Text("Check Your Email")
                 .font(.title)
                 .foregroundStyle(.theme.textPrimary)
                 .fontWeight(.bold)
             
-            Text("We sent a confirmation link to")
+            Text(emailPurposeText)
                 .foregroundStyle(.theme.textSecondary)
             
-            Text(vm.email)
+            Text(email)
                 .foregroundStyle(.theme.textPrimary)
                 .fontWeight(.bold)
             
-            Text("Open the link to verify your address and finish setting up your account.")
+            VStack {
+                Text(instructionText)
+                Text("Check your spam folder if it hasn't arrived.")
+            }
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.theme.textSecondary)
         }
@@ -72,20 +66,18 @@ struct EmailConfirmationScreen: View {
             
             TimelineView(.periodic(from: .now, by: 1)) { context in
                 HStack(spacing: 0) {
-                    Text("Resend confirmation email")
+                    Text("Resend email")
                         .foregroundStyle(.theme.textPrimary)
-                        .clickable(isDisabled: !vm.canResend) {
-                            Task {
-                                await vm.resend()
-                            }
+                        .clickable(isDisabled: !canResend()) {
+                            onResendClicked()
                         }
                     
-                    let seconds = vm.resendAvailableAfter?.timeIntervalSince(context.date) ?? 0
+                    let remainingSec = resendAvailableAfter.timeIntervalSince(context.date)
                     
-                    if !vm.canResend {
+                    if remainingSec > 0 {
                         HStack(spacing: 0) {
                             Text(" in ")
-                            Text(Duration.seconds(seconds).formatted(.time(pattern: .minuteSecond)))
+                            Text(Duration.seconds(remainingSec).formatted(.time(pattern: .minuteSecond)))
                         }
                         .foregroundStyle(.theme.textPrimary)
                     }
@@ -94,17 +86,8 @@ struct EmailConfirmationScreen: View {
                 .padding(.vertical, Spacing.large)
             }
             
-            
-            HStack(spacing: Spacing.xLarge) {
-                Text("Wrong address?")
-                    .foregroundStyle(.theme.textSecondary)
-                
-                Text("Edit email")
-                    .foregroundStyle(.theme.primary)
-                    .font(.headline)
-                    .clickable {
-                        dismiss()
-                    }
+            ActionPromptView(text: "Wrong address?", actionTitle: "Edit email") {
+                dismiss()
             }
             .padding(.top, Spacing.xLarge)
         }
@@ -112,7 +95,20 @@ struct EmailConfirmationScreen: View {
 }
 
 #Preview {
+    let interval = MockAuthService().resendIntervalSec
+    let resendAt: Date = .now.addingTimeInterval(interval)
+    var canResend: Bool {
+        .now > resendAt
+    }
+    
     CustomNavStack {
-        EmailConfirmationScreen(viewModel: .sample)
+        CheckEmailView(
+            emailPurposeText: "We sent a confirmation link to",
+            instructionText: "Open the link to ....",
+            email: "pharmascout@email.com",
+            resendAvailableAfter: resendAt,
+            canResend: { canResend }) {
+                
+            }
     }
 }

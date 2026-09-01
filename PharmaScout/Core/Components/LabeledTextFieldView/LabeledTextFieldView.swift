@@ -11,9 +11,10 @@ struct LabeledTextFieldView: View {
     @Binding var title: String
     let label: String
     let placeholder: String
+    var capitalization: TextInputAutocapitalization = .never
     
     var body: some View {
-        TextFieldContainer(label: label) {
+        TextFieldContainer(label: label, capitalization: capitalization) {
             TextFieldTintedPlaceholder(title: $title, placeholder: placeholder)
         }
     }

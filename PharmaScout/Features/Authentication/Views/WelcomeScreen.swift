@@ -8,12 +8,14 @@
 import SwiftUI
 
 struct WelcomeScreen: View {
+    let authService: AuthService
+    let googleAuthService: GoogleAuthService
+
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
-    let authService: AuthService
-    
-    init(authSerivce: AuthService) {
+    init(authSerivce: AuthService, googleAuthService: GoogleAuthService) {
         self.authService = authSerivce
+        self.googleAuthService = googleAuthService
     }
     
     var body: some View {
@@ -76,24 +78,20 @@ struct WelcomeScreen: View {
     private var buttonsSection: some View {
         VStack(spacing: Spacing.xLarge) {
             CustomNavLink {
-                SignUpScreen(authService: authService)
+                SignUpScreen(authService: authService, googleAuthService: googleAuthService)
             } label: {
                 PrimaryButtonLabelView(title: "Get Started")
                     .frame(maxWidth: 400)
                     .frame(maxWidth: .infinity)
             }
             
-            CustomNavLink {
-                SignInScreen(authSerivce: authService)
-            } label: {
-                Text("I already have an account")
-                    .foregroundStyle(.theme.primary)
-                    .font(.headline)
+            NavigationPromptView(actionTitle: "I already have an account") {
+                SignInScreen(authService: authService, googleAuthService: googleAuthService)
             }
         }
     }
 }
 
 #Preview {
-    WelcomeScreen(authSerivce: MockAuthService.sample)
+    WelcomeScreen(authSerivce: MockAuthService.sample, googleAuthService: MockGoogleAuthService.sample)
 }

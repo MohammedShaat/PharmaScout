@@ -9,10 +9,28 @@ import SwiftUI
 
 @main
 struct PharmaScoutApp: App {
+    let authService: AuthService
+    let googleAuthService: GoogleAuthService
+    @State private var router: AppRouter
+    
+    init() {
+        let authService = DefaultAuthService()
+        self.authService = authService
+        self.googleAuthService = DefaultGoogleAuthService()
+        self._router = State(wrappedValue: AppRouter(authService: authService))
+    }
+    
     var body: some Scene {
         WindowGroup {
-            ContentView(authService: DefaultAuthService())
-//            ContentView(authService: MockAuthService())
+            RootView(router: router, authService: DefaultAuthService(), googleAuthService: googleAuthService)
+                .onOpenURL { url in
+                    Task {
+                        await router.handleUrl(url)
+                    }
+                }
+                .task {
+                    await router.subscribeToAuthStateChanges()
+                }
         }
     }
 }

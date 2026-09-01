@@ -7,6 +7,7 @@
 
 import Foundation
 import Supabase
+import GoogleSignIn
 
 @Observable
 class AppRouter {
@@ -15,24 +16,28 @@ class AppRouter {
     
     init(authService: AuthService) {
         self.authService = authService
-        
-        Task {
-            try? await authService.signOut()
-        }
     }
     
-    func handleUrl(_ url: URL) {
+    func handleUrl(_ url: URL) async {
+        if GIDSignIn.sharedInstance.handle(url) {
+            return
+        }
+        
         guard url.scheme == DeepLink.scheme,
               let deepLink = DeepLink(rawValue: (url.host() ?? "") + url.path())
         else {
-            print("url is invalid\n", url)
+            print("DeepLink-url is invalid\n", url)
             return
         }
         
         switch deepLink {
         case .emailConfirmation:
-            authService.handle(url: url)
+            try? await authService.handle(url: url, passwordReset: false)
+        
+        case .passwordReset:
+            try? await authService.handle(url: url, passwordReset: true)
         }
+        print("DeepLink-", deepLink)
     }
     
     func subscribeToAuthStateChanges() async {
@@ -42,12 +47,24 @@ class AppRouter {
                 destination = .main
             case .non:
                 destination = .authentication
+            case .passwordReset:
+                destination = .resetPassword
             }
         }
+    }
+    
+    func onPasswordResetSucceeed() {
+        destination = .main
+    }
+    
+    func navigateToSignIn() {
+        destination = .signIn
     }
 }
 
 enum Destination {
     case authentication
+    case signIn
+    case resetPassword
     case main
 }

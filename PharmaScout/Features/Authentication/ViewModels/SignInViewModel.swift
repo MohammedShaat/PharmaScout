@@ -10,6 +10,7 @@ import Foundation
 @Observable
 class SignInViewModel {
     private let authService: AuthService
+    private let googleAuthService: GoogleAuthService
     
     var password: String = ""
     var email: String = ""
@@ -21,8 +22,9 @@ class SignInViewModel {
     private(set) var isLoading: Bool = false
     var signInError: AppError?
     
-    init(authService: AuthService) {
+    init(authService: AuthService, googleAuthService: GoogleAuthService) {
         self.authService = authService
+        self.googleAuthService = googleAuthService
     }
     
     func signIn() async {
@@ -36,11 +38,11 @@ class SignInViewModel {
             
         } catch let authError as AppAuthError {
             signInError = authError
-            print("Failed to sign in (AuthError)\n", authError)
+            print("Failed to sign in (AuthError): ", authError)
             
         } catch let networkError as NetworkError {
             signInError = networkError
-            print("Failed to sign in (NetworkError)\n", networkError)
+            print("Failed to sign in (NetworkError): ", networkError)
             
         } catch {
             signInError = UnknownError.unKnown(error)
@@ -56,16 +58,12 @@ extension SignInViewModel {
         email.isNotEmpty && password.isNotEmpty
     }
     
-    private func isEmailValid() -> Bool {
-        Validation.isEmailValid(email)
-    }
-    
-    private func isPasswordValid() -> Bool {
-        Validation.isPasswordValid(password)
-    }
-    
     private func checkInputsAreValid() throws {
-        guard isEmailValid() else { throw AppAuthError.emailInvalid }
-        guard isPasswordValid() else { throw AppAuthError.weakPassword }
+        guard Validation.isEmailValid(email) else {
+            throw AppAuthError.emailInvalid
+        }
+        guard Validation.isPasswordValid(password) else {
+            throw AppAuthError.weakPassword
+        }
     }
 }

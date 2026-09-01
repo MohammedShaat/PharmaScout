@@ -12,4 +12,5 @@ import Supabase
 enum AuthState {
     case authenticated
     case non
+    case passwordReset
 }

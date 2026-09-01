@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import UIKit
 
 @Observable
 class SignUpViewModel {
     private let authService: AuthService
+    private let googleAuthService: GoogleAuthService
     
     var name: String = ""
     var email: String = ""
@@ -25,14 +27,16 @@ class SignUpViewModel {
     
     var confirmationSent: Bool = false
     
-    private let resendInterval: Double = 60
     private(set) var resendAvailableAfter: Date?
     var canResend: Bool {
         Date.now > (resendAvailableAfter ?? .distantPast)
     }
     
-    init(authService: AuthService) {
+    private(set) var         isProviderSigningLoading: Bool = false
+    
+    init(authService: AuthService, googleAuthService: GoogleAuthService) {
         self.authService = authService
+        self.googleAuthService = googleAuthService
     }
     
     func signUp() async {
@@ -40,20 +44,23 @@ class SignUpViewModel {
 
         do {
             try checkInputsAreValid()
-            
-            let user = try await authService.signUp(email: email, password: password)
-            
-            confirmationSent = true
             updateResendAvailability()
+            
+            let user = try await authService.signUp(
+                email: email,
+                password: password,
+                redirectTo: DeepLink.emailConfirmation.url
+            )
+            confirmationSent = true
             print("Confirmation sent to ", user.email)
             
         } catch let authError as AppAuthError {
             self.signUpError = authError
-            print("Failed to sign up (AppAuthError)\n", authError)
+            print("Failed to sign up (AuthError): ", authError)
             
         } catch let networkError as NetworkError {
             signUpError = networkError
-            print("Failed to sign up (NetworkError)\n", networkError)
+            print("Failed to sign up (NetworkError): ", networkError)
             
         } catch {
             signUpError = UnknownError.unKnown(error)
@@ -70,7 +77,35 @@ class SignUpViewModel {
     }
     
     private func updateResendAvailability() {
-        resendAvailableAfter = .now.addingTimeInterval(resendInterval)
+        resendAvailableAfter = .now.addingTimeInterval(authService.resendIntervalSec)
+    }
+    
+    func signInWithGoogle(viewController vc: UIViewController) async {
+        isProviderSigningLoading = true
+
+        do {
+            let oAuthCredential = try await googleAuthService.signIn(viewController: vc)
+            try await authService.signInWithCredential(oAuthCredential)
+            print("Signing with Google succeeded")
+            
+        } catch let authError as AppAuthError {
+            self.signUpError = authError
+            print("Failed to sign in with Google (AuthError): ", authError)
+            
+        } catch let error as GoogleSignInError {
+            self.signUpError = error
+            print("Failed to sign in with Google (GoogleSignInError): ", error)
+            
+        } catch let networkError as NetworkError {
+            signUpError = networkError
+            print("Failed to sign in with Google (NetworkError): ", networkError)
+            
+        } catch {
+            signUpError = UnknownError.unKnown(error)
+            print("Failed to sign in with Google\n", error)
+        }
+        
+        isProviderSigningLoading = false
     }
 }
 
@@ -84,22 +119,22 @@ extension SignUpViewModel {
             && name.split(separator: " ").count >= 2
     }
     
-    private func isEmailValid() -> Bool {
-        Validation.isEmailValid(email)
-    }
-    
-    private func isPasswordValid() -> Bool {
-        Validation.isPasswordValid(password)
-    }
-    
     private func doPasswordsMatch() -> Bool {
         password == confirmPassword
     }
     
     private func checkInputsAreValid() throws {
-        guard isNameValid() else { throw AppAuthError.nameInvalid }
-        guard isEmailValid() else { throw AppAuthError.emailInvalid }
-        guard isPasswordValid() else { throw AppAuthError.weakPassword }
-        guard doPasswordsMatch() else { throw AppAuthError.passwordNotMatch }
+        guard isNameValid() else {
+            throw AppAuthError.nameInvalid
+        }
+        guard Validation.isEmailValid(email) else {
+            throw AppAuthError.emailInvalid
+        }
+        guard Validation.isPasswordValid(password) else {
+            throw AppAuthError.weakPassword
+        }
+        guard doPasswordsMatch() else {
+            throw AppAuthError.passwordNotMatch
+        }
     }
 }

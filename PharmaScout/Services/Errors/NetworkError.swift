@@ -7,6 +7,7 @@
 
 import Foundation
 
+nonisolated
 enum NetworkError: AppError {
     case notConnectedToInternet
     case networkConnectionLost

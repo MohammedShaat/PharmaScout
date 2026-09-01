@@ -18,6 +18,7 @@ enum AppAuthError: AppError {
     case emailNotConfirmed
     case invalidCredentials
     case overRequestRateLimit
+    case samePassword
     case unknown(Error)
 
     var errorDescription: String {
@@ -32,6 +33,7 @@ enum AppAuthError: AppError {
         case .emailNotConfirmed: "Please confirm your email address before signing in."
         case .invalidCredentials: "The email or password you entered is incorrect."
         case .overRequestRateLimit: "Too many attempts. Please wait a moment and try again."
+        case .samePassword: "Your new password must be different from your current password."
         case .unknown: "Something went wrong. Please try again."
         }
     }

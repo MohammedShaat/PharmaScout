@@ -9,11 +9,14 @@ import SwiftUI
 
 struct SignInScreen: View {
     let authService: AuthService
+    let googleAuthService: GoogleAuthService
     @State private var vm: SignInViewModel
     
-    init(authSerivce: AuthService) {
-        self.authService = authSerivce
-        self._vm = State(wrappedValue: SignInViewModel(authService: authSerivce))
+    init(authService: AuthService, googleAuthService: GoogleAuthService) {
+        self.authService = authService
+        let viewModel = SignInViewModel(authService: authService, googleAuthService: googleAuthService)
+        self._vm = State(wrappedValue: viewModel)
+        self.googleAuthService = googleAuthService
     }
     
     var body: some View {
@@ -57,15 +60,17 @@ struct SignInScreen: View {
     private var formSection: some View {
         VStack(alignment: .leading, spacing: Spacing.large) {
             LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
-                .textInputAutocapitalization(.never)
             
             LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
-                .textInputAutocapitalization(.never)
             
-            Text("Forgot password?")
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .foregroundStyle(.theme.primary)
-                .font(.headline)
+            CustomNavLink {
+                ForgotPasswordScreen(authSerivce: authService)
+            } label: {
+                Text("Forgot password?")
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .foregroundStyle(.theme.primary)
+                    .font(.headline)
+            }
             
             PrimaryButtonView(title: "Sign In", isDisabled: !vm.areFieldsFilled, isLoading: vm.isLoading) {
                 Task {
@@ -93,18 +98,8 @@ struct SignInScreen: View {
     }
     
     private var doNotHaveAnAccountSection: some View {
-        HStack {
-            Text("Don't have an account?")
-                .foregroundStyle(.theme.textSecondary)
-            
-            CustomNavLink {
-                SignUpScreen(authService: authService)
-            } label: {
-                Text("Sign Up")
-                    .foregroundStyle(.theme.primary)
-                    .font(.headline)
-            }
-            
+        NavigationPromptView(text: "Don't have an account?", actionTitle: "Sign Up") {
+            SignUpScreen(authService: authService, googleAuthService: googleAuthService)
         }
         .padding(.top, Spacing.xLarge)
     }
@@ -112,7 +107,7 @@ struct SignInScreen: View {
 
 #Preview {
     CustomNavStack {
-        SignInScreen(authSerivce: MockAuthService.sample)
+        SignInScreen(authService: MockAuthService.sample, googleAuthService: MockGoogleAuthService.sample)
             .customNavBarVisibility(true)
     }
 }

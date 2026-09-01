@@ -9,10 +9,16 @@ import SwiftUI
 
 struct TextFieldContainer<TextField: View>: View {
     let label: String
+    let capitalization: TextInputAutocapitalization
     let textField: TextField?
     
-    init(label: String, @ViewBuilder textField: () -> TextField) {
+    init(
+        label: String,
+        capitalization: TextInputAutocapitalization = .never,
+        @ViewBuilder textField: () -> TextField
+    ) {
         self.label = label
+        self.capitalization = capitalization
         self.textField = textField()
     }
     
@@ -33,6 +39,7 @@ struct TextFieldContainer<TextField: View>: View {
                 )
                 .foregroundStyle(.theme.primary)
                 .fontWeight(.medium)
+                .textInputAutocapitalization(capitalization)
         }
     }
 }
