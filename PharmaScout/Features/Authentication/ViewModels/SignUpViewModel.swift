@@ -47,13 +47,13 @@ class SignUpViewModel {
             updateResendAvailability()
             print("Confirmation sent to ", user.email)
             
-        } catch let signUpError as SignUpError {
-            self.signUpError = signUpError
-            print("Failed to sign up (AuthError)\n", signUpError)
+        } catch let authError as AppAuthError {
+            self.signUpError = authError
+            print("Failed to sign up (AppAuthError)\n", authError)
             
-        } catch let urlError as URLError {
-            signUpError = NetworkError.mapURLError(urlError)
-            print("Failed to sign up (URLError)\n", urlError)
+        } catch let networkError as NetworkError {
+            signUpError = networkError
+            print("Failed to sign up (NetworkError)\n", networkError)
             
         } catch {
             signUpError = UnknownError.unKnown(error)
@@ -61,13 +61,6 @@ class SignUpViewModel {
         }
         
         isLoading = false
-    }
-    
-    private func checkInputsAreValid() throws {
-        guard isNameValid() else { throw SignUpError.nameInvalid }
-        guard isEmailValid() else { throw SignUpError.emailInvalid }
-        guard isPasswordValid() else { throw SignUpError.weakPassword }
-        guard doPasswordsMatch() else { throw SignUpError.passwordNotMatch }
     }
     
     func resend() async {
@@ -92,16 +85,21 @@ extension SignUpViewModel {
     }
     
     private func isEmailValid() -> Bool {
-        let pattern = #"^[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"#
-            
-        return email.range(of: pattern, options: .regularExpression) != nil
+        Validation.isEmailValid(email)
     }
     
     private func isPasswordValid() -> Bool {
-        password.count >= 8
+        Validation.isPasswordValid(password)
     }
     
     private func doPasswordsMatch() -> Bool {
         password == confirmPassword
+    }
+    
+    private func checkInputsAreValid() throws {
+        guard isNameValid() else { throw AppAuthError.nameInvalid }
+        guard isEmailValid() else { throw AppAuthError.emailInvalid }
+        guard isPasswordValid() else { throw AppAuthError.weakPassword }
+        guard doPasswordsMatch() else { throw AppAuthError.passwordNotMatch }
     }
 }

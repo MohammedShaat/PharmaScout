@@ -73,10 +73,10 @@ struct SignUpScreen: View {
             
             PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled, isLoading: vm.isLoading) {
                 Task {
-                    await vm.signUp()//mohammedshaat.it@gmai.com
+                    await vm.signUp()
                 }
             }
-                .padding(.vertical, Spacing.medium)
+            .padding(.vertical, Spacing.medium)
         }
         .padding(.vertical, Spacing.xxLarge)
     }

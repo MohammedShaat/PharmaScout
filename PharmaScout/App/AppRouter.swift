@@ -15,6 +15,10 @@ class AppRouter {
     
     init(authService: AuthService) {
         self.authService = authService
+        
+        Task {
+            try? await authService.signOut()
+        }
     }
     
     func handleUrl(_ url: URL) {

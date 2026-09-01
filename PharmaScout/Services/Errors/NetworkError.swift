@@ -28,14 +28,14 @@ enum NetworkError: AppError {
 }
 
 extension NetworkError {
-    static func mapURLError(_ error: URLError) -> NetworkError {
-        switch error.code {
-        case .notConnectedToInternet: NetworkError.notConnectedToInternet
-        case .networkConnectionLost: NetworkError.networkConnectionLost
-        case .cannotConnectToHost: NetworkError.cannotConnectToHost
-        case .cannotFindHost: NetworkError.cannotFindHost
-        case .timedOut: NetworkError.timedOut
-        default: NetworkError.unknown(error)
+    init(from error: URLError) {
+        self = switch error.code {
+        case .notConnectedToInternet: .notConnectedToInternet
+        case .networkConnectionLost: .networkConnectionLost
+        case .cannotConnectToHost: .cannotConnectToHost
+        case .cannotFindHost: .cannotFindHost
+        case .timedOut: .timedOut
+        default: .unknown(error)
         }
     }
 }

@@ -83,9 +83,13 @@ struct WelcomeScreen: View {
                     .frame(maxWidth: .infinity)
             }
             
-            Text("I already have an account")
-                .foregroundStyle(.theme.primary)
-                .font(.headline)
+            CustomNavLink {
+                SignInScreen(authSerivce: authService)
+            } label: {
+                Text("I already have an account")
+                    .foregroundStyle(.theme.primary)
+                    .font(.headline)
+            }
         }
     }
 }

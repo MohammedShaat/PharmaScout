@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import Supabase
 
 struct MockAuthService: AuthService {
     let authState: AsyncStream<AuthState> = AsyncStream { continuation in
@@ -17,9 +16,11 @@ struct MockAuthService: AuthService {
         AppUser(email: "pharmascout@email.com")
     }
     
-    func handle(url: URL) {
-        
-    }
+    func handle(url: URL) {}
+    
+    func signIn(email: String, password: String) async throws {}
+    
+    func signOut() async throws {}
 }
 
 

@@ -8,15 +8,12 @@
 import SwiftUI
 
 struct SignInScreen: View {
-    @State private var email: String = ""
-    @State private var password: String = ""
-    @State private var isPasswordHidden: Bool = true
-    @State private var isSignInDisabled: Bool = true
-    
     let authService: AuthService
+    @State private var vm: SignInViewModel
     
     init(authSerivce: AuthService) {
         self.authService = authSerivce
+        self._vm = State(wrappedValue: SignInViewModel(authService: authSerivce))
     }
     
     var body: some View {
@@ -33,6 +30,7 @@ struct SignInScreen: View {
                 doNotHaveAnAccountSection
             }
             .padding(.horizontal, Spacing.xxLarge)
+            .errorAlert(title: "Sign In Failed", error: $vm.signInError)
         }
     }
     
@@ -58,17 +56,23 @@ struct SignInScreen: View {
     
     private var formSection: some View {
         VStack(alignment: .leading, spacing: Spacing.large) {
-            LabeledTextFieldView(title: $email, label: "Email", placeholder: "name@email.com")
+            LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
+                .textInputAutocapitalization(.never)
             
-            LabeledSecureFieldView(title: $password, label: "Password", isInputHidden: $isPasswordHidden)
+            LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
+                .textInputAutocapitalization(.never)
             
             Text("Forgot password?")
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .foregroundStyle(.theme.primary)
                 .font(.headline)
             
-            PrimaryButtonView(title: "Sign In", isDisabled: isSignInDisabled)
-                .padding(.vertical, Spacing.medium)
+            PrimaryButtonView(title: "Sign In", isDisabled: !vm.areFieldsFilled, isLoading: vm.isLoading) {
+                Task {
+                    await vm.signIn()
+                }
+            }
+            .padding(.vertical, Spacing.medium)
         }
         .padding(.vertical, Spacing.xxLarge)
     }

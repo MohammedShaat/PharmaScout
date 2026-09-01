@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SignUpError: AppError {
+enum AppAuthError: AppError {
     case nameInvalid
     case emailInvalid
     case emailAlreadyExists
@@ -15,6 +15,9 @@ enum SignUpError: AppError {
     case missingEmail
     case weakPassword
     case emailRateLimit
+    case emailNotConfirmed
+    case invalidCredentials
+    case overRequestRateLimit
     case unknown(Error)
 
     var errorDescription: String {
@@ -26,6 +29,9 @@ enum SignUpError: AppError {
         case .weakPassword: "Please enter a password with at least 8 characters."
         case .emailRateLimit: "You’ve requested too many verification emails. Please wait before trying again."
         case .missingEmail: "Email is missing"
+        case .emailNotConfirmed: "Please confirm your email address before signing in."
+        case .invalidCredentials: "The email or password you entered is incorrect."
+        case .overRequestRateLimit: "Too many attempts. Please wait a moment and try again."
         case .unknown: "Something went wrong. Please try again."
         }
     }

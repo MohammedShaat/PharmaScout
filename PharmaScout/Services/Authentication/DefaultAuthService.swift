@@ -23,26 +23,37 @@ struct DefaultAuthService: AuthService {
             let authResponse = try await auth.signUp(email: email, password: password, redirectTo: url)
             
             guard let email = authResponse.user.email else {
-                throw SignUpError.missingEmail
+                throw AppAuthError.missingEmail
             }
 
             return AppUser(email: email)
             
         } catch let authError as AuthError {
-            switch authError.errorCode {
-            case .emailExists: throw SignUpError.emailAlreadyExists
-            case .weakPassword: throw SignUpError.weakPassword
-            case .overEmailSendRateLimit: throw SignUpError.emailRateLimit
-            default: throw SignUpError.unknown(authError)
-            }
+            throw mapAuthErrorToAppError(authError)
             
         } catch let urlError as URLError {
-            throw NetworkError.mapURLError(urlError)
+            throw NetworkError.init(from: urlError)
         }
     }
     
     func handle(url: URL) {
         auth.handle(url)
+    }
+    
+    func signIn(email: String, password: String) async throws {
+        do {
+            try await auth.signIn(email: email, password: password)
+            
+        } catch let authError as AuthError {
+            throw mapAuthErrorToAppError(authError)
+            
+        } catch let urlError as URLError {
+            throw NetworkError.init(from: urlError)
+        }
+    }
+    
+    func signOut() async throws {
+        try? await auth.signOut()
     }
 }
 
@@ -72,6 +83,27 @@ extension DefaultAuthService {
                     }
                 }
             }
+        }
+    }
+}
+
+extension DefaultAuthService {
+    private func mapAuthErrorToAppError(_ error: AuthError) -> AppAuthError {
+        switch error.errorCode {
+        case .emailExists: .emailAlreadyExists
+            
+        case .weakPassword: .weakPassword
+            
+        case .overEmailSendRateLimit: .emailRateLimit
+            
+        case .emailNotConfirmed: .emailNotConfirmed
+            
+        case .invalidCredentials: .invalidCredentials
+            
+        case .overRequestRateLimit: .overRequestRateLimit
+            
+        default: .unknown(error)
+            
         }
     }
 }
