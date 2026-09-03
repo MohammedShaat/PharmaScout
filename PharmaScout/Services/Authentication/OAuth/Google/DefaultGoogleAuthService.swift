@@ -9,16 +9,16 @@ import Foundation
 import GoogleSignIn
 import UIKit
 
-struct DefaultGoogleAuthService: GoogleAuthService {
+struct DefaultGoogleAuthService: OAuthService {
     func signIn(viewController vc: UIViewController) async throws -> OAuthCredential {
-            do {
+        do {
             let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: vc)
             let user = result.user
             
-            guard let idToken = user.idToken?.tokenString else { throw GoogleSignInError.idTokenUnavailable }
+            guard let idToken = user.idToken?.tokenString else { throw OAuthError.idTokenUnavailable(.google) }
             let accessToken = user.accessToken.tokenString
             
-                return OAuthCredential(provider: .google, idToken: idToken, accessToken: accessToken)
+            return OAuthCredential(provider: .google, idToken: idToken, accessToken: accessToken)
             
         } catch let googleError as GIDSignInError {
             throw mapGIDSignInError(googleError)
@@ -31,11 +31,11 @@ struct DefaultGoogleAuthService: GoogleAuthService {
 }
 
 extension DefaultGoogleAuthService {
-    private func mapGIDSignInError(_ error: GIDSignInError) -> GoogleSignInError {
+    private func mapGIDSignInError(_ error: GIDSignInError) -> OAuthError {
         switch error.code {
-        case .canceled: .canceled
-        case .hasNoAuthInKeychain: .noExistingCredentials
-        case.refreshTokenExpired: .refreshTokenExpired
+        case .canceled: .canceled(.google)
+        case .hasNoAuthInKeychain: .noExistingCredentials(.google)
+        case.refreshTokenExpired: .refreshTokenExpired(.google)
         default: .unknow(error)
         }
     }

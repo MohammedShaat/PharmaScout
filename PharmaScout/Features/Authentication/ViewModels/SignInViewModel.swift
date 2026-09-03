@@ -6,11 +6,13 @@
 //
 
 import Foundation
+import UIKit
 
 @Observable
 class SignInViewModel {
     private let authService: AuthService
-    private let googleAuthService: GoogleAuthService
+    private let googleAuthService: OAuthService
+    private let appleAuthService: OAuthService
     
     var password: String = ""
     var email: String = ""
@@ -19,16 +21,18 @@ class SignInViewModel {
         checkFieldsAreFilled()
     }
     
-    private(set) var isLoading: Bool = false
+    private(set) var isSignWithEmailLoading: Bool = false
     var signInError: AppError?
+    private(set) var isProviderSigningLoading: Bool = false
     
-    init(authService: AuthService, googleAuthService: GoogleAuthService) {
+    init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
         self.authService = authService
         self.googleAuthService = googleAuthService
+        self.appleAuthService = appleAuthService
     }
     
     func signIn() async {
-        isLoading = true
+        isSignWithEmailLoading = true
 
         do {
             try checkInputsAreValid()
@@ -36,20 +40,45 @@ class SignInViewModel {
             try await authService.signIn(email: email, password: password)
             print("Signed in successfully", email)
             
-        } catch let authError as AppAuthError {
-            signInError = authError
-            print("Failed to sign in (AuthError): ", authError)
-            
-        } catch let networkError as NetworkError {
-            signInError = networkError
-            print("Failed to sign in (NetworkError): ", networkError)
-            
         } catch {
-            signInError = UnknownError.unKnown(error)
+            signInError = ErrorHandler.handle(error)
             print("Failed to sign in\n", error)
         }
         
-        isLoading = false
+        isSignWithEmailLoading = false
+    }
+    
+    func signInWithGoogle(viewController vc: UIViewController) async {
+        isProviderSigningLoading = true
+
+        do {
+            let oAuthCredential = try await googleAuthService.signIn(viewController: vc)
+            try await authService.signInWithCredential(oAuthCredential)
+            print("Signing with Google succeeded")
+            
+        } catch {
+            signInError = ErrorHandler.handle(error)
+            print("Failed to sign in with Google\n", error)
+        }
+        
+        isProviderSigningLoading = false
+    }
+    
+    
+    func signInWithApple(viewController vc: UIViewController) async {
+        isProviderSigningLoading = true
+
+        do {
+            let oAuthCredential = try await appleAuthService.signIn(viewController: vc)
+            try await authService.signInWithCredential(oAuthCredential)
+            print("Signing with Apple succeeded")
+            
+        } catch {
+            signInError = ErrorHandler.handle(error)
+            print("Failed to sign in with Apple\n", error)
+        }
+        
+        isProviderSigningLoading = false
     }
 }
 

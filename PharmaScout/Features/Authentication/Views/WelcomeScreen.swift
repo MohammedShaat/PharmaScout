@@ -9,13 +9,15 @@ import SwiftUI
 
 struct WelcomeScreen: View {
     let authService: AuthService
-    let googleAuthService: GoogleAuthService
+    let googleAuthService: OAuthService
+    let appleAuthService: OAuthService
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
-    init(authSerivce: AuthService, googleAuthService: GoogleAuthService) {
+    init(authSerivce: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
         self.authService = authSerivce
         self.googleAuthService = googleAuthService
+        self.appleAuthService = appleAuthService
     }
     
     var body: some View {
@@ -78,7 +80,11 @@ struct WelcomeScreen: View {
     private var buttonsSection: some View {
         VStack(spacing: Spacing.xLarge) {
             CustomNavLink {
-                SignUpScreen(authService: authService, googleAuthService: googleAuthService)
+                SignUpScreen(
+                    authService: authService,
+                    googleAuthService: googleAuthService,
+                    appleAuthService: appleAuthService
+                )
             } label: {
                 PrimaryButtonLabelView(title: "Get Started")
                     .frame(maxWidth: 400)
@@ -86,12 +92,20 @@ struct WelcomeScreen: View {
             }
             
             NavigationPromptView(actionTitle: "I already have an account") {
-                SignInScreen(authService: authService, googleAuthService: googleAuthService)
+                SignInScreen(
+                    authService: authService,
+                    googleAuthService: googleAuthService,
+                    appleAuthService: appleAuthService
+                )
             }
         }
     }
 }
 
 #Preview {
-    WelcomeScreen(authSerivce: MockAuthService.sample, googleAuthService: MockGoogleAuthService.sample)
+    WelcomeScreen(
+        authSerivce: MockAuthService.sample,
+        googleAuthService: MockGoogleAuthService.sample,
+        appleAuthService: MockAppleAuthService.sample
+    )
 }

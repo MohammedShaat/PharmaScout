@@ -11,7 +11,8 @@ import UIKit
 @Observable
 class SignUpViewModel {
     private let authService: AuthService
-    private let googleAuthService: GoogleAuthService
+    private let googleAuthService: OAuthService
+    private let appleAuthService: OAuthService
     
     var name: String = ""
     var email: String = ""
@@ -22,7 +23,7 @@ class SignUpViewModel {
         checkFieldsAreFilled()
     }
     
-    private(set) var isLoading: Bool = false
+    private(set) var isSignInWithEmailLoading: Bool = false
     var signUpError: AppError?
     
     var confirmationSent: Bool = false
@@ -32,15 +33,16 @@ class SignUpViewModel {
         Date.now > (resendAvailableAfter ?? .distantPast)
     }
     
-    private(set) var         isProviderSigningLoading: Bool = false
+    private(set) var isProviderSigningLoading: Bool = false
     
-    init(authService: AuthService, googleAuthService: GoogleAuthService) {
+    init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
         self.authService = authService
         self.googleAuthService = googleAuthService
+        self.appleAuthService = appleAuthService
     }
     
     func signUp() async {
-        isLoading = true
+        isSignInWithEmailLoading = true
 
         do {
             try checkInputsAreValid()
@@ -54,24 +56,16 @@ class SignUpViewModel {
             confirmationSent = true
             print("Confirmation sent to ", user.email)
             
-        } catch let authError as AppAuthError {
-            self.signUpError = authError
-            print("Failed to sign up (AuthError): ", authError)
-            
-        } catch let networkError as NetworkError {
-            signUpError = networkError
-            print("Failed to sign up (NetworkError): ", networkError)
-            
         } catch {
-            signUpError = UnknownError.unKnown(error)
+            signUpError = ErrorHandler.handle(error)
             print("Failed to sign up\n", error)
         }
         
-        isLoading = false
+        isSignInWithEmailLoading = false
     }
     
     func resend() async {
-        if canResend && !isLoading {
+        if canResend && !isSignInWithEmailLoading {
             await signUp()
         }
     }
@@ -88,21 +82,26 @@ class SignUpViewModel {
             try await authService.signInWithCredential(oAuthCredential)
             print("Signing with Google succeeded")
             
-        } catch let authError as AppAuthError {
-            self.signUpError = authError
-            print("Failed to sign in with Google (AuthError): ", authError)
-            
-        } catch let error as GoogleSignInError {
-            self.signUpError = error
-            print("Failed to sign in with Google (GoogleSignInError): ", error)
-            
-        } catch let networkError as NetworkError {
-            signUpError = networkError
-            print("Failed to sign in with Google (NetworkError): ", networkError)
+        } catch {
+            signUpError = ErrorHandler.handle(error)
+            print("Failed to sign in with Google\n", error)
+        }
+        
+        isProviderSigningLoading = false
+    }
+    
+    
+    func signInWithApple(viewController vc: UIViewController) async {
+        isProviderSigningLoading = true
+
+        do {
+            let oAuthCredential = try await appleAuthService.signIn(viewController: vc)
+            try await authService.signInWithCredential(oAuthCredential)
+            print("Signing with Apple succeeded")
             
         } catch {
-            signUpError = UnknownError.unKnown(error)
-            print("Failed to sign in with Google\n", error)
+            signUpError = ErrorHandler.handle(error)
+            print("Failed to sign in with Apple\n", error)
         }
         
         isProviderSigningLoading = false

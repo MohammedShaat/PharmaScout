@@ -9,13 +9,20 @@ import SwiftUI
 
 struct SignUpScreen: View {
     private let authService: AuthService
-    private let googleAuthService: GoogleAuthService
+    private let googleAuthService: OAuthService
+    private let appleAuthService: OAuthService
     @State private var vm: SignUpViewModel
     
-    init(authService: AuthService, googleAuthService: GoogleAuthService) {
+    init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
         self.authService = authService
         self.googleAuthService = googleAuthService
-        let viewModel = SignUpViewModel(authService: authService, googleAuthService: googleAuthService)
+        self.appleAuthService = appleAuthService
+        
+        let viewModel = SignUpViewModel(
+            authService: authService,
+            googleAuthService: googleAuthService,
+            appleAuthService: appleAuthService
+        )
         self._vm = State(wrappedValue: viewModel)
     }
     
@@ -70,7 +77,7 @@ struct SignUpScreen: View {
             
             LabeledSecureFieldView(title: $vm.confirmPassword, label: "Confirm password", isInputHidden: $vm.isPasswordHidden)
             
-            PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled || vm.isProviderSigningLoading, isLoading: vm.isLoading) {
+            PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled || vm.isProviderSigningLoading, isLoading: vm.isSignInWithEmailLoading) {
                 Task {
                     await vm.signUp()
                 }
@@ -81,23 +88,28 @@ struct SignUpScreen: View {
     }
     
     private var providersSection: some View {
-        VStack {
-            OrDividerView()
-            
-            GoogleSignInButtonView {
-                Task {
-                    if let vc = UIApplication.shared.viewController {
-                        await vm.signInWithGoogle(viewController: vc)
-                    }
+        SignInWithProvidersView(isDisabled: vm.isProviderSigningLoading) {
+            Task {
+                if let vc = UIApplication.shared.viewController {
+                    await vm.signInWithApple(viewController: vc)
                 }
             }
-            .disabled(vm.isProviderSigningLoading)
+        } onGoogleButtonTapped: {
+            Task {
+                if let vc = UIApplication.shared.viewController {
+                    await vm.signInWithGoogle(viewController: vc)
+                }
+            }
         }
     }
     
     private var alreadyHaveAnAccountSection: some View {
         NavigationPromptView(text: "Already have an account?", actionTitle: "Sign In") {
-            SignInScreen(authService: authService, googleAuthService: googleAuthService)
+            SignInScreen(
+                authService: authService,
+                googleAuthService: googleAuthService,
+                appleAuthService: appleAuthService
+            )
         }
         .padding(.top, Spacing.xLarge)
     }
@@ -119,7 +131,11 @@ struct SignUpScreen: View {
 
 #Preview {
     CustomNavStack {
-        SignUpScreen(authService: MockAuthService.sample, googleAuthService: MockGoogleAuthService.sample)
-            .customNavBarVisibility(true)
+        SignUpScreen(
+            authService: MockAuthService.sample,
+            googleAuthService: MockGoogleAuthService.sample,
+            appleAuthService: MockAppleAuthService.sample
+        )
+        .customNavBarVisibility(true)
     }
 }

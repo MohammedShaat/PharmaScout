@@ -50,18 +50,9 @@ class ResetPasswordViewModel {
             emailSent = true
             print("Password reset request has been sent")
             
-        } catch let authError as AppAuthError  {
-            requestError = authError
-            print("Failed to send request for password reset (AuthError): ", authError)
-            
-        } catch let networkError as NetworkError  {
-            requestError = networkError
-            print("Failed to send request for password reset (NetworkError): ", networkError)
-            
         } catch {
-            requestError = UnknownError.unKnown(error)
-            print("Failed to send request for password reset (Uknown)\n", error)
-            
+            requestError = ErrorHandler.handle(error)
+            print("Failed to send request for password reset\n", error)
         }
         
         isLoading = false
@@ -88,18 +79,9 @@ class ResetPasswordViewModel {
             showPasswordUpdated = true
             print("Password has been reset successfully")
             
-        } catch let authError as AppAuthError  {
-            passwordResetError = authError
-            print("Failed to reset password (AuthError): ", authError)
-            
-        } catch let networkError as NetworkError  {
-            passwordResetError = networkError
-            print("Failed to reset password (NetworkError): ", networkError)
-            
         } catch {
-            passwordResetError = UnknownError.unKnown(error)
-            print("Failed to reset password (Uknown)\n", error)
-            
+            requestError = ErrorHandler.handle(error)
+            print("Failed to reset password\n", error)
         }
         
         isLoading = false

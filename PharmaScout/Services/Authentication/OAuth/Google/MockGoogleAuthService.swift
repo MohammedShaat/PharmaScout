@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-struct MockGoogleAuthService: GoogleAuthService {
+struct MockGoogleAuthService: OAuthService {
     func signIn(viewController vc: UIViewController) async throws -> OAuthCredential {
         OAuthCredential(provider: .google, idToken: "", accessToken: nil)
     }

@@ -15,8 +15,16 @@ extension MockGoogleAuthService {
     static let sample = MockGoogleAuthService()
 }
 
+extension MockAppleAuthService {
+    static let sample = MockAppleAuthService()
+}
+
 extension SignUpViewModel {
-    static let sample = SignUpViewModel(authService: MockAuthService.sample, googleAuthService: MockGoogleAuthService.sample)
+    static let sample = SignUpViewModel(
+        authService: MockAuthService.sample,
+        googleAuthService: MockGoogleAuthService.sample,
+        appleAuthService: MockAppleAuthService.sample
+    )
 }
 
 extension AppRouter {

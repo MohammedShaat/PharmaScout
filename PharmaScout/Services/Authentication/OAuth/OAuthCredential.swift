@@ -20,15 +20,15 @@ struct OAuthCredential {
         self.nonce = nil
     }
     
-    init(provider: OAuthProvider, idToken: String, accessToken: String?, nonce: String) {
+    init(provider: OAuthProvider, idToken: String, nonce: String) {
         self.provider = provider
         self.idToken = idToken
-        self.accessToken = accessToken
+        self.accessToken = nil
         self.nonce = nonce
     }
 }
 
-enum OAuthProvider {
-    case google
-    case apple
+enum OAuthProvider: String {
+    case google = "Google"
+    case apple = "Apple"
 }

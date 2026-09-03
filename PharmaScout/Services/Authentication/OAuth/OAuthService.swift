@@ -8,6 +8,6 @@
 import Foundation
 import UIKit
 
-protocol GoogleAuthService {
+protocol OAuthService {
     func signIn(viewController vc: UIViewController) async throws -> OAuthCredential
 }
