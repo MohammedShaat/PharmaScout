@@ -35,17 +35,23 @@ struct RootView: View {
                 ResetPasswordScreen(authSerivce: authService, router: router)
 
             case .main:
-                HomeScreen(authService: authService)
+                PatientTabView(authService: authService)
             }
         }
     }
 }
 
 #Preview {
+    let authService = MockAuthService.sample
+    let router = AppRouter(authService: authService)
+    
     RootView(
-        router: .sample,
-        authService: MockAuthService.sample,
+        router: router,
+        authService: authService,
         googleAuthService: MockGoogleAuthService.sample,
-        appleAuthService: MockAppleAuthService.sample
+        appleAuthService: MockAppleAuthService.sample		
     )
+    .task {
+        await router.subscribeToAuthStateChanges()
+    }
 }

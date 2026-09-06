@@ -19,12 +19,6 @@ struct HomeScreen: View {
             VStack {
                 Text("Welcome to PharmaScout")
                     .font(.largeTitle)
-                
-                Button("Log out") {
-                    Task {
-                        try? await authService.signOut()
-                    }
-                }
             }
         }
     }
