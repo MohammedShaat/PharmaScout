@@ -8,6 +8,7 @@
 import SwiftUI
 
 enum Spacing {
+    static let xxSmall: CGFloat = 2
     static let xSmall: CGFloat = 4
     static let small: CGFloat = 8
     static let medium: CGFloat = 12

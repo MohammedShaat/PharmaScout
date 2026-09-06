@@ -18,7 +18,6 @@ struct CustomNavStack<Content: View>: View {
         NavigationStack {
             CustomNavView {
                 content
-                    .customNavBarVisibility(false)
             }
         }
     }

@@ -9,4 +9,5 @@ import SwiftUI
 
 enum DesignSystem {
     static let cornerRadius: CGFloat = 12
+    static let cornerRadius2x: CGFloat = 24
 }

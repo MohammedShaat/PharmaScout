@@ -29,6 +29,7 @@ struct RootView: View {
             case .signIn:
                 CustomNavStack {
                     SignInScreen(authService: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
+                        .customNavBarVisibility(false)
                 }
                 
             case .resetPassword:
@@ -44,6 +45,7 @@ struct RootView: View {
 #Preview {
     let authService = MockAuthService.sample
     let router = AppRouter(authService: authService)
+    
     
     RootView(
         router: router,
