@@ -16,27 +16,27 @@ extension ShapeStyle where Self == Color {
 struct ThemeColors {
     // Core
     let primary = Color("primaryBrandColor")
-    let primaryLight = Color("primaryLight")
     let primaryPressed = Color("primaryPressed")
+    let onPrimary = Color("onPrimary")
+    let secondary = Color("secondaryBrand")
+    let secondaryStrong = Color("secondaryStrong")
     let background = Color("background")
-    let warning = Color("warning")
-    
-    // Info
-    let disabled = Color("disabled")
-    let disabledBackground = Color("disabledBackground")
-    let info = Color("info")
-    let infoBackground = Color("infoBackground")
-    
-    // Info
-    let error = Color("error")
-    let errorBackground = Color("errorBackground")
-    let success = Color("success")
-    let successBackground = Color("successBackground")
+    let canvas = Color("canvas")
     let surface = Color("surface")
-    let warningBackground = Color("warningBackground")
     
-    // Info
+    // State
+    let error = Color("error")
+    let errorText = Color("errorText")
+    let success = Color("success")
     let border = Color("border")
+    let borderFilled = Color("borderFilled")
+    let borderFocused = Color("borderFocused")
+    let disabledBackground = Color("disabledBackground")
+    let disabledContent = Color("disabledContent")
+    
+    // Text
     let textPrimary = Color("textPrimary")
     let textSecondary = Color("textSecondary")
+    let textLabel = Color("textLabel")
+    let textTertiary = Color("textTertiary")
 }
