@@ -8,17 +8,19 @@
 import SwiftUI
 
 struct PatientTabView: View {
-    let authService: AuthService
+    private let authService: AuthService
+    private let drugService: DrugService
     @State private var vm = PatientTabViewModel()
     
-    init(authService: AuthService) {
+    init(authService: AuthService, drugService: DrugService) {
         self.authService = authService
+        self.drugService = drugService
     }
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(authService: authService)
+                HomeScreen(authService: authService, drugService: drugService)
             }
             
             
@@ -57,5 +59,8 @@ struct PatientTabView: View {
 }
 
 #Preview {
-    PatientTabView(authService: MockAuthService.sample)
+    PatientTabView(
+        authService: MockAuthService.sample,
+        drugService: MockDrugService.sample
+    )
 }

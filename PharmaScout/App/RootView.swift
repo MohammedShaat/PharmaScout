@@ -12,12 +12,20 @@ struct RootView: View {
     private let authService: AuthService
     private let googleAuthService: OAuthService
     private let appleAuthService: OAuthService
+    private let drugService: DrugService
     
-    init(router: AppRouter, authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
+    init(
+        router: AppRouter,
+        authService: AuthService,
+        googleAuthService: OAuthService,
+        appleAuthService: OAuthService,
+        drugService: DrugService
+    ) {
         self.router = router
         self.authService = authService
         self.googleAuthService = googleAuthService
         self.appleAuthService = appleAuthService
+        self.drugService = drugService
     }
     
     var body: some View {
@@ -36,7 +44,7 @@ struct RootView: View {
                 ResetPasswordScreen(authSerivce: authService, router: router)
 
             case .main:
-                PatientTabView(authService: authService)
+                PatientTabView(authService: authService, drugService: drugService)
             }
         }
     }
@@ -51,7 +59,8 @@ struct RootView: View {
         router: router,
         authService: authService,
         googleAuthService: MockGoogleAuthService.sample,
-        appleAuthService: MockAppleAuthService.sample		
+        appleAuthService: MockAppleAuthService.sample,
+        drugService: MockDrugService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

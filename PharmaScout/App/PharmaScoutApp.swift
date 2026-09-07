@@ -12,6 +12,7 @@ struct PharmaScoutApp: App {
     let authService: AuthService
     let googleAuthService: OAuthService
     let appleAuthService: OAuthService
+    let drugService: DrugService
     @State private var router: AppRouter
     
     init() {
@@ -19,6 +20,7 @@ struct PharmaScoutApp: App {
         self.authService = authService
         self.googleAuthService = DefaultGoogleAuthService()
         self.appleAuthService = DefaultAppleAuthService()
+        self.drugService = DefaultDrugService()
         self._router = State(wrappedValue: AppRouter(authService: authService))
     }
     
@@ -28,7 +30,8 @@ struct PharmaScoutApp: App {
                 router: router,
                 authService: DefaultAuthService(),
                 googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
+                appleAuthService: appleAuthService,
+                drugService: drugService
             )
             .onOpenURL { url in
                 Task {

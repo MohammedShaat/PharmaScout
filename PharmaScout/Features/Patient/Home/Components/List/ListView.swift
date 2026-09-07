@@ -10,9 +10,7 @@ import SwiftUI
 struct ListView: View {
     var body: some View {
         VStack {
-            SectionHeaderView(title: "Recent searchs") {
-                
-            }
+            SectionHeaderView(value: "", title: "Recent searchs")
             
             list
         }

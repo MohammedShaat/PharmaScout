@@ -19,6 +19,10 @@ extension MockAppleAuthService {
     static let sample = MockAppleAuthService()
 }
 
+extension MockDrugService {
+    static let sample = MockDrugService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,

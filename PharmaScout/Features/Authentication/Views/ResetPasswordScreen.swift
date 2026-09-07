@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct ResetPasswordScreen: View {
-    let authService: AuthService
     let router: AppRouter
     @State private var vm: ResetPasswordViewModel
     
     init(authSerivce: AuthService, router: AppRouter) {
-        self.authService = authSerivce
         self.router = router
         self._vm = State(wrappedValue: ResetPasswordViewModel(authService: authSerivce))
     }

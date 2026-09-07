@@ -9,6 +9,19 @@ import Foundation
 
 @Observable
 class HomeViewModel {
-    private(set) var userName: String = "Mohammed"
+    private let authService: AuthService
+    
+    private(set) var user: AppUser?
+    private(set) var userName: String = ""
     var hasUnreadNotifications: Bool = true
+    
+    init(authService: AuthService) {
+        self.authService = authService
+    }
+    
+    func loadUserData() async {
+        user = try? await authService.getUser()
+    }
+    
+    
 }

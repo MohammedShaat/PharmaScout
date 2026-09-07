@@ -13,9 +13,7 @@ struct MockAuthService: AuthService {
         continuation.yield(.authenticated)
     }
     
-    func signUp(email: String, password: String, redirectTo url: URL?) async throws -> AppUser {
-        AppUser(email: "pharmascout@email.com")
-    }
+    func signUp(email: String, password: String, redirectTo url: URL?) async throws {}
     
     func handle(url: URL, passwordReset: Bool) async throws {}
     
@@ -28,6 +26,10 @@ struct MockAuthService: AuthService {
     func resetPassword(newPassword: String) async throws {}
     
     func signInWithCredential(_ credential: OAuthCredential) async throws {}
+    
+    func getUser() async throws -> AppUser {
+        AppUser(fullName: "Mohammed Shaat", email: "mohammed@email.com")
+    }
 }
 
 

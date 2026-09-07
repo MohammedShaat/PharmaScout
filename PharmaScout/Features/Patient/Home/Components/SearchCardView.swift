@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct SearchCardView: View {
+    var onSearchFieldCliced: () -> Void = {}
     @State private var size: CGSize = .zero
     
     var body: some View {
@@ -49,12 +50,20 @@ struct SearchCardView: View {
     
     private var searchField: some View {
         HStack(spacing: Spacing.large) {
+            
             Image(systemName: "magnifyingglass")
+                .padding(Spacing.medium)
+                .background(.surface.opacity(0.0001))
+                .clickable(action: onSearchFieldCliced)
             
             Text("Search for a medicine")
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.vertical, Spacing.medium)
+                .background(.surface.opacity(0.0001))
+                .clickable(action: onSearchFieldCliced)
+            
         }
         .foregroundStyle(.theme.textSecondary)
-        .padding(Spacing.large)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.theme.surface)
         .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))

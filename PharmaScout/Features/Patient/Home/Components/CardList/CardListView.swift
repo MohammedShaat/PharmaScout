@@ -10,9 +10,7 @@ import SwiftUI
 struct CardListView: View {
     var body: some View {
         VStack {
-            SectionHeaderView(title: "Nearby pharmacies") {
-                
-            }
+            SectionHeaderView(value: "", title: "Nearby pharmacies")
             
             list
         }

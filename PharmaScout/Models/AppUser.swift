@@ -8,5 +8,10 @@
 import Foundation
 
 struct AppUser {
-    let email: String
+    let fullName: String?
+    let email: String?
+    
+    var firstName: String? {
+        fullName?.components(separatedBy: .whitespaces).first
+    }
 }

@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct ForgotPasswordScreen: View {
-    let authService: AuthService
     @State private var vm: ResetPasswordViewModel
     @Environment(\.dismiss) private var dismiss
     
     init(authSerivce: AuthService) {
-        self.authService = authSerivce
         self._vm = State(wrappedValue: ResetPasswordViewModel(authService: authSerivce))
     }
     

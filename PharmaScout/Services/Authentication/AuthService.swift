@@ -13,7 +13,7 @@ protocol AuthService {
     var authState: AsyncStream<AuthState> { get }
     var resendIntervalSec: Double { get }
 
-    func signUp(email: String, password: String, redirectTo url: URL?) async throws -> AppUser
+    func signUp(email: String, password: String, redirectTo url: URL?) async throws
     
     func handle(url: URL, passwordReset: Bool)  async throws
 
@@ -26,5 +26,7 @@ protocol AuthService {
     func resetPassword(newPassword: String) async throws
     
     func signInWithCredential(_ credential: OAuthCredential) async throws
+    
+    func getUser() async throws -> AppUser
 }
 

@@ -7,38 +7,27 @@
 
 import SwiftUI
 
-struct NavigationPromptView<Content: View>: View {
+struct NavigationPromptView<H: Hashable>: View {
+    let value: H
     var text: String = ""
     let actionTitle: String
-    let destination: Content
-    
-    init(text: String = "", actionTitle: String, @ViewBuilder destination: () -> Content) {
-        self.text = text
-        self.actionTitle = actionTitle
-        self.destination = destination()
-    }
     
     var body: some View {
         HStack(spacing: Spacing.medium) {
             Text(text)
                 .foregroundStyle(.theme.textSecondary)
             
-            CustomNavLink {
-                destination
-            } label: {
+            CustomNavValueLink(value: value) {
                 Text(actionTitle)
                     .foregroundStyle(.theme.primary)
                     .font(.headline)
             }
-            
         }
     }
 }
 
 #Preview {
     CustomNavStack {
-        NavigationPromptView(text: "Remembered it?", actionTitle: "Back to Sign Up") {
-            
-        }
+        NavigationPromptView(value: "", text: "Remembered it?", actionTitle: "Back to Sign Up")
     }
 }

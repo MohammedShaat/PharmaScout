@@ -8,15 +8,21 @@
 import SwiftUI
 
 struct HomeScreen: View {
-    let authService: AuthService
-    @State private var vm: HomeViewModel = HomeViewModel()
+    private let authService: AuthService
+    private let drugService: DrugService
     
-    init(authService: AuthService) {
+    @State private var vm: HomeViewModel
+    @State private var path = NavigationPath()
+    
+    init(authService: AuthService, drugService: DrugService) {
         self.authService = authService
+        self.drugService = drugService
+        let viewModel = HomeViewModel(authService: authService)
+        self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
-        CustomNavStack {
+        CustomNavStack(path: $path) {
             ScrollView {
                 VStack(spacing: Spacing.xxLarge) {
                     headerSection
@@ -30,6 +36,15 @@ struct HomeScreen: View {
                 .padding(Spacing.xLarge)
             }
             .customNavBarVisibility(false)
+            .customNavigationDestination(for: Route.self, destination: { route in
+                switch route {
+                case .search:
+                    SearchScreen(drugService: drugService)
+                }
+            })
+            .task {
+                await vm.loadUserData()
+            }
         }
     }
     
@@ -40,9 +55,13 @@ struct HomeScreen: View {
                     .foregroundStyle(.theme.textSecondary)
                 
                 HStack(spacing: 0) {
-                    Text("Good Morning, ")
-                    Text(vm.userName)
+                    Text("Good \(Date.now.timeOfDay)")
+                    
+                    if let firstName = vm.user?.firstName {
+                        Text(", \(firstName)")
+                    }
                 }
+                .lineLimit(1)
                 .foregroundStyle(.theme.textPrimary)
                 .font(.title3)
                 .fontWeight(.bold)
@@ -57,7 +76,9 @@ struct HomeScreen: View {
     }
     
     private var searchSection: some View {
-        SearchCardView()
+        SearchCardView {
+            path.append(Route.search)
+        }
     }
     
     private var recentSection: some View {
@@ -69,6 +90,13 @@ struct HomeScreen: View {
     }
 }
 
+enum Route: Hashable {
+    case search
+}
+
 #Preview {
-    HomeScreen(authService: MockAuthService.sample)
+    HomeScreen(
+        authService: MockAuthService.sample,
+        drugService: MockDrugService.sample
+    )
 }

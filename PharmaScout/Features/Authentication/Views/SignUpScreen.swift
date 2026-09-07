@@ -8,16 +8,9 @@
 import SwiftUI
 
 struct SignUpScreen: View {
-    private let authService: AuthService
-    private let googleAuthService: OAuthService
-    private let appleAuthService: OAuthService
     @State private var vm: SignUpViewModel
     
     init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
-        self.authService = authService
-        self.googleAuthService = googleAuthService
-        self.appleAuthService = appleAuthService
-        
         let viewModel = SignUpViewModel(
             authService: authService,
             googleAuthService: googleAuthService,
@@ -104,13 +97,7 @@ struct SignUpScreen: View {
     }
     
     private var alreadyHaveAnAccountSection: some View {
-        NavigationPromptView(text: "Already have an account?", actionTitle: "Sign In") {
-            SignInScreen(
-                authService: authService,
-                googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
-            )
-        }
+        NavigationPromptView(value: AuthenticationRoute.signIn,text: "Already have an account?", actionTitle: "Sign In")
         .padding(.top, Spacing.xLarge)
     }
     

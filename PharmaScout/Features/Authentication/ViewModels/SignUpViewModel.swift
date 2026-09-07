@@ -48,13 +48,13 @@ class SignUpViewModel {
             try checkInputsAreValid()
             updateResendAvailability()
             
-            let user = try await authService.signUp(
+            try await authService.signUp(
                 email: email,
                 password: password,
                 redirectTo: DeepLink.emailConfirmation.url
             )
             confirmationSent = true
-            print("Confirmation sent to ", user.email)
+            print("Confirmation sent to ", email)
             
         } catch {
             signUpError = ErrorHandler.handle(error)

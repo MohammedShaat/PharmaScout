@@ -7,14 +7,9 @@
 
 import SwiftUI
 
-struct SectionHeaderView<Destination: View>: View {
+struct SectionHeaderView<H: Hashable>: View {
+    let value: H
     let title: String
-    let destination: Destination
-    
-    init(title: String, @ViewBuilder destination: () -> Destination) {
-        self.title = title
-        self.destination = destination()
-    }
     
     var body: some View {
         HStack {
@@ -24,9 +19,7 @@ struct SectionHeaderView<Destination: View>: View {
             
             Spacer()
             
-            CustomNavLink {
-                destination 
-            } label: {
+            CustomNavValueLink(value: value) {
                 HStack(spacing: Spacing.xSmall) {
                     Text("See all")
                         .fontWeight(.medium)
@@ -44,9 +37,7 @@ struct SectionHeaderView<Destination: View>: View {
 
 #Preview {
     CustomNavStack {
-        SectionHeaderView(title: "Recent searchs") {
-            
-        }
+        SectionHeaderView(value: "", title: "Recent searchs")
         .padding()
         .customNavBarVisibility(false)
     }

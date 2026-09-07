@@ -8,14 +8,22 @@
 import SwiftUI
 
 struct CustomNavStack<Content: View>: View {
-    let content: Content
+    private let content: Content
+    private let path: Binding<NavigationPath>?
+    @State private var deafultPath = NavigationPath()
+    
+    init(path: Binding<NavigationPath>, @ViewBuilder contet: () -> Content) {
+        self.path = path
+        self.content = contet()
+    }
     
     init(@ViewBuilder contet: () -> Content) {
+        self.path = nil
         self.content = contet()
     }
     
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: path ?? $deafultPath) {
             CustomNavView {
                 content
             }

@@ -8,17 +8,11 @@
 import SwiftUI
 
 struct SignInScreen: View {
-    let authService: AuthService
-    let googleAuthService: OAuthService
-    let appleAuthService: OAuthService
     @State private var vm: SignInViewModel
     
     init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
-        self.authService = authService
-        self.appleAuthService = appleAuthService
         let viewModel = SignInViewModel(authService: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
         self._vm = State(wrappedValue: viewModel)
-        self.googleAuthService = googleAuthService
     }
     
     var body: some View {
@@ -65,9 +59,7 @@ struct SignInScreen: View {
             
             LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
             
-            CustomNavLink {
-                ForgotPasswordScreen(authSerivce: authService)
-            } label: {
+            CustomNavValueLink(value: AuthenticationRoute.forgotPassword) {
                 Text("Forgot password?")
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .foregroundStyle(.theme.primary)
@@ -101,13 +93,11 @@ struct SignInScreen: View {
     }
     
     private var doNotHaveAnAccountSection: some View {
-        NavigationPromptView(text: "Don't have an account?", actionTitle: "Sign Up") {
-            SignUpScreen(
-                authService: authService,
-                googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
-            )
-        }
+        NavigationPromptView(
+            value: AuthenticationRoute.signUp,
+            text: "Don't have an account?",
+            actionTitle: "Sign Up"
+        )
         .padding(.top, Spacing.xLarge)
     }
 }
