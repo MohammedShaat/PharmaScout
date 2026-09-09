@@ -14,7 +14,7 @@ struct PrimaryButtonLabelView: View {
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.large) {
-            RingProgressView(isActive: isLoading)
+            RingProgressView(isActive: isLoading, trimColor: .theme.onPrimary)
                 .tint(.theme.onPrimary)
                 .opacity(isLoading ? 1 : 0)
                 .frame(maxWidth: .infinity, alignment: .trailing)

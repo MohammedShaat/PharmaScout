@@ -43,15 +43,36 @@ struct SupabaseManager {
                     static let genericName = "generic_name"
                 }
             }
-        }
-    }
-    
-    enum Functions {
-        enum SearchGenericDrug {
-            static let name = "search_generic_drug"
             
-            enum Params {
-                static let inputText = "input_text"
+            enum DrugFormulation {
+                static let name = "drug_formulation"
+                
+                enum Column {
+                    static let id = "id"
+                    static let genericDrugId = "generic_drug_id"
+                    static let strength = "strength"
+                    static let route = "route"
+                    static let form = "form"
+                }
+            }
+        }
+        
+        enum Functions {
+            enum SearchGenericDrug {
+                static let name = "search_generic_drug"
+                
+                enum Params {
+                    static let inputText = "input_text"
+                }
+            }
+            
+            enum SearchDrugFormulations {
+                static let name = "search_drug_formulations"
+                
+                enum Params {
+                    static let genericDrugId = "p_generic_drug_id"
+                    static let inputText = "p_input_text"
+                }
             }
         }
     }
