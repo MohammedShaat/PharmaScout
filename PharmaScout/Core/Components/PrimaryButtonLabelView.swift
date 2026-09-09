@@ -13,7 +13,7 @@ struct PrimaryButtonLabelView: View {
     var isLoading: Bool = false
     
     var body: some View {
-        HStack(spacing: Spacing.large) {
+        HStack(spacing: DesignSystem.Spacing.large) {
             RingProgressView(isActive: isLoading)
                 .tint(.theme.onPrimary)
                 .opacity(isLoading ? 1 : 0)
@@ -31,7 +31,7 @@ struct PrimaryButtonLabelView: View {
         }
         .padding()
         .background(isDisabled ? .theme.disabledBackground : .theme.primary)
-        .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
         .opacity(isLoading ? 0.89 : 1)
     }
 }

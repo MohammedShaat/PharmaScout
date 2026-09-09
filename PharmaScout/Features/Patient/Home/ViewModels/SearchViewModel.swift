@@ -30,7 +30,7 @@ class SearchViewModel {
         guard isSearchTextValid() else { return }
         
         do {
-            try await Task.sleep(for: .milliseconds(500))
+            try await Task.sleep(for: AppConstants.Timing.searchDebounceInterval)
             isLoading = true
             
             genericDrugs = try await drugSerice.autoComplete(for: trimmedSearchText)

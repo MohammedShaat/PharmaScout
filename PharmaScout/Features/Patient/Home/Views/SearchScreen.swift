@@ -30,7 +30,7 @@ struct SearchScreen: View {
                     Text(genericDrug.genericName)
                 }
             }
-            .padding(Spacing.xLarge)
+            .padding(DesignSystem.Spacing.xLarge)
             .errorAlert(title: "Search failed", error: $vm.searchError)
             .task(id: vm.searchText) {
                 await vm.autoComplete()

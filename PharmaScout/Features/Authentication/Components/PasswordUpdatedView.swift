@@ -11,7 +11,7 @@ struct PasswordUpdatedView: View {
     var onContinueClicked: (() -> Void)? = nil
     
     var body: some View {
-        VStack(spacing: Spacing.large) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             Spacer()
             
             CircularIconView(image: .checkmarkImg, bgColor: .theme.success.opacity(0.3))
@@ -40,7 +40,7 @@ struct PasswordUpdatedView: View {
             }
             Spacer()
         }
-        .padding(.horizontal, Spacing.large)
+        .padding(.horizontal, DesignSystem.Spacing.large)
     }
 }
 

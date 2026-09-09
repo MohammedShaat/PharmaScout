@@ -28,13 +28,13 @@ struct ListItemVIew: View {
     private var pillIcon: some View {
         Image(systemName: "pill")
             .fontWeight(.medium)
-            .padding(Spacing.medium)
+            .padding(DesignSystem.Spacing.medium)
             .background(.theme.disabledBackground)
-            .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
     }
     
     private var content: some View {
-        VStack(alignment: .leading, spacing: Spacing.xxSmall) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
             Text(name)
                 .font(.headline)
                 .lineLimit(1)
@@ -54,9 +54,9 @@ struct ListItemVIew: View {
             .fontWeight(.medium)
             .rotationEffect(.degrees(-45))
             .foregroundStyle(.theme.onPrimary)
-            .padding(Spacing.medium)
+            .padding(DesignSystem.Spacing.medium)
             .background(.theme.primary)
-            .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
     }
 }
 

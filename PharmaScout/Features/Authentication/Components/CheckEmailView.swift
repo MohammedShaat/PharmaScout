@@ -27,11 +27,11 @@ struct CheckEmailView: View {
             
             actionsSection
         }
-        .padding(.horizontal, Spacing.xxLarge)
+        .padding(.horizontal, DesignSystem.Spacing.xxLarge)
     }
     
     private var infoSection: some View {
-        VStack(spacing: Spacing.large) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             CircularIconView(image: .mail, bgSize: 130, iconSize: 70, bgColor: .theme.success.opacity(0.2))
             
             Text("Check Your Email")
@@ -83,13 +83,13 @@ struct CheckEmailView: View {
                     }
                 }
                 .font(.headline)
-                .padding(.vertical, Spacing.large)
+                .padding(.vertical, DesignSystem.Spacing.large)
             }
             
             ActionPromptView(text: "Wrong address?", actionTitle: "Edit email") {
                 dismiss()
             }
-            .padding(.top, Spacing.xLarge)
+            .padding(.top, DesignSystem.Spacing.xLarge)
         }
     }
 }

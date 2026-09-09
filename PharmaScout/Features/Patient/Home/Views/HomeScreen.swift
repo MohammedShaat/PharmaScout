@@ -24,7 +24,7 @@ struct HomeScreen: View {
     var body: some View {
         CustomNavStack(path: $path) {
             ScrollView {
-                VStack(spacing: Spacing.xxLarge) {
+                VStack(spacing: DesignSystem.Spacing.xxLarge) {
                     headerSection
                     
                     searchSection
@@ -33,7 +33,7 @@ struct HomeScreen: View {
                     
                     nearbyPharmaciesSection
                 }
-                .padding(Spacing.xLarge)
+                .padding(DesignSystem.Spacing.xLarge)
             }
             .customNavBarVisibility(false)
             .customNavigationDestination(for: Route.self, destination: { route in
@@ -50,7 +50,7 @@ struct HomeScreen: View {
     
     private var headerSection: some View {
         HStack {
-            VStack(alignment: .leading, spacing: Spacing.xSmall) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
                 Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
                     .foregroundStyle(.theme.textSecondary)
                 

@@ -13,7 +13,7 @@ struct NavigationPromptView<H: Hashable>: View {
     let actionTitle: String
     
     var body: some View {
-        HStack(spacing: Spacing.medium) {
+        HStack(spacing: DesignSystem.Spacing.medium) {
             Text(text)
                 .foregroundStyle(.theme.textSecondary)
             

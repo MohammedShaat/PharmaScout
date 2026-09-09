@@ -24,14 +24,14 @@ struct CardListItemView: View {
             content
         }
         .foregroundStyle(.theme.textPrimary)
-        .padding(Spacing.medium)
+        .padding(DesignSystem.Spacing.medium)
         .background(.theme.surface)
         .overlay {
-            RoundedRectangle(cornerRadius: DesignSystem.cornerRadius)
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
                 .stroke(lineWidth: 2)
                 .fill(.theme.borderFilled)
         }
-        .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
         .frame(maxWidth: .infinity)
     }
 
@@ -42,13 +42,13 @@ struct CardListItemView: View {
             .scaledToFit()
             .frame(width: 35)
             .foregroundStyle(.theme.secondaryStrong)
-            .padding(Spacing.small)
+            .padding(DesignSystem.Spacing.small)
             .background(.theme.disabledBackground)
-            .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
     }
     
     private var content: some View {
-        VStack(alignment: .leading, spacing: Spacing.xxSmall) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
             // MARK: Title and work hour
             HStack {
                 Text(name)
@@ -59,8 +59,8 @@ struct CardListItemView: View {
             }
 
             // MARK: Details (rating, distance, ...)
-            HStack(spacing: Spacing.xSmall) {
-                HStack(spacing: Spacing.xSmall) {
+            HStack(spacing: DesignSystem.Spacing.xSmall) {
+                HStack(spacing: DesignSystem.Spacing.xSmall) {
                     Image(systemName: "star.fill")
                         .foregroundStyle(.yellow)
                         .font(.caption)
@@ -88,10 +88,10 @@ struct CardListItemView: View {
             .foregroundStyle(statusColor)
             .font(.callout)
             .fontWeight(.semibold)
-            .padding(.horizontal, Spacing.medium)
-            .padding(.vertical, Spacing.small)
+            .padding(.horizontal, DesignSystem.Spacing.medium)
+            .padding(.vertical, DesignSystem.Spacing.small)
             .background(statusColor.opacity(0.15))
-            .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
     }
 }
 

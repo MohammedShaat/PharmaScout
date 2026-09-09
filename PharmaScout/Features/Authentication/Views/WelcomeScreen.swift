@@ -37,7 +37,7 @@ struct WelcomeScreen: View {
                 
                 buttonsSection
             }
-            .padding(.horizontal, Spacing.xxLarge)
+            .padding(.horizontal, DesignSystem.Spacing.xxLarge)
             .customNavBarVisibility(false)
             .customNavigationDestination(for: AuthenticationRoute.self) { route in
                 switch route {
@@ -80,7 +80,7 @@ struct WelcomeScreen: View {
     private var descriptionSection: some View {
         VStack(
             alignment: horizontalSizeClass == .compact ? .leading : .center,
-            spacing: Spacing.medium
+            spacing: DesignSystem.Spacing.medium
         ) {
             Text("Find the medicine you need.")
                 .font(.largeTitle)
@@ -98,7 +98,7 @@ struct WelcomeScreen: View {
     }
     
     private var buttonsSection: some View {
-        VStack(spacing: Spacing.xLarge) {
+        VStack(spacing: DesignSystem.Spacing.xLarge) {
             CustomNavValueLink(value: AuthenticationRoute.signUp) {
                 PrimaryButtonLabelView(title: "Get Started")
                     .frame(maxWidth: 400)

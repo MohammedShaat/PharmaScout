@@ -26,7 +26,7 @@ struct ResetPasswordScreen: View {
             
             doNotHaveAnAccountSection
         }
-        .padding(.horizontal, Spacing.xxLarge)
+        .padding(.horizontal, DesignSystem.Spacing.xxLarge)
         .errorAlert(title: "Password Reset Failed", error: $vm.passwordResetError)
         .sheet(isPresented: $vm.showPasswordUpdated, onDismiss: router.onPasswordResetSucceeed) {
             PasswordUpdatedView(onContinueClicked: router.onPasswordResetSucceeed)
@@ -35,7 +35,7 @@ struct ResetPasswordScreen: View {
     }
     
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Text("Type New Password")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -48,11 +48,11 @@ struct ResetPasswordScreen: View {
             .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
     private var formSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.large) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             LabeledSecureFieldView(title: $vm.newPassword, label: "New password", isInputHidden: $vm.isPasswordHidden)
             
             LabeledSecureFieldView(title: $vm.confirmNewPassword, label: "Confirm new password", isInputHidden: $vm.isPasswordHidden)
@@ -62,16 +62,16 @@ struct ResetPasswordScreen: View {
                     await vm.updatePassword()
                 }
             }
-            .padding(.vertical, Spacing.medium)
+            .padding(.vertical, DesignSystem.Spacing.medium)
         }
-        .padding(.vertical, Spacing.medium)
+        .padding(.vertical, DesignSystem.Spacing.medium)
     }
     
     private var doNotHaveAnAccountSection: some View {
         ActionPromptView(actionTitle: "Back to Sign In") {
             router.navigateToSignIn()
         }
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
 }
 

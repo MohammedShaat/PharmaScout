@@ -21,7 +21,7 @@ struct ListView: View {
             ForEach(0...2, id: \.self) { i in
                 VStack(spacing: 0) {
                     ListItemVIew(name: "Ibuprofen", strength: "200 mg", quantity: 10)
-                        .padding(Spacing.medium)
+                        .padding(DesignSystem.Spacing.medium)
                     
                     if i < 2 {
                         Rectangle()
@@ -33,11 +33,11 @@ struct ListView: View {
         }
         .background(.theme.surface)
         .overlay {
-            RoundedRectangle(cornerRadius: DesignSystem.cornerRadius)
+            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
                 .stroke(lineWidth: 2)
                 .fill(.theme.borderFilled)
         }
-        .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
     }
     
     

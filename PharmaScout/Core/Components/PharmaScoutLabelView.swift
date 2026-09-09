@@ -11,7 +11,7 @@ struct PharmaScoutLabelView: View {
     var isLarge: Bool = true
     
     var body: some View {
-        HStack(spacing: Spacing.large) {
+        HStack(spacing: DesignSystem.Spacing.large) {
             Image(.pill)
                 .resizable()
                 .scaledToFit()

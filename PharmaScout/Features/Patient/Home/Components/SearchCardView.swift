@@ -12,21 +12,21 @@ struct SearchCardView: View {
     @State private var size: CGSize = .zero
     
     var body: some View {
-        VStack(spacing: Spacing.large) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             prompt
             
             searchField
         }
-        .padding(Spacing.large)
+        .padding(DesignSystem.Spacing.large)
         .background(alignment: .topTrailing) { cornerCircle }
         .background(.theme.primary)
-        .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius2x))
+        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.large))
         .readFrame { size = $0.size }
     }
     
     private var prompt: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
-            HStack(spacing: Spacing.xSmall) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            HStack(spacing: DesignSystem.Spacing.xSmall) {
                 Image(systemName: "pill")
                     .font(.callout)
                 
@@ -49,16 +49,16 @@ struct SearchCardView: View {
     }
     
     private var searchField: some View {
-        HStack(spacing: Spacing.large) {
+        HStack(spacing: DesignSystem.Spacing.large) {
             
             Image(systemName: "magnifyingglass")
-                .padding(Spacing.medium)
+                .padding(DesignSystem.Spacing.medium)
                 .background(.surface.opacity(0.0001))
                 .clickable(action: onSearchFieldCliced)
             
             Text("Search for a medicine")
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, Spacing.medium)
+                .padding(.vertical, DesignSystem.Spacing.medium)
                 .background(.surface.opacity(0.0001))
                 .clickable(action: onSearchFieldCliced)
             
@@ -66,7 +66,7 @@ struct SearchCardView: View {
         .foregroundStyle(.theme.textSecondary)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(.theme.surface)
-        .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
     }
     
     private var cornerCircle: some View {

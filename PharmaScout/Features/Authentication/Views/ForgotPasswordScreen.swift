@@ -25,7 +25,7 @@ struct ForgotPasswordScreen: View {
             
             doNotHaveAnAccountSection
         }
-        .padding(.horizontal, Spacing.xxLarge)
+        .padding(.horizontal, DesignSystem.Spacing.xxLarge)
         .errorAlert(title: "Request Failed", error: $vm.requestError)
         .navigationDestination(isPresented: $vm.emailSent) {
             destination
@@ -33,7 +33,7 @@ struct ForgotPasswordScreen: View {
     }
     
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             CircularIconView(image: .lock)
             
             Text("Forgot Password?")
@@ -45,11 +45,11 @@ struct ForgotPasswordScreen: View {
                 .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
     private var formSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.large) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
             
             PrimaryButtonView(title: "Send Reset Link", isDisabled: !vm.areEmailRequestFieldsFilled, isLoading: vm.isLoading) {
@@ -57,16 +57,16 @@ struct ForgotPasswordScreen: View {
                     await vm.sendResetLink()
                 }
             }
-            .padding(.vertical, Spacing.medium)
+            .padding(.vertical, DesignSystem.Spacing.medium)
         }
-        .padding(.vertical, Spacing.xxLarge)
+        .padding(.vertical, DesignSystem.Spacing.xxLarge)
     }
     
     private var doNotHaveAnAccountSection: some View {
         ActionPromptView(text: "Remembered it?", actionTitle: "Back to Sign Up") {
             dismiss()
         }
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
     private var destination: some View {

@@ -27,7 +27,7 @@ struct GoogleSignInButtonView: View {
             .frame(maxWidth: .infinity)
             .frame(height: 48)
             .background(
-                RoundedRectangle(cornerRadius: DesignSystem.cornerRadius)
+                RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
                     .stroke()
                     .fill(.theme.borderFocused)
             )

@@ -18,7 +18,7 @@ struct CustomeNavBarView: View {
                 dismiss()
             } label: {
                 Image(systemName: "chevron.left")
-                    .padding(.horizontal, Spacing.xLarge)
+                    .padding(.horizontal, DesignSystem.Spacing.xLarge)
                     .font(.title2)
                     .foregroundStyle(.theme.textPrimary)
                     .background(.red.opacity(0.001))
@@ -35,7 +35,7 @@ struct CustomeNavBarView: View {
             Spacer()
             
             Image(systemName: "chevron.left")
-                .padding(.horizontal, Spacing.xLarge)
+                .padding(.horizontal, DesignSystem.Spacing.xLarge)
                 .font(.title2)
                 .background(.red.opacity(0.001))
                 .opacity(0)

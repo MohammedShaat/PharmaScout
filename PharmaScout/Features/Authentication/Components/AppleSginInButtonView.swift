@@ -28,7 +28,7 @@ private struct AppleSignInButtonRepresentable: UIViewRepresentable {
     
     func makeUIView(context: Context) -> ASAuthorizationAppleIDButton {
         let button = ASAuthorizationAppleIDButton(type: type, style: style)
-        button.cornerRadius = DesignSystem.cornerRadius
+        button.cornerRadius = DesignSystem.CornerRadius.small
         return button
     }
     

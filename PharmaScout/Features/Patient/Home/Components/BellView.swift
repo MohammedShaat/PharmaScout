@@ -21,9 +21,9 @@ struct BellView: View {
                     dot
                 }
             }
-            .padding(Spacing.medium)
+            .padding(DesignSystem.Spacing.medium)
             .background(.theme.surface)
-            .clipShape(.rect(cornerRadius: DesignSystem.cornerRadius))
+            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
             .shadow(radius: 2)
     }
     

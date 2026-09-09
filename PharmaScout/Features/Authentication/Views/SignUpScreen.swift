@@ -32,7 +32,7 @@ struct SignUpScreen: View {
                 
                 alreadyHaveAnAccountSection
             }
-            .padding(.horizontal, Spacing.xxLarge)
+            .padding(.horizontal, DesignSystem.Spacing.xxLarge)
             .errorAlert(title: "Sign Up Failed", error: $vm.signUpError)
             .navigationDestination(isPresented: $vm.confirmationSent) {
                 destination
@@ -43,11 +43,11 @@ struct SignUpScreen: View {
     private var inlineHeaderSection: some View {
         PharmaScoutLabelView(isLarge: false)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, Spacing.small)
+            .padding(.top, DesignSystem.Spacing.small)
     }
     
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Text("Create your account")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -57,11 +57,11 @@ struct SignUpScreen: View {
                 .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
     private var formSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.large) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             LabeledTextFieldView(title: $vm.name, label: "Full name", placeholder: "Enter your name", capitalization: .words)
             
             LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
@@ -75,9 +75,9 @@ struct SignUpScreen: View {
                     await vm.signUp()
                 }
             }
-            .padding(.vertical, Spacing.medium)
+            .padding(.vertical, DesignSystem.Spacing.medium)
         }
-        .padding(.vertical, Spacing.xxLarge)
+        .padding(.vertical, DesignSystem.Spacing.xxLarge)
     }
     
     private var providersSection: some View {
@@ -98,7 +98,7 @@ struct SignUpScreen: View {
     
     private var alreadyHaveAnAccountSection: some View {
         NavigationPromptView(value: AuthenticationRoute.signIn,text: "Already have an account?", actionTitle: "Sign In")
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
     private var destination: some View {

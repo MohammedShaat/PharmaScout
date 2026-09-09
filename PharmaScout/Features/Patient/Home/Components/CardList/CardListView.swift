@@ -17,7 +17,7 @@ struct CardListView: View {
     }
     
     private var list: some View {
-        VStack(spacing: Spacing.large) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             ForEach(0...2, id: \.self) { i in
                 CardListItemView(name: "Al-Shifa Pharmacy", rate: 4.7, distance: "10 km", responseRate: 92, isOpen: i % 2 == 0)
             }

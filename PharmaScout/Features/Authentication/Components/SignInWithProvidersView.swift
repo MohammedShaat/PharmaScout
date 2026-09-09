@@ -13,7 +13,7 @@ struct SignInWithProvidersView: View {
     let onGoogleButtonTapped: (() -> Void)
     
     var body: some View {
-        VStack(spacing: Spacing.large) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             orDivider
             
             AppleSginInButtonView {
@@ -30,7 +30,7 @@ struct SignInWithProvidersView: View {
     }
     
     private var orDivider: some View {
-        HStack(spacing: Spacing.large) {
+        HStack(spacing: DesignSystem.Spacing.large) {
             Rectangle()
                 .fill(.theme.borderFocused)
                 .frame(height: 0.5)

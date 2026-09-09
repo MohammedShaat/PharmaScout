@@ -20,7 +20,7 @@ struct SectionHeaderView<H: Hashable>: View {
             Spacer()
             
             CustomNavValueLink(value: value) {
-                HStack(spacing: Spacing.xSmall) {
+                HStack(spacing: DesignSystem.Spacing.xSmall) {
                     Text("See all")
                         .fontWeight(.medium)
                     
