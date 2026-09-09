@@ -8,6 +8,6 @@
 import Foundation
 
 struct GenericDrug: Codable, Identifiable {
-    let id: UUID
+    let id: String
     let genericName: String
 }

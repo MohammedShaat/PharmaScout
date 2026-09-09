@@ -11,30 +11,27 @@ extension GenericDrug {
     static let samples: [GenericDrug] = [
        
         GenericDrug(
-            id: .init(uuidString: "b1494acf-88eb-44a4-925d-b266839b7471")!,
+            id: UUID().uuidString,
             genericName: "Amoxicillin + Clavulanic Acid"
         ),
 
         GenericDrug(
-            id: .init(uuidString: "8a89a93a-ac39-4562-ab7f-bb5c383c5bc3")!,
+            id: UUID().uuidString,
             genericName: "Paracetamol"
         ),
 
-
         GenericDrug(
-            id: .init(uuidString: "b864e0e3-7e65-401c-bad0-585e776a129a")!,
+            id: UUID().uuidString,
             genericName: "Ibuprofen"
         ),
 
-
         GenericDrug(
-            id: .init(uuidString: "ad652256-8e4f-4325-8221-3254dc7b87ed")!,
+            id: UUID().uuidString,
             genericName: "Amoxicillin"
         ),
 
-
         GenericDrug(
-            id: .init(uuidString: "99714fc0-1b3f-4252-9176-715947ca187c")!,
+            id: UUID().uuidString,
             genericName: "Diclofenac"
         ),
 

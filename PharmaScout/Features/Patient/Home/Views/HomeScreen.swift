@@ -39,7 +39,7 @@ struct HomeScreen: View {
             .customNavigationDestination(for: Route.self, destination: { route in
                 switch route {
                 case .search:
-                    SearchScreen(drugService: drugService)
+                    DrugSelectionScreen(drugService: drugService)
                 }
             })
             .task {
