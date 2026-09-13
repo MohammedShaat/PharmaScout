@@ -20,9 +20,12 @@ struct PatientTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(authService: authService, drugService: drugService)
+                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm)
             }
             
+            Tab("Search", image: tabImage(.search), value: .search) {
+                SearchScreen(drugService: drugService)
+            }
             
             Tab("Recent", image: tabImage(.recent), value: .recent) {
                 
@@ -44,6 +47,8 @@ struct PatientTabView: View {
         switch tab {
         case .home:
             isSelected(tab) ? "homeSelected" : "home"
+        case .search:
+            isSelected(tab) ? "magnifyingglassSelected" : "magnifyingglass"
         case .recent:
             isSelected(tab) ? "historySelected" : "history"
         case .pharmacies:

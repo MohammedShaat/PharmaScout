@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GenericDrug: Codable, Identifiable {
+struct GenericDrug: Codable, Hashable, Identifiable {
     let id: String
     let genericName: String
 }

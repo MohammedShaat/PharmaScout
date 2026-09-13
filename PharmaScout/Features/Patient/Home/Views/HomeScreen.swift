@@ -10,19 +10,24 @@ import SwiftUI
 struct HomeScreen: View {
     private let authService: AuthService
     private let drugService: DrugService
+    private let patientTabViewModel: PatientTabViewModel
     
     @State private var vm: HomeViewModel
-    @State private var path = NavigationPath()
     
-    init(authService: AuthService, drugService: DrugService) {
+    init(
+        authService: AuthService,
+        drugService: DrugService,
+        patientTabViewModel: PatientTabViewModel
+    ) {
         self.authService = authService
         self.drugService = drugService
+        self.patientTabViewModel = patientTabViewModel
         let viewModel = HomeViewModel(authService: authService)
         self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
-        CustomNavStack(path: $path) {
+        CustomNavStack {
             ScrollView {
                 VStack(spacing: DesignSystem.Spacing.xxLarge) {
                     headerSection
@@ -36,12 +41,6 @@ struct HomeScreen: View {
                 .padding(DesignSystem.Spacing.xLarge)
             }
             .customNavBarVisibility(false)
-            .customNavigationDestination(for: Route.self, destination: { route in
-                switch route {
-                case .search:
-                    DrugSelectionScreen(drugService: drugService)
-                }
-            })
             .task {
                 await vm.loadUserData()
             }
@@ -77,7 +76,7 @@ struct HomeScreen: View {
     
     private var searchSection: some View {
         SearchCardView {
-            path.append(Route.search)
+            patientTabViewModel.selectedTab = .search
         }
     }
     
@@ -90,13 +89,10 @@ struct HomeScreen: View {
     }
 }
 
-enum Route: Hashable {
-    case search
-}
-
 #Preview {
     HomeScreen(
         authService: MockAuthService.sample,
-        drugService: MockDrugService.sample
+        drugService: MockDrugService.sample,
+        patientTabViewModel: PatientTabViewModel.sample
     )
 }

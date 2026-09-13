@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct DrugFormulation: Codable, Identifiable {
+struct DrugFormulation: Codable, Hashable, Identifiable {
     let id: String
     let genericDrugId: String
     let strength: String

@@ -10,6 +10,7 @@ import Foundation
 @Observable
 class DrugSelectionViewModel {
     let drugSerice: DrugService
+    let editingSelectedDrug: SelectedDrug?
     
     var searchText: String = "" {
         didSet { onSearchTextChanged() }
@@ -37,8 +38,15 @@ class DrugSelectionViewModel {
     
     var quantity: Int = 5
     
-    init(drugSerice: DrugService) {
+    init(drugSerice: DrugService, editingSelectedDrug: SelectedDrug?) {
         self.drugSerice = drugSerice
+        self.editingSelectedDrug = editingSelectedDrug
+        
+        if let editingSelectedDrug {
+            self.selectedGenericDrug = editingSelectedDrug.genericDrug
+            self.selectedDrugFormulation = editingSelectedDrug.formulation
+            self.quantity = editingSelectedDrug.quanity
+        }
     }
     
     func search() async {
@@ -57,7 +65,7 @@ class DrugSelectionViewModel {
     func onDrugFormulationClicked(drugFormulaion: DrugFormulation) async {
         selectedDrugFormulation = drugFormulaion
         
-        let form = DrugForm(rawValue: drugFormulaion.form)
+        let form = DrugForm(rawValue: drugFormulaion.form.lowercased())
         quantity = switch form {
         case .capsule, .tablet: 10
         default: 1
@@ -82,6 +90,25 @@ class DrugSelectionViewModel {
         refreshing = true
         await search()
         refreshing = false
+    }
+    
+    func applyChanges() {
+        guard let genericDrug = selectedGenericDrug,
+            let formulation = selectedDrugFormulation,
+            let editingSelectedDrug = editingSelectedDrug
+        else { return }
+        
+        editingSelectedDrug.genericDrug = genericDrug
+        editingSelectedDrug.formulation = formulation
+        editingSelectedDrug.quanity = quantity
+    }
+    
+    func createSelctedDrug() -> SelectedDrug? {
+        guard let genericDrug = selectedGenericDrug,
+          let formulation = selectedDrugFormulation
+        else { return nil }
+        
+        return SelectedDrug(from: genericDrug, and: formulation, quantity: quantity)
     }
     
     private func searchDrugName() async {

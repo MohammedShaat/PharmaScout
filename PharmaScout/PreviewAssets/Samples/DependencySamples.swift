@@ -31,6 +31,10 @@ extension SignUpViewModel {
     )
 }
 
+extension PatientTabViewModel {
+    static let sample = PatientTabViewModel()
+}
+
 extension AppRouter {
     static let sample = AppRouter(authService: MockAuthService.sample)
 }

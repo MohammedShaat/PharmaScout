@@ -15,6 +15,7 @@ class PatientTabViewModel {
 
 enum PatientTab {
     case home
+    case search
     case recent
     case pharmacies
     case profile

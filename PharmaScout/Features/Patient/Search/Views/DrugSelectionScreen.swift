@@ -8,18 +8,28 @@
 import SwiftUI
 
 struct DrugSelectionScreen: View {
+    let onCompletion: ((SelectedDrug) -> Void)?
+    
     @State private var vm: DrugSelectionViewModel
     @FocusState private var isSearchFocused: Bool
     @State private var selectionTask: Task<Void, Never>?
+    @Environment(\.dismiss) private var dismiss
     
-    init(drugService: DrugService) {
-        let viewModel = DrugSelectionViewModel(drugSerice: drugService)
+    init(drugService: DrugService, editingSelectedDrug: SelectedDrug) {
+        let viewModel = DrugSelectionViewModel(drugSerice: drugService, editingSelectedDrug: editingSelectedDrug)
+        self._vm = State(wrappedValue: viewModel)
+        self.onCompletion = nil
+    }
+    
+    init(drugService: DrugService, onCompletion: @escaping (SelectedDrug) -> Void) {
+        self.onCompletion = onCompletion
+        let viewModel = DrugSelectionViewModel(drugSerice: drugService, editingSelectedDrug: nil)
         self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
+            VStack(spacing: DesignSystem.Spacing.large) {
                 // MARK: - Selected
                 HStack {
                     if let selectedGenericDrug = vm.selectedGenericDrug {
@@ -127,6 +137,15 @@ struct DrugSelectionScreen: View {
                 // MARK: - Quantity
                 if vm.isDrugFormulationSelected {
                     CustomStepperView(value: $vm.quantity, range: 1...100)
+                    
+                    Button("Continue") {
+                        vm.applyChanges()
+                        if let selectedDrug = vm.createSelctedDrug() {
+                            onCompletion?(selectedDrug)
+                        }
+                        dismiss()
+                    }
+                    .frame(maxWidth: .infinity, alignment: .trailing)
                 }
             }
             .padding(DesignSystem.Spacing.xLarge)
@@ -182,6 +201,8 @@ struct DrugSelectionScreen: View {
 
 #Preview {
     CustomNavStack {
-        DrugSelectionScreen(drugService: MockDrugService.sample)
+        DrugSelectionScreen(drugService: MockDrugService.sample) { _ in
+            
+        }
     }
 }
