@@ -22,7 +22,7 @@ class DefaultAuthService: AuthService {
             try await auth.signUp(email: email, password: password, redirectTo: url)
             
         } catch {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -36,7 +36,7 @@ class DefaultAuthService: AuthService {
             try await auth.signIn(email: email, password: password)
             
         } catch {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -49,7 +49,7 @@ class DefaultAuthService: AuthService {
             try await auth.resetPasswordForEmail(email, redirectTo: url)
             
         } catch {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -59,7 +59,7 @@ class DefaultAuthService: AuthService {
             try await auth.update(user: userAttributes)
             
         } catch {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -75,7 +75,7 @@ class DefaultAuthService: AuthService {
             )
             
         } catch {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -85,7 +85,7 @@ class DefaultAuthService: AuthService {
             return AppUser(from: user)
             
         } catch {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
 }
@@ -126,42 +126,6 @@ extension DefaultAuthService {
                     print("authState: ", event)
                 }
             }
-        }
-    }
-}
-
-extension DefaultAuthService {
-    private func mapError(_ error: Error) -> Error {
-        switch error {
-        case let authError as AuthError:
-            mapAuthErrorToAppError(authError)
-            
-        case let urlError as URLError:
-            NetworkError.init(from: urlError)
-            
-        default:
-            error
-        }
-    }
-    
-    private func mapAuthErrorToAppError(_ error: AuthError) -> AppAuthError {
-        switch error.errorCode {
-        case .emailExists: .emailAlreadyExists
-            
-        case .weakPassword: .weakPassword
-            
-        case .overEmailSendRateLimit: .emailRateLimit
-            
-        case .emailNotConfirmed: .emailNotConfirmed
-            
-        case .invalidCredentials: .invalidCredentials
-            
-        case .overRequestRateLimit: .overRequestRateLimit
-            
-        case .samePassword: .samePassword
-            
-        default: .unknown(error)
-            
         }
     }
 }

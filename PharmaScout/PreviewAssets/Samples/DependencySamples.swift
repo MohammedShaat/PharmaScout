@@ -23,6 +23,18 @@ extension MockDrugService {
     static let sample = MockDrugService()
 }
 
+extension MockSearchRequestService {
+    static let sample = MockSearchRequestService()
+}
+
+extension MockLocationService {
+    static let sample = MockLocationService()
+}
+
+extension MockPharmacyService {
+    static let sample = MockPharmacyService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,

@@ -13,19 +13,28 @@ struct RootView: View {
     private let googleAuthService: OAuthService
     private let appleAuthService: OAuthService
     private let drugService: DrugService
+    private let searchRequestService: SearchRequestService
+    private let locationService: LocationService
+    private let pharmacySerivce: PharmacyService
     
     init(
         router: AppRouter,
         authService: AuthService,
         googleAuthService: OAuthService,
         appleAuthService: OAuthService,
-        drugService: DrugService
+        drugService: DrugService,
+        searchRequestService: SearchRequestService,
+        locationService: LocationService,
+        pharmacySerivce: PharmacyService
     ) {
         self.router = router
         self.authService = authService
         self.googleAuthService = googleAuthService
         self.appleAuthService = appleAuthService
         self.drugService = drugService
+        self.searchRequestService = searchRequestService
+        self.locationService = locationService
+        self.pharmacySerivce = pharmacySerivce
     }
     
     var body: some View {
@@ -44,7 +53,7 @@ struct RootView: View {
                 ResetPasswordScreen(authSerivce: authService, router: router)
 
             case .main:
-                PatientTabView(authService: authService, drugService: drugService)
+                PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce)
             }
         }
     }
@@ -60,7 +69,10 @@ struct RootView: View {
         authService: authService,
         googleAuthService: MockGoogleAuthService.sample,
         appleAuthService: MockAppleAuthService.sample,
-        drugService: MockDrugService.sample
+        drugService: MockDrugService.sample,
+        searchRequestService: MockSearchRequestService.sample,
+        locationService: MockLocationService.sample,
+        pharmacySerivce: MockPharmacyService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

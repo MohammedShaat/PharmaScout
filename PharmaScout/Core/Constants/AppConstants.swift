@@ -17,6 +17,7 @@ enum AppConstants {
     }
 
     enum Search {
-        static let maxDrugsPerRequest = 5
+        static let maxDrugsPerRequest = 3
+        static let maxPendingRequests = 2
     }
 }

@@ -33,7 +33,10 @@ struct SupabaseManager {
             options: options
         )
     }
-    
+}
+
+
+extension SupabaseManager {
     enum Database {
         enum Table {
             enum GenericDrug {
@@ -72,6 +75,28 @@ struct SupabaseManager {
                 enum Params {
                     static let genericDrugId = "p_generic_drug_id"
                     static let inputText = "p_input_text"
+                }
+            }
+            
+            enum CreateSearch {
+                static let name = "create_search"
+                
+                enum Params {
+                    static let latitude = "p_latitude"
+                    static let longitude = "p_longitude"
+                    static let fulfilmentMode = "p_fulfilment_mode"
+                    static let acceptSubstitute = "p_accept_substitute"
+                    static let items = "p_items"
+                }
+            }
+            
+            enum findPharmaciesWithinDistance {
+                static let name = "find_pharmacies_within_distance"
+                
+                enum Params {
+                    static let latitude = "p_latitude"
+                    static let longitude = "p_longitude"
+                    static let radiusMeters = "p_radius_meters"
                 }
             }
         }
