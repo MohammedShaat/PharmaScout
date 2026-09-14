@@ -9,18 +9,17 @@ import SwiftUI
 
 @main
 struct PharmaScoutApp: App {
-    let authService: AuthService
-    let googleAuthService: OAuthService
-    let appleAuthService: OAuthService
-    let drugService: DrugService
+    private let authService: AuthService = DefaultAuthService()
+    private let googleAuthService: OAuthService = DefaultGoogleAuthService()
+    private let appleAuthService: OAuthService = DefaultAppleAuthService()
+    private let drugService: DrugService = DefaultDrugService()
+    private let searchRequestService: SearchRequestService = DefaultSearchRequestService()
+    private let locationService: LocationService = DefaultLocationService()
+    private let pharmacySerivce: PharmacyService = DefaultPharmacyService()
+    
     @State private var router: AppRouter
     
     init() {
-        let authService = DefaultAuthService()
-        self.authService = authService
-        self.googleAuthService = DefaultGoogleAuthService()
-        self.appleAuthService = DefaultAppleAuthService()
-        self.drugService = DefaultDrugService()
         self._router = State(wrappedValue: AppRouter(authService: authService))
     }
     
@@ -31,7 +30,10 @@ struct PharmaScoutApp: App {
                 authService: DefaultAuthService(),
                 googleAuthService: googleAuthService,
                 appleAuthService: appleAuthService,
-                drugService: drugService
+                drugService: drugService,
+                searchRequestService: searchRequestService,
+                locationService: locationService,
+                pharmacySerivce: pharmacySerivce
             )
             .onOpenURL { url in
                 Task {

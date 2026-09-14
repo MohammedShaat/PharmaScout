@@ -10,7 +10,6 @@ import Supabase
 
 struct DefaultDrugService: DrugService {
     private let supabase = SupabaseManager.shared.client
-    private let db = SupabaseManager.Database.self
     
     func searchGenericDrug(contains text: String, from: Int, to: Int) async throws -> [GenericDrug] {
         do {
@@ -29,7 +28,7 @@ struct DefaultDrugService: DrugService {
             return genericDrugs
             
         } catch  {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
     
@@ -53,22 +52,8 @@ struct DefaultDrugService: DrugService {
             return drugFormulations
             
         } catch  {
-            throw mapError(error)
+            throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
 }
 
-extension DefaultDrugService {
-    private func mapError(_ error: Error) -> Error {
-        switch error {
-        case let urlError as URLError:
-            NetworkError.init(from: urlError)
-            
-        case let pgError as PostgrestError:
-            pgError
-            
-        default:
-            error
-        }
-    }
-}
