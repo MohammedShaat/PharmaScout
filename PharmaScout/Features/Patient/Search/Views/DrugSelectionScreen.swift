@@ -15,15 +15,23 @@ struct DrugSelectionScreen: View {
     @State private var selectionTask: Task<Void, Never>?
     @Environment(\.dismiss) private var dismiss
     
-    init(drugService: DrugService, editingSelectedDrug: SelectedDrug) {
-        let viewModel = DrugSelectionViewModel(drugSerice: drugService, editingSelectedDrug: editingSelectedDrug)
+    init(drugService: DrugService, editingSelectedDrug: SelectedDrug, selectedFormulationIds: [String]) {
+        let viewModel = DrugSelectionViewModel(
+            drugSerice: drugService,
+            editingSelectedDrug: editingSelectedDrug,
+            selectedFormulationIds: selectedFormulationIds
+        )
         self._vm = State(wrappedValue: viewModel)
         self.onCompletion = nil
     }
     
-    init(drugService: DrugService, onCompletion: @escaping (SelectedDrug) -> Void) {
+    init(drugService: DrugService, selectedFormulationIds: [String], onCompletion: @escaping (SelectedDrug) -> Void) {
         self.onCompletion = onCompletion
-        let viewModel = DrugSelectionViewModel(drugSerice: drugService, editingSelectedDrug: nil)
+        let viewModel = DrugSelectionViewModel(
+            drugSerice: drugService,
+            editingSelectedDrug: nil,
+            selectedFormulationIds: selectedFormulationIds
+        )
         self._vm = State(wrappedValue: viewModel)
     }
     
@@ -134,10 +142,8 @@ struct DrugSelectionScreen: View {
                     }
                 }
                 
-                // MARK: - Quantity
+                // MARK: - Continue
                 if vm.isDrugFormulationSelected {
-                    CustomStepperView(value: $vm.quantity, range: 1...100)
-                    
                     Button("Continue") {
                         vm.applyChanges()
                         if let selectedDrug = vm.createSelctedDrug() {
@@ -201,7 +207,7 @@ struct DrugSelectionScreen: View {
 
 #Preview {
     CustomNavStack {
-        DrugSelectionScreen(drugService: MockDrugService.sample) { _ in
+        DrugSelectionScreen(drugService: MockDrugService.sample, selectedFormulationIds: []) { _ in
             
         }
     }

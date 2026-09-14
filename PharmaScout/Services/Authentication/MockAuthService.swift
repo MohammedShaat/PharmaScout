@@ -28,7 +28,7 @@ struct MockAuthService: AuthService {
     func signInWithCredential(_ credential: OAuthCredential) async throws {}
     
     func getUser() async throws -> AppUser {
-        AppUser(fullName: "Mohammed Shaat", email: "mohammed@email.com")
+        AppUser(id: "1", fullName: "Mohammed Shaat", email: "mohammed@email.com")
     }
 }
 

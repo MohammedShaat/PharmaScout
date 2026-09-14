@@ -20,7 +20,7 @@ struct ListView: View {
         VStack(spacing: 0) {
             ForEach(0...2, id: \.self) { i in
                 VStack(spacing: 0) {
-                    ListItemVIew(name: "Ibuprofen", strength: "200 mg", quantity: 10)
+                    ListItemVIew(name: "Ibuprofen", strength: "200 mg",)
                         .padding(DesignSystem.Spacing.medium)
                     
                     if i < 2 {

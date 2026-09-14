@@ -10,11 +10,24 @@ import SwiftUI
 struct PatientTabView: View {
     private let authService: AuthService
     private let drugService: DrugService
+    private let searchRequestService: SearchRequestService
+    private let locationService: LocationService
+    private let pharmacySerivce: PharmacyService
+    
     @State private var vm = PatientTabViewModel()
     
-    init(authService: AuthService, drugService: DrugService) {
+    init(
+        authService: AuthService,
+        drugService: DrugService,
+        searchRequestService: SearchRequestService,
+        locationService: LocationService,
+        pharmacySerivce: PharmacyService
+    ) {
         self.authService = authService
         self.drugService = drugService
+        self.searchRequestService = searchRequestService
+        self.locationService = locationService
+        self.pharmacySerivce = pharmacySerivce
     }
     
     var body: some View {
@@ -24,7 +37,7 @@ struct PatientTabView: View {
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
-                SearchScreen(drugService: drugService)
+                SearchScreen(drugService: drugService, searchRequestService: searchRequestService, authService: authService, locationService: locationService, pharmacySerivce: pharmacySerivce)
             }
             
             Tab("Recent", image: tabImage(.recent), value: .recent) {
@@ -66,6 +79,9 @@ struct PatientTabView: View {
 #Preview {
     PatientTabView(
         authService: MockAuthService.sample,
-        drugService: MockDrugService.sample
+        drugService: MockDrugService.sample,
+        searchRequestService: MockSearchRequestService.sample,
+        locationService: MockLocationService.sample,
+        pharmacySerivce: MockPharmacyService.sample
     )
 }

@@ -11,6 +11,7 @@ import Foundation
 class DrugSelectionViewModel {
     let drugSerice: DrugService
     let editingSelectedDrug: SelectedDrug?
+    let selectedFormulationIds: [String]
     
     var searchText: String = "" {
         didSet { onSearchTextChanged() }
@@ -36,16 +37,14 @@ class DrugSelectionViewModel {
     
     private(set) var refreshing = false
     
-    var quantity: Int = 5
-    
-    init(drugSerice: DrugService, editingSelectedDrug: SelectedDrug?) {
+    init(drugSerice: DrugService, editingSelectedDrug: SelectedDrug?, selectedFormulationIds: [String]) {
         self.drugSerice = drugSerice
         self.editingSelectedDrug = editingSelectedDrug
+        self.selectedFormulationIds = selectedFormulationIds
         
         if let editingSelectedDrug {
             self.selectedGenericDrug = editingSelectedDrug.genericDrug
             self.selectedDrugFormulation = editingSelectedDrug.formulation
-            self.quantity = editingSelectedDrug.quanity
         }
     }
     
@@ -64,12 +63,6 @@ class DrugSelectionViewModel {
     
     func onDrugFormulationClicked(drugFormulaion: DrugFormulation) async {
         selectedDrugFormulation = drugFormulaion
-        
-        let form = DrugForm(rawValue: drugFormulaion.form.lowercased())
-        quantity = switch form {
-        case .capsule, .tablet: 10
-        default: 1
-        }
     }
     
     func onGenericDrugCanceled() {
@@ -100,7 +93,6 @@ class DrugSelectionViewModel {
         
         editingSelectedDrug.genericDrug = genericDrug
         editingSelectedDrug.formulation = formulation
-        editingSelectedDrug.quanity = quantity
     }
     
     func createSelctedDrug() -> SelectedDrug? {
@@ -108,7 +100,7 @@ class DrugSelectionViewModel {
           let formulation = selectedDrugFormulation
         else { return nil }
         
-        return SelectedDrug(from: genericDrug, and: formulation, quantity: quantity)
+        return SelectedDrug(from: genericDrug, and: formulation)
     }
     
     private func searchDrugName() async {
@@ -137,10 +129,15 @@ class DrugSelectionViewModel {
             )
             
         } onSuccess: { newDrugFormulations in
+            
+            let newUnselectedDrugFormulations = newDrugFormulations.filter {
+                !selectedFormulationIds.contains($0.id)
+            }
+            
             if pagination.hasPreviousPage {
-                drugFormulations.append(contentsOf: newDrugFormulations)
+                drugFormulations.append(contentsOf: newUnselectedDrugFormulations)
             } else {
-                drugFormulations = newDrugFormulations
+                drugFormulations = newUnselectedDrugFormulations
             }
         }
     }

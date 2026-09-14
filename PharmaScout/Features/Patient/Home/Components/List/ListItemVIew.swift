@@ -10,7 +10,6 @@ import SwiftUI
 struct ListItemVIew: View {
     let name: String
     let strength: String
-    let quantity: Int
     
     var body: some View {
         HStack {
@@ -39,11 +38,7 @@ struct ListItemVIew: View {
                 .font(.headline)
                 .lineLimit(1)
 
-            HStack(spacing: 0) {
-                Text(strength)
-                Text(" · ")
-                Text("\(quantity) units")
-            }
+            Text(strength)
             .foregroundStyle(.theme.textSecondary)
             .font(.callout)
         }
@@ -61,7 +56,7 @@ struct ListItemVIew: View {
 }
 
 #Preview {
-    ListItemVIew(name: "Ibuprofen", strength: "200 mg", quantity: 10)
+    ListItemVIew(name: "Ibuprofen", strength: "200 mg")
         .padding()
         .background(.gray.opacity(0.4))
 }
