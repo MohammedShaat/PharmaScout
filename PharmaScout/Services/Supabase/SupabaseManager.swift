@@ -117,6 +117,18 @@ extension SupabaseManager {
                     static let radiusMeters = "p_radius_meters"
                 }
             }
+            
+            enum findNearbyPharmacies {
+                static let name = "find_nearby_pharmacies"
+                
+                enum Params {
+                    static let latitude = "p_latitude"
+                    static let longitude = "p_longitude"
+                    static let radiusMeters = "p_radius_meters"
+                    static let limit = "p_limit"
+                    static let offset = "p_offset"
+                }
+            }
         }
     }
 }

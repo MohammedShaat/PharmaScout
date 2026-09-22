@@ -16,3 +16,6 @@ struct NearbyPharmacy: Codable {
         case distanceMeters = "distance"
     }
 }
+
+
+

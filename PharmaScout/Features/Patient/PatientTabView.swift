@@ -45,7 +45,7 @@ struct PatientTabView: View {
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
-                
+                PharmaciesScreen(pharmacyService: pharmacySerivce, locationService: locationService)
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {

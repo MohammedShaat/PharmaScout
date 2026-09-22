@@ -86,7 +86,7 @@ class SearchViewModel {
         do {
             let location = try locationService.getCurrentLocation()
             
-            let nearbyPharmacies = try await pharmacySerivce.findNearbyPharmacies(
+            let nearbyPharmacies = try await pharmacySerivce.findOpenNearbyPharmacies(
                 latitude: location.latitude,
                 longitude: location.longitude,
                 radiusMeters: distanceMeters,
