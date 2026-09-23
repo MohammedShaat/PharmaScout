@@ -75,7 +75,33 @@ extension SupabaseManager {
                     static let createdAt = "created_at"
                 }
             }
+            
+            enum PharmacyContact {
+                static let name = "pharmacy_contact"
+                
+                enum Column {
+                    static let id = "id"
+                    static let pharmacyId = "pharmacy_id"
+                    static let title = "title"
+                    static let type = "type"
+                    static let value = "value"
+                }
+            }
+            
+            enum PharmacyHours {
+                static let name = "pharmacy_hours"
+                
+                enum Column {
+                    static let id = "id"
+                    static let day = "day"
+                    static let pharmacyId = "pharmacy_id"
+                    static let opensAt = "opens_at"
+                    static let closesAt = "closes_at"
+                    static let timezone = "timezone"
+                }
+            }
         }
+        
         
         enum Functions {
             enum SearchGenericDrug {

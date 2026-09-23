@@ -1,13 +1,13 @@
 //
-//  UserLocation.swift
+//  Coordinate.swift
 //  PharmaScout
 //
-//  Created by Mohammed on 9/14/26.
+//  Created by Mohammed on 9/24/26.
 //
 
 import Foundation
 
-struct UserLocation {
+struct Coordinate: Codable, Hashable {
     let latitude: Double
     let longitude: Double
 }

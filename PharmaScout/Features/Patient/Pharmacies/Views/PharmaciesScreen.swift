@@ -8,10 +8,19 @@
 import SwiftUI
 
 struct PharmaciesScreen: View {
+    private let pharmacyService: PharmacyService
+    private let directionsService: DirectionsService
+    
     @State private var vm: PharmaciesViewModel
     @State private var searchFurtherTask: Task<Void, Never>? = nil
     
-    init(pharmacyService: PharmacyService, locationService: LocationService) {
+    init(
+        pharmacyService: PharmacyService,
+        locationService: LocationService,
+        directionsService: DirectionsService
+    ) {
+        self.pharmacyService = pharmacyService
+        self.directionsService = directionsService
         let viewModel = PharmaciesViewModel(pharmacyService: pharmacyService, locationService: locationService)
         self._vm = State(wrappedValue: viewModel)
     }
@@ -62,8 +71,19 @@ struct PharmaciesScreen: View {
                 }
             }
             .customNavBarVisibility(false)
+            .customNavigationDestination(for: PharmacyDestination.self, destination: { destination in
+                switch destination {
+                case .details(let pharmacy):
+                    PharmacyDetailScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
+                    
+                case .map(let pharmacy):
+                    if let userCoordinate = vm.userCoordinate {
+                        PharmacyMapScreen(pharmacy: pharmacy, userCoordiante: userCoordinate, directionsService: directionsService)
+                    }
+                }
+            })
             .refreshable(action: vm.refresh)
-            .task {
+            .taskOnFirstAppear{
                 await vm.findNearbyPharmacies()
             }
         }
@@ -73,22 +93,30 @@ struct PharmaciesScreen: View {
     private func nearbyPharmacyItem(nearbyPharmacy: Pharmacy) -> some View {
         let distance = nearbyPharmacy.distanceMeters.meterToKilometer.formatted(.number.precision(.fractionLength(2)))
         
-        VStack {
-            Text(nearbyPharmacy.name)
-            HStack {
-                Text("\(distance) km")
-                Text(nearbyPharmacy.isOpen.description)
+        CustomNavValueLink(value: PharmacyDestination.details(nearbyPharmacy)) {
+            VStack {
+                Text(nearbyPharmacy.name)
+                HStack {
+                    Text("\(distance) km")
+                    Text(nearbyPharmacy.isOpen.description)
+                }
             }
+            .frame(maxWidth: .infinity)
+            .frame(height: 70)
+            .background(.gray.opacity(0.3))
         }
-        .frame(maxWidth: .infinity)
-        .frame(height: 70)
-        .background(.gray.opacity(0.3))
     }
+}
+
+enum PharmacyDestination: Hashable {
+    case details(Pharmacy)
+    case map(Pharmacy)
 }
 
 #Preview {
     PharmaciesScreen(
         pharmacyService: MockPharmacyService.sample,
-        locationService: MockLocationService.sample
+        locationService: MockLocationService.sample,
+        directionsService: MockDirectionsSrevice.sample
     )
 }

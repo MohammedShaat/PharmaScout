@@ -12,9 +12,10 @@ extension Pharmacy {
         Pharmacy(
             id: "5748b784-ec20-4267-a97d-d217aeaa24b5",
             name: "Al-Razi Pharmacy",
-            latitude: 31.540268,
-            longitude: 34.439894,
+            latitude: 31.522555,
+            longitude: 34.4581,
             address: "Test Address 01",
+            timezone: "Asia/Gaza",
             distanceMeters: 2000,
             isOpen: true
         ),
@@ -24,6 +25,7 @@ extension Pharmacy {
             latitude: 31.500585,
             longitude: 34.466933,
             address: "Test Address 02",
+            timezone: "Asia/Gaza",
             distanceMeters: 3800,
             isOpen: true
         ),
@@ -33,6 +35,7 @@ extension Pharmacy {
             latitude: 31.507782,
             longitude: 34.38865,
             address: "Test Address 03",
+            timezone: "Asia/Gaza",
             distanceMeters: 4800,
             isOpen: false
         ),
@@ -42,6 +45,7 @@ extension Pharmacy {
             latitude: 31.560702,
             longitude: 34.481007,
             address: "Test Address 04",
+            timezone: "Asia/Gaza",
             distanceMeters: 6000,
             isOpen: true
         ),
@@ -51,6 +55,7 @@ extension Pharmacy {
             latitude: 31.453255,
             longitude: 34.465795,
             address: "Test Address 05",
+            timezone: "Asia/Gaza",
             distanceMeters: 8200,
             isOpen: false
         ),
@@ -60,6 +65,7 @@ extension Pharmacy {
             latitude: 31.552355,
             longitude: 34.340034,
             address: "Test Address 06",
+            timezone: "Asia/Gaza",
             distanceMeters: 9700,
             isOpen: true
         ),
@@ -69,6 +75,7 @@ extension Pharmacy {
             latitude: 31.616983,
             longitude: 34.436229,
             address: "Test Address 21",
+            timezone: "Asia/Gaza",
             distanceMeters: 10500,
             isOpen: true
         ),
@@ -78,6 +85,7 @@ extension Pharmacy {
             latitude: 31.619634,
             longitude: 34.457891,
             address: "Test Address 49",
+            timezone: "Asia/Gaza",
             distanceMeters: 10988,
             isOpen: true
         ),
@@ -87,6 +95,7 @@ extension Pharmacy {
             latitude: 31.602977,
             longitude: 34.507401,
             address: "Test Address 22",
+            timezone: "Asia/Gaza",
             distanceMeters: 11200,
             isOpen: false
         ),
@@ -96,6 +105,7 @@ extension Pharmacy {
             latitude: 31.551996,
             longitude: 34.556949,
             address: "Test Address 23",
+            timezone: "Asia/Gaza",
             distanceMeters: 11900,
             isOpen: true
         ),
@@ -105,6 +115,7 @@ extension Pharmacy {
             latitude: 31.623958,
             longitude: 34.479576,
             address: "Test Address 07",
+            timezone: "Asia/Gaza",
             distanceMeters: 12000,
             isOpen: true
         ),
@@ -114,6 +125,7 @@ extension Pharmacy {
             latitude: 31.580716,
             longitude: 34.555985,
             address: "Test Address 51",
+            timezone: "Asia/Gaza",
             distanceMeters: 13061,
             isOpen: true
         ),
@@ -123,6 +135,7 @@ extension Pharmacy {
             latitude: 31.476271,
             longitude: 34.572332,
             address: "Test Address 52",
+            timezone: "Asia/Gaza",
             distanceMeters: 13892,
             isOpen: false
         ),
@@ -132,6 +145,7 @@ extension Pharmacy {
             latitude: 31.632874,
             longitude: 34.517013,
             address: "Test Address 50",
+            timezone: "Asia/Gaza",
             distanceMeters: 14458,
             isOpen: false
         ),
@@ -141,6 +155,7 @@ extension Pharmacy {
             latitude: 31.499036,
             longitude: 34.592036,
             address: "Test Address 08",
+            timezone: "Asia/Gaza",
             distanceMeters: 15000,
             isOpen: false
         ),
@@ -150,6 +165,7 @@ extension Pharmacy {
             latitude: 31.474739,
             longitude: 34.591657,
             address: "Test Address 24",
+            timezone: "Asia/Gaza",
             distanceMeters: 15666,
             isOpen: true
         ),
@@ -159,6 +175,7 @@ extension Pharmacy {
             latitude: 31.392665,
             longitude: 34.525318,
             address: "Test Address 53",
+            timezone: "Asia/Gaza",
             distanceMeters: 16734,
             isOpen: false
         ),
@@ -168,6 +185,7 @@ extension Pharmacy {
             latitude: 31.370423,
             longitude: 34.371385,
             address: "Test Address 09",
+            timezone: "Asia/Gaza",
             distanceMeters: 18000,
             isOpen: false
         ),
@@ -177,6 +195,7 @@ extension Pharmacy {
             latitude: 31.387198,
             longitude: 34.541928,
             address: "Test Address 25",
+            timezone: "Asia/Gaza",
             distanceMeters: 18085,
             isOpen: true
         ),
@@ -186,6 +205,7 @@ extension Pharmacy {
             latitude: 31.635182,
             longitude: 34.278443,
             address: "Test Address 10",
+            timezone: "Asia/Gaza",
             distanceMeters: 19500,
             isOpen: true
         ),
@@ -195,6 +215,7 @@ extension Pharmacy {
             latitude: 31.621323,
             longitude: 34.637447,
             address: "Test Address 11",
+            timezone: "Asia/Gaza",
             distanceMeters: 22000,
             isOpen: false
         ),
@@ -204,6 +225,7 @@ extension Pharmacy {
             latitude: 31.397183,
             longitude: 34.648809,
             address: "Test Address 38",
+            timezone: "Asia/Gaza",
             distanceMeters: 24513,
             isOpen: true
         ),
@@ -213,6 +235,7 @@ extension Pharmacy {
             latitude: 31.297531,
             longitude: 34.441527,
             address: "Test Address 54",
+            timezone: "Asia/Gaza",
             distanceMeters: 25027,
             isOpen: false
         ),
@@ -222,6 +245,7 @@ extension Pharmacy {
             latitude: 31.741843,
             longitude: 34.365318,
             address: "Test Address 59",
+            timezone: "Asia/Gaza",
             distanceMeters: 25291,
             isOpen: true
         ),
@@ -231,6 +255,7 @@ extension Pharmacy {
             latitude: 31.295213,
             longitude: 34.450969,
             address: "Test Address 40",
+            timezone: "Asia/Gaza",
             distanceMeters: 25318,
             isOpen: false
         ),
@@ -240,6 +265,7 @@ extension Pharmacy {
             latitude: 31.493482,
             longitude: 34.701989,
             address: "Test Address 37",
+            timezone: "Asia/Gaza",
             distanceMeters: 25401,
             isOpen: false
         ),
@@ -249,6 +275,7 @@ extension Pharmacy {
             latitude: 31.319849,
             longitude: 34.559742,
             address: "Test Address 39",
+            timezone: "Asia/Gaza",
             distanceMeters: 25405,
             isOpen: true
         ),
@@ -258,6 +285,7 @@ extension Pharmacy {
             latitude: 31.319985,
             longitude: 34.573083,
             address: "Test Address 12",
+            timezone: "Asia/Gaza",
             distanceMeters: 26000,
             isOpen: true
         ),
@@ -267,6 +295,7 @@ extension Pharmacy {
             latitude: 31.303755,
             longitude: 34.33394,
             address: "Test Address 41",
+            timezone: "Asia/Gaza",
             distanceMeters: 26194,
             isOpen: true
         ),
@@ -276,6 +305,7 @@ extension Pharmacy {
             latitude: 31.60066,
             longitude: 34.700177,
             address: "Test Address 36",
+            timezone: "Asia/Gaza",
             distanceMeters: 26473,
             isOpen: false
         ),
@@ -285,6 +315,7 @@ extension Pharmacy {
             latitude: 31.283937,
             longitude: 34.450071,
             address: "Test Address 26",
+            timezone: "Asia/Gaza",
             distanceMeters: 26566,
             isOpen: false
         ),
@@ -294,6 +325,7 @@ extension Pharmacy {
             latitude: 31.752292,
             longitude: 34.516838,
             address: "Test Address 34",
+            timezone: "Asia/Gaza",
             distanceMeters: 26661,
             isOpen: false
         ),
@@ -303,6 +335,7 @@ extension Pharmacy {
             latitude: 31.75664,
             longitude: 34.375961,
             address: "Test Address 33",
+            timezone: "Asia/Gaza",
             distanceMeters: 26647,
             isOpen: false
         ),
@@ -312,6 +345,7 @@ extension Pharmacy {
             latitude: 31.682053,
             longitude: 34.223496,
             address: "Test Address 58",
+            timezone: "Asia/Gaza",
             distanceMeters: 26841,
             isOpen: true
         ),
@@ -321,6 +355,7 @@ extension Pharmacy {
             latitude: 31.760862,
             longitude: 34.49183,
             address: "Test Address 48",
+            timezone: "Asia/Gaza",
             distanceMeters: 27016,
             isOpen: true
         ),
@@ -330,6 +365,7 @@ extension Pharmacy {
             latitude: 31.622401,
             longitude: 34.171349,
             address: "Test Address 31",
+            timezone: "Asia/Gaza",
             distanceMeters: 27440,
             isOpen: true
         ),
@@ -339,6 +375,7 @@ extension Pharmacy {
             latitude: 31.697245,
             longitude: 34.641404,
             address: "Test Address 35",
+            timezone: "Asia/Gaza",
             distanceMeters: 27474,
             isOpen: true
         ),
@@ -348,6 +385,7 @@ extension Pharmacy {
             latitude: 31.710384,
             longitude: 34.246958,
             address: "Test Address 32",
+            timezone: "Asia/Gaza",
             distanceMeters: 27521,
             isOpen: true
         ),
@@ -357,6 +395,7 @@ extension Pharmacy {
             latitude: 31.760692,
             longitude: 34.345988,
             address: "Test Address 47",
+            timezone: "Asia/Gaza",
             distanceMeters: 27824,
             isOpen: true
         ),
@@ -366,6 +405,7 @@ extension Pharmacy {
             latitude: 31.344814,
             longitude: 34.222832,
             address: "Test Address 42",
+            timezone: "Asia/Gaza",
             distanceMeters: 28294,
             isOpen: false
         ),
@@ -375,6 +415,7 @@ extension Pharmacy {
             latitude: 31.615236,
             longitude: 34.157742,
             address: "Test Address 45",
+            timezone: "Asia/Gaza",
             distanceMeters: 28325,
             isOpen: true
         ),
@@ -384,6 +425,7 @@ extension Pharmacy {
             latitude: 31.51493,
             longitude: 34.131472,
             address: "Test Address 30",
+            timezone: "Asia/Gaza",
             distanceMeters: 28901,
             isOpen: true
         ),
@@ -393,6 +435,7 @@ extension Pharmacy {
             latitude: 31.713279,
             longitude: 34.226997,
             address: "Test Address 46",
+            timezone: "Asia/Gaza",
             distanceMeters: 29022,
             isOpen: true
         ),
@@ -402,6 +445,7 @@ extension Pharmacy {
             latitude: 31.476914,
             longitude: 34.135073,
             address: "Test Address 13",
+            timezone: "Asia/Gaza",
             distanceMeters: 29000,
             isOpen: true
         ),
@@ -411,6 +455,7 @@ extension Pharmacy {
             latitude: 31.784795,
             longitude: 34.452398,
             address: "Test Address 60",
+            timezone: "Asia/Gaza",
             distanceMeters: 29200,
             isOpen: true
         ),
@@ -420,6 +465,7 @@ extension Pharmacy {
             latitude: 31.475621,
             longitude: 34.131719,
             address: "Test Address 57",
+            timezone: "Asia/Gaza",
             distanceMeters: 29339,
             isOpen: false
         ),
@@ -429,6 +475,7 @@ extension Pharmacy {
             latitude: 31.513049,
             longitude: 34.122275,
             address: "Test Address 44",
+            timezone: "Asia/Gaza",
             distanceMeters: 29779,
             isOpen: true
         ),
@@ -438,6 +485,7 @@ extension Pharmacy {
             latitude: 31.420883,
             longitude: 34.143309,
             address: "Test Address 43",
+            timezone: "Asia/Gaza",
             distanceMeters: 29992,
             isOpen: false
         ),
@@ -447,6 +495,7 @@ extension Pharmacy {
             latitude: 31.260771,
             longitude: 34.301116,
             address: "Test Address 55",
+            timezone: "Asia/Gaza",
             distanceMeters: 31809,
             isOpen: true
         ),
@@ -456,6 +505,7 @@ extension Pharmacy {
             latitude: 31.805952,
             longitude: 34.495032,
             address: "Test Address 14",
+            timezone: "Asia/Gaza",
             distanceMeters: 32000,
             isOpen: true
         ),
@@ -465,6 +515,7 @@ extension Pharmacy {
             latitude: 31.40562,
             longitude: 34.123582,
             address: "Test Address 29",
+            timezone: "Asia/Gaza",
             distanceMeters: 32379,
             isOpen: true
         ),
@@ -474,6 +525,7 @@ extension Pharmacy {
             latitude: 31.335943,
             longitude: 34.173128,
             address: "Test Address 56",
+            timezone: "Asia/Gaza",
             distanceMeters: 32461,
             isOpen: false
         ),
@@ -483,6 +535,7 @@ extension Pharmacy {
             latitude: 31.364778,
             longitude: 34.755472,
             address: "Test Address 15",
+            timezone: "Asia/Gaza",
             distanceMeters: 35000,
             isOpen: false
         ),
@@ -492,6 +545,7 @@ extension Pharmacy {
             latitude: 31.290207,
             longitude: 34.192949,
             address: "Test Address 28",
+            timezone: "Asia/Gaza",
             distanceMeters: 34649,
             isOpen: false
         ),
@@ -501,6 +555,7 @@ extension Pharmacy {
             latitude: 31.229173,
             longitude: 34.320699,
             address: "Test Address 27",
+            timezone: "Asia/Gaza",
             distanceMeters: 34417,
             isOpen: false
         ),
@@ -510,6 +565,7 @@ extension Pharmacy {
             latitude: 31.346695,
             longitude: 34.080569,
             address: "Test Address 16",
+            timezone: "Asia/Gaza",
             distanceMeters: 39000,
             isOpen: false
         ),
@@ -519,6 +575,7 @@ extension Pharmacy {
             latitude: 31.660193,
             longitude: 34.88301,
             address: "Test Address 17",
+            timezone: "Asia/Gaza",
             distanceMeters: 45000,
             isOpen: true
         ),
@@ -528,6 +585,7 @@ extension Pharmacy {
             latitude: 31.099887,
             longitude: 34.615836,
             address: "Test Address 18",
+            timezone: "Asia/Gaza",
             distanceMeters: 50000,
             isOpen: false
         ),
@@ -537,6 +595,7 @@ extension Pharmacy {
             latitude: 31.435396,
             longitude: 33.865322,
             address: "Test Address 19",
+            timezone: "Asia/Gaza",
             distanceMeters: 55000,
             isOpen: false
         ),
@@ -546,6 +605,7 @@ extension Pharmacy {
             latitude: 31.981688,
             longitude: 34.123459,
             address: "Test Address 20",
+            timezone: "Asia/Gaza",
             distanceMeters: 59000,
             isOpen: false
         )

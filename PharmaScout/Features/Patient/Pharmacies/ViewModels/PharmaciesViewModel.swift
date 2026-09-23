@@ -14,7 +14,7 @@ class PharmaciesViewModel {
     
     private(set) var nearbyPharmacies: [Pharmacy] = []
 
-    private var location: UserLocation?    
+    private(set) var userCoordinate: Coordinate?    
     var pharmaciesError: AppError?
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
@@ -29,15 +29,15 @@ class PharmaciesViewModel {
     
     func findNearbyPharmacies(refresh: Bool = false) async {
         await getLocation()
-        guard let location else { return }
+        guard let userCoordinate else { return }
         
         loadingState.startLoading(refresh: refresh)
         defer { loadingState.stopLoading() }
         
         do {
             let params = FindNearbyPharmaciesParams(
-                latitude: location.latitude,
-                longitude: location.longitude,
+                latitude: userCoordinate.latitude,
+                longitude: userCoordinate.longitude,
                 radiusMeters: radiusKm.kilometerToMeter,
                 limit: refresh ? nearbyPharmacies.count : loadingState.pagination.pageSize,
                 offset: refresh ? 0 : nearbyPharmacies.count
@@ -59,6 +59,7 @@ class PharmaciesViewModel {
                     newNearbyPharmacies.count < loadingState.pagination.pageSize
                     ? true : false
             }
+            print("nearybyPharmacies: ", nearbyPharmacies.count)
             
         } catch {
             pharmaciesError = ErrorHandler.handle(error)
@@ -83,44 +84,16 @@ class PharmaciesViewModel {
     }
     
     private func getLocation() async {
-        guard location == nil else { return }
+        guard userCoordinate == nil else { return }
         
         locationService.requestPermission()
         
         do {
-            location = try locationService.getCurrentLocation()
+            userCoordinate = try locationService.getCurrentLocation()
             
         } catch {
             pharmaciesError = ErrorHandler.handle(error)
             print("Failed to get location\n", error)
         }
-    }
-}
-
-struct LoadingState {
-    var status: State = .idle
-    var pagination: Pagination
-    
-    init(pageSize: Int) {
-        pagination = .init(pageSize: pageSize)
-    }
-    
-    mutating func startLoading(refresh: Bool = false) {
-        if refresh {
-            status = .refreshing
-        } else {
-            status = pagination.page != 0 ? .loadingMore : .loading
-        }
-    }
-    
-    mutating func stopLoading() {
-        status = .idle
-    }
-    
-    enum State {
-        case idle
-        case loading
-        case loadingMore
-        case refreshing
     }
 }

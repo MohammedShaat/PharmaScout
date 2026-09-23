@@ -33,7 +33,7 @@ class DrugSelectionViewModel {
     private(set) var selectedDrugFormulation: DrugFormulation?
     var isDrugFormulationSelected: Bool { selectedDrugFormulation != nil }
     
-    private(set) var pagination: Pagination = .init(pageSize: AppConstants.Network.pageSize)
+    private(set) var pagination: LoadingState.Pagination = .init(pageSize: AppConstants.Network.pageSize)
     
     private(set) var refreshing = false
     

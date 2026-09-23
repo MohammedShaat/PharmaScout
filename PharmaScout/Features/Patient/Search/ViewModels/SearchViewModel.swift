@@ -84,11 +84,10 @@ class SearchViewModel {
         locationService.requestPermission()
         
         do {
-            let location = try locationService.getCurrentLocation()
+            let coordinate = try locationService.getCurrentLocation()
             
             let nearbyPharmacies = try await pharmacySerivce.findOpenNearbyPharmacies(
-                latitude: location.latitude,
-                longitude: location.longitude,
+                coordinate: coordinate,
                 radiusMeters: distanceMeters,
                 count: pharmacyLimit,
             )
@@ -98,7 +97,7 @@ class SearchViewModel {
                 return
             }
             
-            try await createSearchRequest(location: location, pharmacies: nearbyPharmacies)
+            try await createSearchRequest(coordinate: coordinate, pharmacies: nearbyPharmacies)
             
             showSuccessMessage = true
             await refresh()
@@ -115,10 +114,10 @@ class SearchViewModel {
         await getNumberOfActiveSearchs()
     }
     
-    private func createSearchRequest(location: UserLocation, pharmacies: [NearbyPharmacy]) async throws {
+    private func createSearchRequest(coordinate: Coordinate, pharmacies: [NearbyPharmacy]) async throws {
         let request = SearchRequest(
-            latitude: location.latitude,
-            longitude: location.longitude,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
             fulfilmentMode: fulfilmentMode,
             acceptSubstitute: acceptSubstitutes,
             drugs: selectedDrugs.map { SearchItemRequest(from: $0) },

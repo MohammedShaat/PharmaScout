@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockPharmacyService: PharmacyService {
-    func findOpenNearbyPharmacies(latitude: Double, longitude: Double, radiusMeters: Double, count: Int) async throws -> [NearbyPharmacy] {
+    func findOpenNearbyPharmacies(coordinate: Coordinate, radiusMeters: Double, count: Int) async throws -> [NearbyPharmacy] {
         return NearbyPharmacy.samples
     }
     
@@ -24,5 +24,18 @@ struct MockPharmacyService: PharmacyService {
             .prefix(params.limit)
         
         return Array(nearbyPharmacies)
+    }
+    
+    func getContactInfo(for pharmacyId: String) async throws -> [PharmacyContact] {
+        try? await Task.sleep(for: .seconds(2))
+        
+        return PharmacyContact.samples
+            .filter {
+                $0.pharmacyId == pharmacyId
+            }
+    }
+    
+    func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour] {
+        []
     }
 }

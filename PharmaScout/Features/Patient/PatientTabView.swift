@@ -13,6 +13,7 @@ struct PatientTabView: View {
     private let searchRequestService: SearchRequestService
     private let locationService: LocationService
     private let pharmacySerivce: PharmacyService
+    private let directionsService: DirectionsService
     
     @State private var vm = PatientTabViewModel()
     
@@ -21,13 +22,15 @@ struct PatientTabView: View {
         drugService: DrugService,
         searchRequestService: SearchRequestService,
         locationService: LocationService,
-        pharmacySerivce: PharmacyService
+        pharmacySerivce: PharmacyService,
+        directionsService: DirectionsService
     ) {
         self.authService = authService
         self.drugService = drugService
         self.searchRequestService = searchRequestService
         self.locationService = locationService
         self.pharmacySerivce = pharmacySerivce
+        self.directionsService = directionsService
     }
     
     var body: some View {
@@ -45,7 +48,7 @@ struct PatientTabView: View {
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
-                PharmaciesScreen(pharmacyService: pharmacySerivce, locationService: locationService)
+                PharmaciesScreen(pharmacyService: pharmacySerivce, locationService: locationService, directionsService: directionsService)
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
@@ -82,6 +85,7 @@ struct PatientTabView: View {
         drugService: MockDrugService.sample,
         searchRequestService: MockSearchRequestService.sample,
         locationService: MockLocationService.sample,
-        pharmacySerivce: MockPharmacyService.sample
+        pharmacySerivce: MockPharmacyService.sample,
+        directionsService: MockDirectionsSrevice.sample
     )
 }
