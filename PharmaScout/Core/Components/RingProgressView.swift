@@ -10,6 +10,7 @@ import SwiftUI
 struct RingProgressView: View {
     var size: CGFloat = 18
     var isActive: Bool = true
+    var trimColor: Color = .theme.primary
     
     @State private var animate: Bool = false
     private let strokeWidth: Double = 3
@@ -17,12 +18,12 @@ struct RingProgressView: View {
     var body: some View {
         Circle()
             .stroke(lineWidth: strokeWidth)
-            .fill(.theme.textTertiary)
+            .fill(.theme.disabledContent.opacity(0.5))
             .overlay {
                 Circle()
                     .trim(to: 0.3)
                     .stroke(lineWidth: strokeWidth)
-                    .fill(.theme.onPrimary)
+                    .fill(trimColor)
                     .rotationEffect(.degrees(animate && isActive ? 360 : 0))
                     .animation(
                         .easeInOut(duration: 0.6)

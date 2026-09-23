@@ -37,8 +37,28 @@ struct WelcomeScreen: View {
                 
                 buttonsSection
             }
+            .padding(.horizontal, DesignSystem.Spacing.xxLarge)
             .customNavBarVisibility(false)
-            .padding(.horizontal, Spacing.xxLarge)
+            .customNavigationDestination(for: AuthenticationRoute.self) { route in
+                switch route {
+                case .signUp:
+                    SignUpScreen(
+                        authService: authService,
+                        googleAuthService: googleAuthService,
+                        appleAuthService: appleAuthService
+                    )
+                    
+                case .signIn:
+                    SignInScreen(
+                        authService: authService,
+                        googleAuthService: googleAuthService,
+                        appleAuthService: appleAuthService
+                    )
+                    
+                case .forgotPassword:
+                    ForgotPasswordScreen(authSerivce: authService)
+                }
+            }
         }
     }
     
@@ -60,7 +80,7 @@ struct WelcomeScreen: View {
     private var descriptionSection: some View {
         VStack(
             alignment: horizontalSizeClass == .compact ? .leading : .center,
-            spacing: Spacing.medium
+            spacing: DesignSystem.Spacing.medium
         ) {
             Text("Find the medicine you need.")
                 .font(.largeTitle)
@@ -78,28 +98,22 @@ struct WelcomeScreen: View {
     }
     
     private var buttonsSection: some View {
-        VStack(spacing: Spacing.xLarge) {
-            CustomNavLink {
-                SignUpScreen(
-                    authService: authService,
-                    googleAuthService: googleAuthService,
-                    appleAuthService: appleAuthService
-                )
-            } label: {
+        VStack(spacing: DesignSystem.Spacing.xLarge) {
+            CustomNavValueLink(value: AuthenticationRoute.signUp) {
                 PrimaryButtonLabelView(title: "Get Started")
                     .frame(maxWidth: 400)
                     .frame(maxWidth: .infinity)
             }
             
-            NavigationPromptView(actionTitle: "I already have an account") {
-                SignInScreen(
-                    authService: authService,
-                    googleAuthService: googleAuthService,
-                    appleAuthService: appleAuthService
-                )
-            }
+            NavigationPromptView(value: AuthenticationRoute.signIn, actionTitle: "I already have an account")
         }
     }
+}
+
+enum AuthenticationRoute {
+    case signUp
+    case signIn
+    case forgotPassword
 }
 
 #Preview {

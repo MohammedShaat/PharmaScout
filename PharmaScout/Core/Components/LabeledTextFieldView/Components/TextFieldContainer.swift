@@ -25,7 +25,7 @@ struct TextFieldContainer<TextField: View>: View {
     @FocusState private var isFocused: Bool
     
     var body: some View {
-        VStack(alignment: .leading, spacing: Spacing.small) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
             Text(label)
                 .font(.headline)
                 .foregroundStyle(.theme.textLabel)
@@ -34,7 +34,7 @@ struct TextFieldContainer<TextField: View>: View {
                 .focused($isFocused)
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: DesignSystem.cornerRadius)
+                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
                         .stroke(isFocused ? .theme.primary : .theme.border)
                 )
                 .foregroundStyle(.theme.primary)

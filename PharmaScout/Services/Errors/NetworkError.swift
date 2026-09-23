@@ -14,6 +14,7 @@ enum NetworkError: AppError {
     case cannotConnectToHost
     case cannotFindHost
     case timedOut
+    case canceled
     case unknown(URLError)
 
     var errorDescription: String {
@@ -23,6 +24,7 @@ enum NetworkError: AppError {
         case .cannotConnectToHost: "Unable to connect. Try again."
         case .cannotFindHost: "Unable to connect. Try again."
         case .timedOut: "Request timed out. Try again."
+        case .canceled: "The request was canceled. Try again."
         case .unknown: "Something went wrong with the connection. Please try again."
         }
     }
@@ -36,6 +38,7 @@ extension NetworkError {
         case .cannotConnectToHost: .cannotConnectToHost
         case .cannotFindHost: .cannotFindHost
         case .timedOut: .timedOut
+        case .cancelled: .canceled
         default: .unknown(error)
         }
     }

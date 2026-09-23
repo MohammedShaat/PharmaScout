@@ -17,21 +17,12 @@ class DefaultAuthService: AuthService {
     private let auth = SupabaseManager.shared.client.auth
     private var passwordRecovery: Bool = false
     
-    func signUp(email: String, password: String, redirectTo url: URL?) async throws -> AppUser {
+    func signUp(email: String, password: String, redirectTo url: URL?) async throws {
         do {
-            let authResponse = try await auth.signUp(email: email, password: password, redirectTo: url)
+            try await auth.signUp(email: email, password: password, redirectTo: url)
             
-            guard let email = authResponse.user.email else {
-                throw AppAuthError.missingEmail
-            }
-
-            return AppUser(email: email)
-            
-        } catch let authError as AuthError {
-            throw mapAuthErrorToAppError(authError)
-            
-        } catch let urlError as URLError {
-            throw NetworkError.init(from: urlError)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -44,11 +35,8 @@ class DefaultAuthService: AuthService {
         do {
             try await auth.signIn(email: email, password: password)
             
-        } catch let authError as AuthError {
-            throw mapAuthErrorToAppError(authError)
-            
-        } catch let urlError as URLError {
-            throw NetworkError.init(from: urlError)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -60,12 +48,8 @@ class DefaultAuthService: AuthService {
         do {
             try await auth.resetPasswordForEmail(email, redirectTo: url)
             
-            
-        } catch let authError as AuthError {
-            throw mapAuthErrorToAppError(authError)
-            
-        } catch let urlError as URLError {
-            throw NetworkError.init(from: urlError)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -74,11 +58,8 @@ class DefaultAuthService: AuthService {
             let userAttributes = UserAttributes(password: newPassword)
             try await auth.update(user: userAttributes)
             
-        } catch let authError as AuthError {
-            throw mapAuthErrorToAppError(authError)
-            
-        } catch let urlError as URLError {
-            throw NetworkError.init(from: urlError)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
     
@@ -93,11 +74,18 @@ class DefaultAuthService: AuthService {
                 )
             )
             
-        } catch let authError as AuthError {
-            throw mapAuthErrorToAppError(authError)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
+        }
+    }
+    
+    func getUser() async throws -> AppUser {
+        do {
+            let user = try await auth.user()
+            return AppUser(from: user)
             
-        } catch let urlError as URLError {
-            throw NetworkError.init(from: urlError)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
 }
@@ -142,34 +130,19 @@ extension DefaultAuthService {
     }
 }
 
-extension DefaultAuthService {
-    private func mapAuthErrorToAppError(_ error: AuthError) -> AppAuthError {
-        switch error.errorCode {
-        case .emailExists: .emailAlreadyExists
-            
-        case .weakPassword: .weakPassword
-            
-        case .overEmailSendRateLimit: .emailRateLimit
-            
-        case .emailNotConfirmed: .emailNotConfirmed
-            
-        case .invalidCredentials: .invalidCredentials
-            
-        case .overRequestRateLimit: .overRequestRateLimit
-            
-        case .samePassword: .samePassword
-            
-        default: .unknown(error)
-            
-        }
-    }
-}
-
 extension OAuthProvider {
     var supabaseProvider: OpenIDConnectCredentials.Provider {
         switch self {
         case .google: .google
         case .apple: .apple
         }
+    }
+}
+
+extension AppUser {
+    init(from user: User) {
+        self.id = user.id.uuidString
+        self.fullName = user.userMetadata["full_name"]?.stringValue
+        self.email = user.email
     }
 }

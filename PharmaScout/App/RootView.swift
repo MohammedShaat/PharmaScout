@@ -12,12 +12,29 @@ struct RootView: View {
     private let authService: AuthService
     private let googleAuthService: OAuthService
     private let appleAuthService: OAuthService
+    private let drugService: DrugService
+    private let searchRequestService: SearchRequestService
+    private let locationService: LocationService
+    private let pharmacySerivce: PharmacyService
     
-    init(router: AppRouter, authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
+    init(
+        router: AppRouter,
+        authService: AuthService,
+        googleAuthService: OAuthService,
+        appleAuthService: OAuthService,
+        drugService: DrugService,
+        searchRequestService: SearchRequestService,
+        locationService: LocationService,
+        pharmacySerivce: PharmacyService
+    ) {
         self.router = router
         self.authService = authService
         self.googleAuthService = googleAuthService
         self.appleAuthService = appleAuthService
+        self.drugService = drugService
+        self.searchRequestService = searchRequestService
+        self.locationService = locationService
+        self.pharmacySerivce = pharmacySerivce
     }
     
     var body: some View {
@@ -29,23 +46,35 @@ struct RootView: View {
             case .signIn:
                 CustomNavStack {
                     SignInScreen(authService: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
+                        .customNavBarVisibility(false)
                 }
                 
             case .resetPassword:
                 ResetPasswordScreen(authSerivce: authService, router: router)
 
             case .main:
-                HomeScreen(authService: authService)
+                PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce)
             }
         }
     }
 }
 
 #Preview {
+    let authService = MockAuthService.sample
+    let router = AppRouter(authService: authService)
+    
+    
     RootView(
-        router: .sample,
-        authService: MockAuthService.sample,
+        router: router,
+        authService: authService,
         googleAuthService: MockGoogleAuthService.sample,
-        appleAuthService: MockAppleAuthService.sample
+        appleAuthService: MockAppleAuthService.sample,
+        drugService: MockDrugService.sample,
+        searchRequestService: MockSearchRequestService.sample,
+        locationService: MockLocationService.sample,
+        pharmacySerivce: MockPharmacyService.sample
     )
+    .task {
+        await router.subscribeToAuthStateChanges()
+    }
 }

@@ -13,7 +13,7 @@ struct ActionPromptView: View {
     let action: () -> Void
     
     var body: some View {
-        HStack(spacing: Spacing.medium) {
+        HStack(spacing: DesignSystem.Spacing.medium) {
             Text(text)
                 .foregroundStyle(.theme.textSecondary)
             

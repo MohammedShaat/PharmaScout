@@ -8,17 +8,11 @@
 import SwiftUI
 
 struct SignInScreen: View {
-    let authService: AuthService
-    let googleAuthService: OAuthService
-    let appleAuthService: OAuthService
     @State private var vm: SignInViewModel
     
     init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
-        self.authService = authService
-        self.appleAuthService = appleAuthService
         let viewModel = SignInViewModel(authService: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
         self._vm = State(wrappedValue: viewModel)
-        self.googleAuthService = googleAuthService
     }
     
     var body: some View {
@@ -34,7 +28,7 @@ struct SignInScreen: View {
                 
                 doNotHaveAnAccountSection
             }
-            .padding(.horizontal, Spacing.xxLarge)
+            .padding(.horizontal, DesignSystem.Spacing.xxLarge)
             .errorAlert(title: "Sign In Failed", error: $vm.signInError)
         }
     }
@@ -42,11 +36,11 @@ struct SignInScreen: View {
     private var inlineHeaderSection: some View {
         PharmaScoutLabelView(isLarge: false)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.top, Spacing.small)
+            .padding(.top, DesignSystem.Spacing.small)
     }
     
     private var descriptionSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.medium) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Text("Welcome back")
                 .font(.largeTitle)
                 .fontWeight(.bold)
@@ -56,18 +50,16 @@ struct SignInScreen: View {
                 .foregroundStyle(.textSecondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.top, Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
     private var formSection: some View {
-        VStack(alignment: .leading, spacing: Spacing.large) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
             
             LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
             
-            CustomNavLink {
-                ForgotPasswordScreen(authSerivce: authService)
-            } label: {
+            CustomNavValueLink(value: AuthenticationRoute.forgotPassword) {
                 Text("Forgot password?")
                     .frame(maxWidth: .infinity, alignment: .trailing)
                     .foregroundStyle(.theme.primary)
@@ -79,9 +71,9 @@ struct SignInScreen: View {
                     await vm.signIn()
                 }
             }
-            .padding(.vertical, Spacing.medium)
+            .padding(.vertical, DesignSystem.Spacing.medium)
         }
-        .padding(.vertical, Spacing.xxLarge)
+        .padding(.vertical, DesignSystem.Spacing.xxLarge)
     }
     
     private var providersSection: some View {
@@ -101,14 +93,12 @@ struct SignInScreen: View {
     }
     
     private var doNotHaveAnAccountSection: some View {
-        NavigationPromptView(text: "Don't have an account?", actionTitle: "Sign Up") {
-            SignUpScreen(
-                authService: authService,
-                googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
-            )
-        }
-        .padding(.top, Spacing.xLarge)
+        NavigationPromptView(
+            value: AuthenticationRoute.signUp,
+            text: "Don't have an account?",
+            actionTitle: "Sign Up"
+        )
+        .padding(.top, DesignSystem.Spacing.xLarge)
     }
 }
 

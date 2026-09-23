@@ -8,13 +8,8 @@
 import SwiftUI
 
 struct CustomNavLink<Content: View, Label: View>: View {
-    let content: Content
-    let label: Label
-    
-    init(@ViewBuilder contet: () -> Content, @ViewBuilder label: () -> Label) {
-        self.content = contet()
-        self.label = label()
-    }
+    @ViewBuilder let content: Content
+    @ViewBuilder let label: Label
     
     var body: some View {
         NavigationLink {
