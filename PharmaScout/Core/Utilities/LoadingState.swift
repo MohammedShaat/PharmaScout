@@ -9,8 +9,9 @@
 import Foundation
 
 struct LoadingState {
-    var status: State = .idle
+    private(set) var status: State = .idle
     var pagination: Pagination
+    private(set) var error: AppError?
     
     init(pageSize: Int) {
         pagination = .init(pageSize: pageSize)
@@ -28,11 +29,22 @@ struct LoadingState {
         status = .idle
     }
     
+    mutating func fail(_ error: Error) {
+        stopLoading()
+        self.error = ErrorHandler.handle(error)
+    }
+    
     enum State {
         case idle
         case loading
         case loadingMore
         case refreshing
+    }
+}
+
+extension LoadingState {
+    init() {
+        self.init(pageSize: 10)
     }
 }
 

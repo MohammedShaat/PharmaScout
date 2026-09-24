@@ -34,8 +34,10 @@ struct PharmacyDetailScreen: View {
         }
         .customNavTitle(vm.pharmacy.name)
         .taskOnFirstAppear {
-            await vm.loadContact()
-            await vm.loadWorkingHours()
+            async let contact = await vm.loadContact()
+            async let workingHours = await vm.loadWorkingHours()
+            
+            _ = await (contact, workingHours)
         }
     }
     
@@ -61,11 +63,11 @@ struct PharmacyDetailScreen: View {
     
     @ViewBuilder
     private var contact: some View {
-        switch vm.contactLoadingState.status {
-        case .loading:
-            RingProgressView()
-            
-        case .loadingMore, .idle, .refreshing:
+        LoadingContentView(
+            LoadingState: vm.contactLoadingState,
+            isEmpty: vm.contacts.isEmpty,
+            emptyMessage: "There is no contact info"
+        ) {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                 ForEach(vm.contacts) { contact in
                     HStack {
@@ -79,13 +81,12 @@ struct PharmacyDetailScreen: View {
         }
     }
     
-    @ViewBuilder
     private var workingHours: some View {
-        switch vm.workingHoursLoadingState.status {
-        case .loading:
-            RingProgressView()
-            
-        case .loadingMore, .idle, .refreshing:
+        LoadingContentView(
+            LoadingState: vm.workingHoursLoadingState,
+            isEmpty: vm.workingHours.isEmpty,
+            emptyMessage: "There is no working hours info"
+        ) {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                 ForEach(vm.workingHours) { workinghour in
                     VStack {

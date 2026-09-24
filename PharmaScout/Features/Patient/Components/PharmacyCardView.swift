@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct CardListItemView: View {
+struct PharmacyCardView: View {
     let name: String
-    let rate: Double
-    let distance: String
-    let responseRate: Int
+    let distance: Double
     let isOpen: Bool
+    var rate: Double?
+    var responseRate: Int?
     private var statusColor: Color {
         isOpen ? .theme.success : .theme.error
     }
@@ -60,23 +60,30 @@ struct CardListItemView: View {
 
             // MARK: Details (rating, distance, ...)
             HStack(spacing: DesignSystem.Spacing.xSmall) {
-                HStack(spacing: DesignSystem.Spacing.xSmall) {
-                    Image(systemName: "star.fill")
-                        .foregroundStyle(.yellow)
-                        .font(.caption)
+                
+                // MARK: Rating
+                if let rate {
+                    HStack(spacing: DesignSystem.Spacing.xSmall) {
+                        Image(systemName: "star.fill")
+                            .foregroundStyle(.yellow)
+                            .font(.caption)
+                        
+                        Text(rate, format: .number)
+                            .foregroundStyle(.theme.textLabel)
+                            .fontWeight(.medium)
+                    }
                     
-                    Text(rate, format: .number)
-                        .foregroundStyle(.theme.textLabel)
-                        .fontWeight(.medium)
+                    Text(" · ")
                 }
                 
-                Text(" · ")
+                Text(distance.formattedDistance)
                 
-                Text(distance)
-                
-                Text(" · ")
-                
-                Text("\(responseRate)% replies")
+                // MARK: replies
+                if let responseRate {
+                    Text(" · ")
+                    
+                    Text("\(responseRate)% replies")
+                }
             }
             .foregroundStyle(.theme.textSecondary)
             .font(.callout)
@@ -97,21 +104,21 @@ struct CardListItemView: View {
 
 #Preview {
     VStack(spacing: 50) {
-        CardListItemView(
+        PharmacyCardView(
             name: "Al-Shifa Pharmacy",
+            distance: 10_000,
+            isOpen: true,
             rate: 4.7,
-            distance: "10 km",
             responseRate: 92,
-            isOpen: true
         )
         
-        CardListItemView(
+        PharmacyCardView(
             name: "Care Pharmacy",
+            distance: 5_000,
+            isOpen: false,
             rate: 3,
-            distance: "5 km",
             responseRate: 67,
-            isOpen: false
         )
     }
-        .padding()
+    .padding()
 }

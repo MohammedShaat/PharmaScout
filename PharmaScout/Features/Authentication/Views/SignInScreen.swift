@@ -29,7 +29,8 @@ struct SignInScreen: View {
                 doNotHaveAnAccountSection
             }
             .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-            .errorAlert(title: "Sign In Failed", error: $vm.signInError)
+            .errorAlert(title: "Sign In Failed", error: vm.emailSignInLoadingState.error)
+            .errorAlert(title: "Sign In Failed", error: vm.providerSignInLoadingState.error)
         }
     }
     
@@ -66,7 +67,11 @@ struct SignInScreen: View {
                     .font(.headline)
             }
             
-            PrimaryButtonView(title: "Sign In", isDisabled: !vm.areFieldsFilled, isLoading: vm.isSignWithEmailLoading) {
+            PrimaryButtonView(
+                title: "Sign In",
+                isDisabled: !vm.areFieldsFilled || vm.providerSignInLoadingState.status != .idle,
+                isLoading: vm.emailSignInLoadingState.status != .idle
+            ) {
                 Task {
                     await vm.signIn()
                 }
@@ -77,7 +82,7 @@ struct SignInScreen: View {
     }
     
     private var providersSection: some View {
-        SignInWithProvidersView(isDisabled: vm.isProviderSigningLoading) {
+        SignInWithProvidersView(isDisabled: vm.emailSignInLoadingState.status != .idle || vm.providerSignInLoadingState.status != .idle) {
             Task {
                 if let vc = UIApplication.shared.viewController {
                     await vm.signInWithApple(viewController: vc)
@@ -86,7 +91,7 @@ struct SignInScreen: View {
         } onGoogleButtonTapped: {
             Task {
                 if let vc = UIApplication.shared.viewController {
-                    await vm.signInWithGoogle	(viewController: vc)
+                    await vm.signInWithGoogle(viewController: vc)
                 }
             }
         }

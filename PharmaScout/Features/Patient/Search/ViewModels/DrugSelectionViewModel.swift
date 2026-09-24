@@ -24,18 +24,13 @@ class DrugSelectionViewModel {
     private(set) var genericDrugs: [GenericDrug] = []
     private(set) var drugFormulations: [DrugFormulation] = []
     
-    var searchError: AppError?
-    private(set) var isLoading: Bool = false
+    private(set) var searchLoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private(set) var selectedGenericDrug: GenericDrug?
     var isGenericDrugSelected: Bool { selectedGenericDrug != nil }
     
     private(set) var selectedDrugFormulation: DrugFormulation?
     var isDrugFormulationSelected: Bool { selectedDrugFormulation != nil }
-    
-    private(set) var pagination: LoadingState.Pagination = .init(pageSize: AppConstants.Network.pageSize)
-    
-    private(set) var refreshing = false
     
     init(drugSerice: DrugService, editingSelectedDrug: SelectedDrug?, selectedFormulationIds: [String]) {
         self.drugSerice = drugSerice
@@ -79,10 +74,9 @@ class DrugSelectionViewModel {
     }
     
     func refresh() async {
-        pagination.reset()
-        refreshing = true
+        searchLoadingState.pagination.reset()
+        searchLoadingState.startLoading(refresh: true)
         await search()
-        refreshing = false
     }
     
     func applyChanges() {
@@ -105,10 +99,14 @@ class DrugSelectionViewModel {
     
     private func searchDrugName() async {
         await paginationHandler {
-            try await drugSerice.searchGenericDrug(contains: trimmedSearchText, from: pagination.from, to: pagination.to)
+            try await drugSerice.searchGenericDrug(
+                contains: trimmedSearchText,
+                from: searchLoadingState.pagination.from,
+                to: searchLoadingState.pagination.to
+            )
             
         } onSuccess: { newGenericDrugs in
-            if pagination.hasPreviousPage {
+            if searchLoadingState.pagination.hasPreviousPage {
                 genericDrugs.append(contentsOf: newGenericDrugs)
             } else {
                 genericDrugs = newGenericDrugs
@@ -124,8 +122,8 @@ class DrugSelectionViewModel {
             try await drugSerice.searchDrugFormulations(
                 of: selectedGenericDrug.id,
                 contians: trimmedSearchText,
-                from: pagination.from,
-                to: pagination.to
+                from: searchLoadingState.pagination.from,
+                to: searchLoadingState.pagination.to
             )
             
         } onSuccess: { newDrugFormulations in
@@ -134,7 +132,7 @@ class DrugSelectionViewModel {
                 !selectedFormulationIds.contains($0.id)
             }
             
-            if pagination.hasPreviousPage {
+            if searchLoadingState.pagination.hasPreviousPage {
                 drugFormulations.append(contentsOf: newUnselectedDrugFormulations)
             } else {
                 drugFormulations = newUnselectedDrugFormulations
@@ -156,15 +154,15 @@ class DrugSelectionViewModel {
     }
 
     private func onSearchTextChanged() {
-        pagination.reset()
+        searchLoadingState.pagination.reset()
     }
 }
 
 extension DrugSelectionViewModel {
     private func isSearchValid(allowEmpty: Bool = false) -> Bool {
         (trimmedSearchText != lastSearchText && (trimmedSearchText.count >= 3 || allowEmpty))
-        || pagination.hasPreviousPage
-        || refreshing
+        || searchLoadingState.pagination.hasPreviousPage
+        || searchLoadingState.status == .refreshing
     }
     
     private func paginationHandler<T: Collection>(
@@ -174,27 +172,28 @@ extension DrugSelectionViewModel {
     ) async {
         guard isSearchValid(allowEmpty: allowEmpty) else { return }
         
+        defer { searchLoadingState.stopLoading() }
+        
         do {
-            if !pagination.hasPreviousPage {
+            if !searchLoadingState.pagination.hasPreviousPage && searchLoadingState.status != .refreshing {
                 try await Task.sleep(for: AppConstants.Timing.searchDebounceInterval)
             }
-            isLoading = true
+            if searchLoadingState.status != .refreshing {
+                searchLoadingState.startLoading()
+            }
             
             let result = try await asyncWork()
             
             lastSearchText = trimmedSearchText
             if result.isNotEmpty {
-                pagination.nextPage()
+                searchLoadingState.pagination.nextPage()
             }
             
             onSuccess(result)
-            
         } catch {
-            searchError = ErrorHandler.handle(error)
+            searchLoadingState.fail(error)
             print(error)
         }
-        
-        isLoading = false
     }
 }
 

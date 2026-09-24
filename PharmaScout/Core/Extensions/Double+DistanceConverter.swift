@@ -9,6 +9,4 @@ import Foundation
 
 extension Double {
     var meterToKilometer: Double { self / 1_000 }
-    
-    var kilometerToMeter: Double { self * 1_000 }
 }

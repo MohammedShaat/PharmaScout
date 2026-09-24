@@ -16,7 +16,6 @@ class PharmacyMapViewModel {
     private(set) var route: MapRoute?
     
     private(set) var routeLoadingState: LoadingState = .init(pageSize: AppConstants.Network.pageSize)
-    private(set) var mapError: AppError?
     
     init(pharmacy: Pharmacy, userCoordinate: Coordinate, directionsService: DirectionsService) {
         self.pharmacy = pharmacy
@@ -35,7 +34,7 @@ class PharmacyMapViewModel {
             )
             
         } catch {
-            
+            routeLoadingState.fail(error)
             print("Failed to calculate route:", error)
         }
     }

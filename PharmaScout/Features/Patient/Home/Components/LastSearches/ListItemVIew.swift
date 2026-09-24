@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ListItemVIew: View {
+struct SearchItemView: View {
     let name: String
     let strength: String
     
@@ -56,7 +56,7 @@ struct ListItemVIew: View {
 }
 
 #Preview {
-    ListItemVIew(name: "Ibuprofen", strength: "200 mg")
+    SearchItemView(name: "Ibuprofen", strength: "200 mg")
         .padding()
         .background(.gray.opacity(0.4))
 }

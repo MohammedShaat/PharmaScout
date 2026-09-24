@@ -36,7 +36,7 @@ struct PatientTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm)
+                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce)
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
@@ -48,7 +48,7 @@ struct PatientTabView: View {
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
-                PharmaciesScreen(pharmacyService: pharmacySerivce, locationService: locationService, directionsService: directionsService)
+                PharmaciesScreen(path: $vm.pharmacyPath, pharmacyService: pharmacySerivce, locationService: locationService, directionsService: directionsService)
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {

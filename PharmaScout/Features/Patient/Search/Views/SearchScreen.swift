@@ -114,7 +114,7 @@ struct SearchScreen: View {
                             
                             // MARK: - Start search
                             if vm.canStartSearch {
-                                PrimaryButtonView(title: "Start search", isDisabled: vm.isLoading, isLoading: vm.isLoading) {
+                                PrimaryButtonView(title: "Start search", isLoading: vm.requestLoadingState.status != .idle) {
                                     Task {
                                         await vm.startSearch()
                                     }
@@ -126,7 +126,7 @@ struct SearchScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .errorAlert(title: "Search Failed", error: $vm.requestError)
+            .errorAlert(title: "Search Failed", error: vm.requestLoadingState.error)
             .sheet(isPresented: $vm.showSuccessMessage, content: {
                 VStack {
                     Text("Your request has been submitted successfully")

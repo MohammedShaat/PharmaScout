@@ -27,7 +27,7 @@ struct ResetPasswordScreen: View {
             doNotHaveAnAccountSection
         }
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-        .errorAlert(title: "Password Reset Failed", error: $vm.passwordResetError)
+        .errorAlert(title: "Password Reset Failed", error: vm.passwordResetLoadingState.error)
         .sheet(isPresented: $vm.showPasswordUpdated, onDismiss: router.onPasswordResetSucceeed) {
             PasswordUpdatedView(onContinueClicked: router.onPasswordResetSucceeed)
                 .presentationDetents([.medium])
@@ -57,7 +57,11 @@ struct ResetPasswordScreen: View {
             
             LabeledSecureFieldView(title: $vm.confirmNewPassword, label: "Confirm new password", isInputHidden: $vm.isPasswordHidden)
             
-            PrimaryButtonView(title: "Reset Password", isDisabled: !vm.areNewPasswordFieldsFilled, isLoading: vm.isLoading) {
+            PrimaryButtonView(
+                title: "Reset Password",
+                isDisabled: !vm.areNewPasswordFieldsFilled,
+                isLoading: vm.passwordResetLoadingState.status != .idle
+            ) {
                 Task {
                     await vm.updatePassword()
                 }

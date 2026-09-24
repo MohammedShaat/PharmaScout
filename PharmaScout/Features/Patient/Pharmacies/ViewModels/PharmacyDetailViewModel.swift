@@ -15,8 +15,8 @@ class PharmacyDetailViewModel {
     private(set) var contacts: [PharmacyContact] = []
     private(set) var workingHours: [WorkingHour] = []
     
-    private(set) var contactLoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
-    private(set) var workingHoursLoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
+    private(set) var contactLoadingState = LoadingState()
+    private(set) var workingHoursLoadingState = LoadingState()
     
     init(pharmacyService: PharmacyService, pharmacy: Pharmacy) {
         self.pharmacyService = pharmacyService
@@ -31,6 +31,7 @@ class PharmacyDetailViewModel {
             contacts = try await pharmacyService.getContactInfo(for: pharmacy.id)
             
         } catch {
+            contactLoadingState.fail(error)
             print("Failed to get pharmacy contacts\n", error)
         }
     }
@@ -43,6 +44,7 @@ class PharmacyDetailViewModel {
             workingHours = try await pharmacyService.getWorkingHours(for: pharmacy.id)
 
         } catch {
+            workingHoursLoadingState.fail(error)
             print("Failed to get pharmacy working hours\n", error)
         }
     }

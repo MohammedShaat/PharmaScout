@@ -7,25 +7,33 @@
 
 import SwiftUI
 
-struct CustomNavStack<Content: View>: View {
+struct CustomNavStack<Content: View, H: Hashable>: View {
     private let content: Content
-    private let path: Binding<NavigationPath>?
-    @State private var deafultPath = NavigationPath()
+    private let path: Binding<[H]>?
+    @State private var defaultPath = NavigationPath()
     
-    init(path: Binding<NavigationPath>, @ViewBuilder contet: () -> Content) {
+    init(path: Binding<[H]>, @ViewBuilder contet: () -> Content) {
         self.path = path
         self.content = contet()
     }
     
-    init(@ViewBuilder contet: () -> Content) {
+    init(@ViewBuilder contet: () -> Content) where H == String {
         self.path = nil
         self.content = contet()
     }
     
     var body: some View {
-        NavigationStack(path: path ?? $deafultPath) {
-            CustomNavView {
-                content
+        if let path {
+            NavigationStack(path: path) {
+                CustomNavView {
+                    content
+                }
+            }
+        } else {
+            NavigationStack(path: $defaultPath) {
+                CustomNavView {
+                    content
+                }
             }
         }
     }

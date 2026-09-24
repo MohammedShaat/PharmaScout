@@ -15,12 +15,14 @@ class PharmaciesViewModel {
     private(set) var nearbyPharmacies: [Pharmacy] = []
 
     private(set) var userCoordinate: Coordinate?    
-    var pharmaciesError: AppError?
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
-    private(set) var radiusKm: Double = 5
-    
-    private(set) var canExpandRadius: Bool = false
+    private(set) var radiusMeters: Double = AppConstants.Search.minBrowseDistanceMeters
+    private let maxRadiusMeters: Double = AppConstants.Search.maxBrowseDistanceMeters
+    private(set) var expandToNextRadius: Bool = false
+    var canExpandRadius: Bool {
+        expandToNextRadius && radiusMeters < maxRadiusMeters
+    }
     
     init(pharmacyService: PharmacyService, locationService: LocationService) {
         self.pharmacyService = pharmacyService
@@ -38,7 +40,7 @@ class PharmaciesViewModel {
             let params = FindNearbyPharmaciesParams(
                 latitude: userCoordinate.latitude,
                 longitude: userCoordinate.longitude,
-                radiusMeters: radiusKm.kilometerToMeter,
+                radiusMeters: radiusMeters,
                 limit: refresh ? nearbyPharmacies.count : loadingState.pagination.pageSize,
                 offset: refresh ? 0 : nearbyPharmacies.count
             )
@@ -55,14 +57,14 @@ class PharmaciesViewModel {
                     loadingState.pagination.nextPage()
                 }
                 
-                canExpandRadius =
+                expandToNextRadius =
                     newNearbyPharmacies.count < loadingState.pagination.pageSize
                     ? true : false
             }
             print("nearybyPharmacies: ", nearbyPharmacies.count)
             
         } catch {
-            pharmaciesError = ErrorHandler.handle(error)
+            loadingState.fail(error)
             print("Failed to find nearby pharmacies\n", error)
         }
     }
@@ -72,9 +74,9 @@ class PharmaciesViewModel {
     }
     
     func searchFurther() async {
-        switch radiusKm {
-        case 0...10: radiusKm *= 2
-        default: radiusKm += 10
+        switch radiusMeters.meterToKilometer {
+        case 0...10: radiusMeters *= 2
+        default: radiusMeters += 10
         }
         await findNearbyPharmacies()
     }
@@ -92,7 +94,7 @@ class PharmaciesViewModel {
             userCoordinate = try locationService.getCurrentLocation()
             
         } catch {
-            pharmaciesError = ErrorHandler.handle(error)
+            loadingState.fail(error)
             print("Failed to get location\n", error)
         }
     }

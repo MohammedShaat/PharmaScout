@@ -33,9 +33,9 @@ class SearchViewModel {
     let maxActiveSearches: Int = AppConstants.Search.maxPendingRequests
     var hasReachedSearchLimit: Bool { numberOfActiveSearchs ?? 0 >= maxActiveSearches }
     var canStartSearch: Bool { !hasReachedSearchLimit && selectedDrugs.isNotEmpty }
-    
-    var requestError: AppError?
-    var isLoading: Bool = false
+
+    private(set) var activeSearchsLoadingState: LoadingState = LoadingState()
+    private(set) var requestLoadingState: LoadingState = LoadingState()
     var showNoPharmaciesMessage: Bool = false
     var showSuccessMessage: Bool = false
 
@@ -62,15 +62,15 @@ class SearchViewModel {
     func getNumberOfActiveSearchs() async {
         guard numberOfActiveSearchs == nil else { return }
         
-        isLoading = true
-        defer { isLoading = false }
+        activeSearchsLoadingState.startLoading()
+        defer { activeSearchsLoadingState.stopLoading() }
         
         do {
             let userId = try await authService.getUser().id
             numberOfActiveSearchs = try await searchRequestService.getNumberOfActiveSearchs(userId: userId)
             
         } catch {
-            requestError = ErrorHandler.handle(error)
+            activeSearchsLoadingState.fail(error)
             print("Failed to get number of active searchs\n", error)
         }
     }
@@ -78,8 +78,8 @@ class SearchViewModel {
     func startSearch() async {
         guard canStartSearch else { return }
         
-        isLoading = true
-        defer { isLoading = false }
+        requestLoadingState.startLoading()
+        defer { requestLoadingState.stopLoading() }
         
         locationService.requestPermission()
         
@@ -104,7 +104,7 @@ class SearchViewModel {
             clear()
 
         } catch {
-            requestError = ErrorHandler.handle(error)
+            requestLoadingState.fail(error)
             print("Failed to create search\n", error)
         }
     }

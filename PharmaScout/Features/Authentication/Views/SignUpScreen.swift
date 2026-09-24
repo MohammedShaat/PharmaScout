@@ -33,7 +33,8 @@ struct SignUpScreen: View {
                 alreadyHaveAnAccountSection
             }
             .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-            .errorAlert(title: "Sign Up Failed", error: $vm.signUpError)
+            .errorAlert(title: "Sign Up Failed", error: vm.emailSignUpLoadingState.error)
+            .errorAlert(title: "Sign Up Failed", error: vm.providerSignInLoadingState.error)
             .navigationDestination(isPresented: $vm.confirmationSent) {
                 destination
             }
@@ -70,7 +71,11 @@ struct SignUpScreen: View {
             
             LabeledSecureFieldView(title: $vm.confirmPassword, label: "Confirm password", isInputHidden: $vm.isPasswordHidden)
             
-            PrimaryButtonView(title: "Create Account", isDisabled: !vm.areFieldsFilled || vm.isProviderSigningLoading, isLoading: vm.isSignInWithEmailLoading) {
+            PrimaryButtonView(
+                title: "Create Account",
+                isDisabled: !vm.areFieldsFilled || vm.providerSignInLoadingState.status != .idle,
+                isLoading: vm.emailSignUpLoadingState.status != .idle
+            ) {
                 Task {
                     await vm.signUp()
                 }
@@ -81,7 +86,7 @@ struct SignUpScreen: View {
     }
     
     private var providersSection: some View {
-        SignInWithProvidersView(isDisabled: vm.isProviderSigningLoading) {
+        SignInWithProvidersView(isDisabled: vm.emailSignUpLoadingState.status != .idle || vm.providerSignInLoadingState.status != .idle) {
             Task {
                 if let vc = UIApplication.shared.viewController {
                     await vm.signInWithApple(viewController: vc)
@@ -112,7 +117,7 @@ struct SignUpScreen: View {
                     await vm.resend()
                 }
             }
-            .errorAlert(title: "Resend Failed", error: $vm.signUpError)
+            .errorAlert(title: "Resend Failed", error: vm.emailSignUpLoadingState.error)
     }
 }
 

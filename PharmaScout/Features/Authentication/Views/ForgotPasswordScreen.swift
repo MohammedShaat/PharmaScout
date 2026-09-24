@@ -26,7 +26,7 @@ struct ForgotPasswordScreen: View {
             doNotHaveAnAccountSection
         }
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-        .errorAlert(title: "Request Failed", error: $vm.requestError)
+        .errorAlert(title: "Request Failed", error: vm.requestLoadingState.error)
         .navigationDestination(isPresented: $vm.emailSent) {
             destination
         }
@@ -52,7 +52,11 @@ struct ForgotPasswordScreen: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
             
-            PrimaryButtonView(title: "Send Reset Link", isDisabled: !vm.areEmailRequestFieldsFilled, isLoading: vm.isLoading) {
+            PrimaryButtonView(
+                title: "Send Reset Link",
+                isDisabled: !vm.areEmailRequestFieldsFilled,
+                isLoading: vm.requestLoadingState.status != .idle
+            ) {
                 Task {
                     await vm.sendResetLink()
                 }
@@ -80,7 +84,7 @@ struct ForgotPasswordScreen: View {
                     await vm.resend()
                 }
             }
-            .errorAlert(title: "Resend Failed", error: $vm.requestError)
+            .errorAlert(title: "Resend Failed", error: vm.requestLoadingState.error)
     }
 }
 

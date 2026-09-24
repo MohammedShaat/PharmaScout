@@ -17,12 +17,18 @@ struct HomeScreen: View {
     init(
         authService: AuthService,
         drugService: DrugService,
-        patientTabViewModel: PatientTabViewModel
+        patientTabViewModel: PatientTabViewModel,
+        locationService: LocationService,
+        pharmacyService: PharmacyService
     ) {
         self.authService = authService
         self.drugService = drugService
         self.patientTabViewModel = patientTabViewModel
-        let viewModel = HomeViewModel(authService: authService)
+        let viewModel = HomeViewModel(
+            authService: authService,
+            locationService: locationService,
+            pharmacyService: pharmacyService
+        )
         self._vm = State(wrappedValue: viewModel)
     }
     
@@ -41,8 +47,13 @@ struct HomeScreen: View {
                 .padding(DesignSystem.Spacing.xLarge)
             }
             .customNavBarVisibility(false)
-            .task {
-                await vm.loadUserData()
+            .refreshable(action: vm.refresh)
+            .taskOnFirstAppear {
+                vm.getLocation()
+                async let userData = await vm.loadUserData()
+                async let nearbyPharmacies = await vm.loadNearbyPharmacies()
+                
+                _ = await (userData, nearbyPharmacies)
             }
         }
     }
@@ -76,16 +87,23 @@ struct HomeScreen: View {
     
     private var searchSection: some View {
         SearchCardView {
-            patientTabViewModel.selectedTab = .search
+            patientTabViewModel.navigateToSearchTab()
         }
     }
     
     private var recentSection: some View {
-        ListView()
+        SearchListView()
     }
     
     private var nearbyPharmaciesSection: some View {
-        CardListView()
+        PharmacyListView(
+            pharmacies: vm.nearbyPharmacies,
+            loadingState: vm.nearbyPharmaciesLoadingState
+        ) {
+            patientTabViewModel.navigateToPharmaciesTab()
+        } onPharmacyTapped: { pharmacy in
+            patientTabViewModel.navigateToPharmacyDetailScreen(for: pharmacy)
+        }
     }
 }
 
@@ -93,6 +111,8 @@ struct HomeScreen: View {
     HomeScreen(
         authService: MockAuthService.sample,
         drugService: MockDrugService.sample,
-        patientTabViewModel: PatientTabViewModel.sample
+        patientTabViewModel: PatientTabViewModel.sample,
+        locationService: MockLocationService.sample,
+        pharmacyService: MockPharmacyService.sample
     )
 }
