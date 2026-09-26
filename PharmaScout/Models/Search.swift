@@ -32,5 +32,5 @@ enum SearchStatus: String, Codable {
     case pending = "pending"
     case partiallyFulfilled = "partially_fulfilled"
     case fulfilled = "fulfilled"
-    case expired = "expired"
+    case unfulfilled = "unfulfilled"
 }

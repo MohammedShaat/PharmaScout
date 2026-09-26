@@ -44,4 +44,27 @@ struct DefaultSearchRequestService: SearchRequestService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func getRecentSearches(userId: String) async throws -> [SearchItem] {
+        let searchTable = SupabaseManager.Database.Table.Search.self
+        let searchColumns = searchTable.Column
+        
+        let searchItemTable = SupabaseManager.Database.Table.SearchItem.self
+        let searchItemColumns = searchItemTable.Column
+        
+        do {
+            let searchItems: [SearchItem] = try await supabase
+                .from(searchItemTable.name)
+                .select("*, \(searchTable.name)(*)")
+                .eq("\(searchTable.name).\(searchColumns.userId)", value: userId)
+                .notEquals("\(searchTable.name).\(searchColumns.status)", value: SearchStatus.pending.rawValue)
+                .execute()
+                .value
+            
+            return searchItems
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

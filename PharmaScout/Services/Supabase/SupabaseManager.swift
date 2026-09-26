@@ -76,6 +76,18 @@ extension SupabaseManager {
                 }
             }
             
+            enum SearchItem {
+                static let name = "search_item"
+                
+                enum Column {
+                    static let id = "id"
+                    static let searchId = "search_id"
+                    static let drugFormulationId = "drug_formulation_id"
+                    static let status = "status"
+                    static let fulfilledPharmacyInquiryId = "fulfilled_pharmacy_inquiry_id"
+                }
+            }
+            
             enum PharmacyContact {
                 static let name = "pharmacy_contact"
                 

@@ -13,4 +13,8 @@ struct MockSearchRequestService: SearchRequestService {
     func getNumberOfActiveSearchs(userId: String) async throws -> Int {
         3
     }
+    
+    func getRecentSearches(userId: String) async throws -> [SearchItem] {
+        []
+    }
 }
