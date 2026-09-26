@@ -16,6 +16,7 @@ struct PharmaScoutApp: App {
     private let searchRequestService: SearchRequestService = DefaultSearchRequestService()
     private let locationService: LocationService = DefaultLocationService()
     private let pharmacySerivce: PharmacyService = DefaultPharmacyService()
+    private let directionsService: DirectionsService = DefaultDirectionsService()
     
     @State private var router: AppRouter
     
@@ -33,7 +34,8 @@ struct PharmaScoutApp: App {
                 drugService: drugService,
                 searchRequestService: searchRequestService,
                 locationService: locationService,
-                pharmacySerivce: pharmacySerivce
+                pharmacySerivce: pharmacySerivce,
+                directionsService: directionsService
             )
             .onOpenURL { url in
                 Task {

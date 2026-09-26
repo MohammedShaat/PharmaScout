@@ -16,8 +16,7 @@ class ResetPasswordViewModel {
         checkEmailRequestFieldsAreFilled()
     }
     
-    var requestError: AppError?
-    private(set) var isLoading: Bool = false
+    var requestLoadingState: LoadingState = LoadingState()
     var emailSent: Bool = false
     
     private(set) var resendAvailableAfter: Date?
@@ -31,8 +30,8 @@ class ResetPasswordViewModel {
     var areNewPasswordFieldsFilled: Bool {
         checkNewPasswordFieldsAreFilled()
     }
+    var passwordResetLoadingState: LoadingState = LoadingState()
     var passwordResetSuccessfully: Bool = false
-    var passwordResetError: AppError?
     var showPasswordUpdated: Bool = false
     
     init(authService: AuthService) {
@@ -40,7 +39,8 @@ class ResetPasswordViewModel {
     }
     
     func sendResetLink() async {
-        isLoading = true
+        requestLoadingState.startLoading()
+        defer { requestLoadingState.stopLoading() }
         
         do {
             try checkEmailRequestFieldsAreValid()
@@ -51,15 +51,13 @@ class ResetPasswordViewModel {
             print("Password reset request has been sent")
             
         } catch {
-            requestError = ErrorHandler.handle(error)
+            requestLoadingState.fail(error)
             print("Failed to send request for password reset\n", error)
         }
-        
-        isLoading = false
     }
     
     func resend() async {
-        if canResend && !isLoading {
+        if canResend && requestLoadingState.status == .idle {
             await sendResetLink()
         }
     }
@@ -69,7 +67,8 @@ class ResetPasswordViewModel {
     }
     
     func updatePassword() async {
-        isLoading = true
+        passwordResetLoadingState.startLoading()
+        defer { passwordResetLoadingState.stopLoading() }
         
         do {
             try checkNewPasswordFieldsAreValid()
@@ -80,11 +79,9 @@ class ResetPasswordViewModel {
             print("Password has been reset successfully")
             
         } catch {
-            requestError = ErrorHandler.handle(error)
+            passwordResetLoadingState.fail(error)
             print("Failed to reset password\n", error)
         }
-        
-        isLoading = false
     }
 }
 

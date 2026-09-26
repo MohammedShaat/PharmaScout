@@ -40,13 +40,13 @@ class DefaultLocationService: NSObject, CLLocationManagerDelegate, LocationServi
         manager.startUpdatingLocation()
     }
     
-    func getCurrentLocation() throws -> UserLocation {
+    func getCurrentLocation() throws -> Coordinate {
         guard manager.authorizationStatus == .authorizedWhenInUse
                 || manager.authorizationStatus == .authorizedAlways
         else { throw LocationError.permissionDenied }
         
         guard let location else { throw LocationError.unableToDetermineLocation }
         
-        return UserLocation(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
+        return Coordinate(latitude: location.coordinate.latitude, longitude: location.coordinate.longitude)
     }
 }

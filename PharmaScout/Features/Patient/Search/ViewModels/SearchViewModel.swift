@@ -33,9 +33,9 @@ class SearchViewModel {
     let maxActiveSearches: Int = AppConstants.Search.maxPendingRequests
     var hasReachedSearchLimit: Bool { numberOfActiveSearchs ?? 0 >= maxActiveSearches }
     var canStartSearch: Bool { !hasReachedSearchLimit && selectedDrugs.isNotEmpty }
-    
-    var requestError: AppError?
-    var isLoading: Bool = false
+
+    private(set) var activeSearchsLoadingState: LoadingState = LoadingState()
+    private(set) var requestLoadingState: LoadingState = LoadingState()
     var showNoPharmaciesMessage: Bool = false
     var showSuccessMessage: Bool = false
 
@@ -62,15 +62,15 @@ class SearchViewModel {
     func getNumberOfActiveSearchs() async {
         guard numberOfActiveSearchs == nil else { return }
         
-        isLoading = true
-        defer { isLoading = false }
+        activeSearchsLoadingState.startLoading()
+        defer { activeSearchsLoadingState.stopLoading() }
         
         do {
             let userId = try await authService.getUser().id
             numberOfActiveSearchs = try await searchRequestService.getNumberOfActiveSearchs(userId: userId)
             
         } catch {
-            requestError = ErrorHandler.handle(error)
+            activeSearchsLoadingState.fail(error)
             print("Failed to get number of active searchs\n", error)
         }
     }
@@ -78,17 +78,16 @@ class SearchViewModel {
     func startSearch() async {
         guard canStartSearch else { return }
         
-        isLoading = true
-        defer { isLoading = false }
+        requestLoadingState.startLoading()
+        defer { requestLoadingState.stopLoading() }
         
         locationService.requestPermission()
         
         do {
-            let location = try locationService.getCurrentLocation()
+            let coordinate = try locationService.getCurrentLocation()
             
-            let nearbyPharmacies = try await pharmacySerivce.findNearbyPharmacies(
-                latitude: location.latitude,
-                longitude: location.longitude,
+            let nearbyPharmacies = try await pharmacySerivce.findOpenNearbyPharmacies(
+                coordinate: coordinate,
                 radiusMeters: distanceMeters,
                 count: pharmacyLimit,
             )
@@ -98,14 +97,14 @@ class SearchViewModel {
                 return
             }
             
-            try await createSearchRequest(location: location, pharmacies: nearbyPharmacies)
+            try await createSearchRequest(coordinate: coordinate, pharmacies: nearbyPharmacies)
             
             showSuccessMessage = true
             await refresh()
             clear()
 
         } catch {
-            requestError = ErrorHandler.handle(error)
+            requestLoadingState.fail(error)
             print("Failed to create search\n", error)
         }
     }
@@ -115,10 +114,10 @@ class SearchViewModel {
         await getNumberOfActiveSearchs()
     }
     
-    private func createSearchRequest(location: UserLocation, pharmacies: [NearbyPharmacy]) async throws {
+    private func createSearchRequest(coordinate: Coordinate, pharmacies: [NearbyPharmacy]) async throws {
         let request = SearchRequest(
-            latitude: location.latitude,
-            longitude: location.longitude,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
             fulfilmentMode: fulfilmentMode,
             acceptSubstitute: acceptSubstitutes,
             drugs: selectedDrugs.map { SearchItemRequest(from: $0) },

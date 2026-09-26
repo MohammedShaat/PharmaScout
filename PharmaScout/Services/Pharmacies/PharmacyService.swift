@@ -8,5 +8,11 @@
 import Foundation
 
 protocol PharmacyService {
-    func findNearbyPharmacies(latitude: Double, longitude: Double, radiusMeters: Double, count: Int) async throws -> [NearbyPharmacy]
+    func findOpenNearbyPharmacies(coordinate: Coordinate, radiusMeters: Double, count: Int) async throws -> [NearbyPharmacy]
+    
+    func findNearbyPharmacies(params: FindNearbyPharmaciesParams) async throws -> [Pharmacy]
+    
+    func getContactInfo(for pharmacyId: String) async throws -> [PharmacyContact]
+    
+    func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour]
 }

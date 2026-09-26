@@ -12,7 +12,7 @@ struct MockLocationService: LocationService {
     
     func startUpdatingLocation() {}
     
-    func getCurrentLocation() throws -> UserLocation {
-        UserLocation(latitude: 31.522348, longitude: 34.436231)
+    func getCurrentLocation() throws -> Coordinate {
+        Coordinate(latitude: 31.522348, longitude: 34.436231)
     }
 }

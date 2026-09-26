@@ -12,5 +12,5 @@ protocol LocationService {
     
     func startUpdatingLocation()
     
-    func getCurrentLocation() throws -> UserLocation
+    func getCurrentLocation() throws -> Coordinate
 }

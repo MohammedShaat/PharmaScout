@@ -13,6 +13,7 @@ struct PatientTabView: View {
     private let searchRequestService: SearchRequestService
     private let locationService: LocationService
     private let pharmacySerivce: PharmacyService
+    private let directionsService: DirectionsService
     
     @State private var vm = PatientTabViewModel()
     
@@ -21,19 +22,21 @@ struct PatientTabView: View {
         drugService: DrugService,
         searchRequestService: SearchRequestService,
         locationService: LocationService,
-        pharmacySerivce: PharmacyService
+        pharmacySerivce: PharmacyService,
+        directionsService: DirectionsService
     ) {
         self.authService = authService
         self.drugService = drugService
         self.searchRequestService = searchRequestService
         self.locationService = locationService
         self.pharmacySerivce = pharmacySerivce
+        self.directionsService = directionsService
     }
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm)
+                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce)
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
@@ -45,7 +48,7 @@ struct PatientTabView: View {
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
-                
+                PharmaciesScreen(path: $vm.pharmacyPath, pharmacyService: pharmacySerivce, locationService: locationService, directionsService: directionsService)
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
@@ -82,6 +85,7 @@ struct PatientTabView: View {
         drugService: MockDrugService.sample,
         searchRequestService: MockSearchRequestService.sample,
         locationService: MockLocationService.sample,
-        pharmacySerivce: MockPharmacyService.sample
+        pharmacySerivce: MockPharmacyService.sample,
+        directionsService: MockDirectionsSrevice.sample
     )
 }

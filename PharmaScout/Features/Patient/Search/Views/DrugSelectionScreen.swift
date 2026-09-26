@@ -79,7 +79,7 @@ struct DrugSelectionScreen: View {
                         }
                     }
                     
-                    if vm.isLoading && !vm.pagination.hasPreviousPage && !vm.refreshing {
+                    if vm.searchLoadingState.status == .loading && !vm.searchLoadingState.pagination.hasPreviousPage {
                         RingProgressView()
                             .frame(maxWidth: .infinity)
                     }
@@ -102,7 +102,7 @@ struct DrugSelectionScreen: View {
                                         }
                                     }
                                 
-                                if genericDrug.id == vm.genericDrugs.last?.id && vm.isLoading {
+                                if genericDrug.id == vm.genericDrugs.last?.id && vm.searchLoadingState.status == .loadingMore {
                                     RingProgressView()
                                         .frame(maxWidth: .infinity)
                                 }
@@ -131,7 +131,7 @@ struct DrugSelectionScreen: View {
                                         }
                                     }
                                 
-                                if drugFormulation.id == vm.drugFormulations.last?.id && vm.isLoading {
+                                if drugFormulation.id == vm.drugFormulations.last?.id && vm.searchLoadingState.status == .loadingMore {
                                     RingProgressView()
                                         .frame(maxWidth: .infinity)
                                 }
@@ -155,11 +155,9 @@ struct DrugSelectionScreen: View {
                 }
             }
             .padding(DesignSystem.Spacing.xLarge)
-            .errorAlert(title: "Search failed", error: $vm.searchError)
+            .errorAlert(title: "Search failed", error: vm.searchLoadingState.error)
         }
-        .refreshable {
-            await vm.refresh()
-        }
+        .refreshable(action: vm.refresh)
         .onAppear {
             isSearchFocused = true
         }

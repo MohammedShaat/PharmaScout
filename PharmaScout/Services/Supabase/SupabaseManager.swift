@@ -75,7 +75,33 @@ extension SupabaseManager {
                     static let createdAt = "created_at"
                 }
             }
+            
+            enum PharmacyContact {
+                static let name = "pharmacy_contact"
+                
+                enum Column {
+                    static let id = "id"
+                    static let pharmacyId = "pharmacy_id"
+                    static let title = "title"
+                    static let type = "type"
+                    static let value = "value"
+                }
+            }
+            
+            enum PharmacyHours {
+                static let name = "pharmacy_hours"
+                
+                enum Column {
+                    static let id = "id"
+                    static let day = "day"
+                    static let pharmacyId = "pharmacy_id"
+                    static let opensAt = "opens_at"
+                    static let closesAt = "closes_at"
+                    static let timezone = "timezone"
+                }
+            }
         }
+        
         
         enum Functions {
             enum SearchGenericDrug {
@@ -115,6 +141,18 @@ extension SupabaseManager {
                     static let latitude = "p_latitude"
                     static let longitude = "p_longitude"
                     static let radiusMeters = "p_radius_meters"
+                }
+            }
+            
+            enum findNearbyPharmacies {
+                static let name = "find_nearby_pharmacies"
+                
+                enum Params {
+                    static let latitude = "p_latitude"
+                    static let longitude = "p_longitude"
+                    static let radiusMeters = "p_radius_meters"
+                    static let limit = "p_limit"
+                    static let offset = "p_offset"
                 }
             }
         }

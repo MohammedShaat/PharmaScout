@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-struct ListView: View {
+struct SearchListView: View {
     var body: some View {
         VStack {
-            SectionHeaderView(value: "", title: "Recent searchs")
+            SectionHeaderView(title: "Recent searchs")
             
             list
         }
@@ -20,7 +20,7 @@ struct ListView: View {
         VStack(spacing: 0) {
             ForEach(0...2, id: \.self) { i in
                 VStack(spacing: 0) {
-                    ListItemVIew(name: "Ibuprofen", strength: "200 mg",)
+                    SearchItemView(name: "Ibuprofen", strength: "200 mg",)
                         .padding(DesignSystem.Spacing.medium)
                     
                     if i < 2 {
@@ -45,7 +45,7 @@ struct ListView: View {
 
 #Preview {
     CustomNavStack {
-        ListView()
+        SearchListView()
             .padding()
             .customNavBarVisibility(false)
     }

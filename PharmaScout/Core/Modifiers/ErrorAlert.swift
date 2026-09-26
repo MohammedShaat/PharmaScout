@@ -9,26 +9,25 @@ import SwiftUI
 
 struct ErrorAlert: ViewModifier {
     let title: String
-    @Binding var presenting: AppError?
+    let error: AppError?
     
     func body(content: Content) -> some View {
         content
             .alert(
                 title,
-                isPresented: .init(optional: $presenting),
-                presenting: presenting
+                isPresented: .init(optionalValue: error),
+                presenting: error
             ) { _ in
                 
             } message: { error in
                 Text(error.errorDescription)
             }
-
     }
 }
 
 extension View {
-    func errorAlert(title: String, error: Binding<AppError?>) -> some View {
-        modifier(ErrorAlert(title: title, presenting: error))
+    func errorAlert(title: String, error: AppError?) -> some View {
+        modifier(ErrorAlert(title: title, error: error))
     }
 }
 
