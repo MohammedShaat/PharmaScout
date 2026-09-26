@@ -44,4 +44,50 @@ struct DefaultSearchRequestService: SearchRequestService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+//    func getRecentSearches(userId: String) async throws -> [Search] {
+//        let searchTable = SupabaseManager.Database.Table.Search.self
+//        let searchColumns = searchTable.Column
+//        
+//        let searchItemTable = SupabaseManager.Database.Table.SearchItem.self
+//        let searchItemColumns = searchItemTable.Column
+//        
+//        do {
+//            let searchs: [Search] = try await supabase
+//                .from(searchTable.name)
+//                .select("*, \(searchItemTable.name)(*)")
+//                .eq(searchColumns.userId, value: userId)
+//                .notEquals(searchColumns.status, value: SearchStatus.pending.rawValue)
+//                .order(searchColumns.createdAt, ascending: false)
+//                .execute()
+//                .value
+//            
+//            return searchs
+//            
+//        } catch {
+//            throw SupabaseErrorMapper.mapDatabseError(error)
+//        }
+//    }
+    
+    func getSearches(limit: Int, offset: Int) async throws -> [Search] {
+        let getSearchesFunc = SupabaseManager.Database.Functions.getSearches.self
+
+        do {
+            let searchs: [Search] = try await supabase
+                .rpc(
+                    getSearchesFunc.name,
+                    params: [
+                        getSearchesFunc.Params.limit: limit,
+                        getSearchesFunc.Params.offset: offset
+                    ]
+                )
+                .execute()
+                .value
+            
+            return searchs
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

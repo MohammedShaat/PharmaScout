@@ -19,7 +19,8 @@ struct HomeScreen: View {
         drugService: DrugService,
         patientTabViewModel: PatientTabViewModel,
         locationService: LocationService,
-        pharmacyService: PharmacyService
+        pharmacyService: PharmacyService,
+        searchRequestService: SearchRequestService
     ) {
         self.authService = authService
         self.drugService = drugService
@@ -27,7 +28,8 @@ struct HomeScreen: View {
         let viewModel = HomeViewModel(
             authService: authService,
             locationService: locationService,
-            pharmacyService: pharmacyService
+            pharmacyService: pharmacyService,
+            searchRequestService: searchRequestService
         )
         self._vm = State(wrappedValue: viewModel)
     }
@@ -52,8 +54,9 @@ struct HomeScreen: View {
                 vm.getLocation()
                 async let userData = await vm.loadUserData()
                 async let nearbyPharmacies = await vm.loadNearbyPharmacies()
+                async let recentSearches = await vm.loadRecentSearches()
                 
-                _ = await (userData, nearbyPharmacies)
+                _ = await (userData, nearbyPharmacies, recentSearches)
             }
         }
     }
@@ -92,7 +95,13 @@ struct HomeScreen: View {
     }
     
     private var recentSection: some View {
-        SearchListView()
+        SearchListView(
+            searches: vm.recentSearches,
+            loadingState: vm.recentSearchesloadingState
+        ) {
+            patientTabViewModel.navigateToRecentSearchesTab()
+        }
+        .frame(minHeight: 250, alignment: .top)
     }
     
     private var nearbyPharmaciesSection: some View {
@@ -113,6 +122,7 @@ struct HomeScreen: View {
         drugService: MockDrugService.sample,
         patientTabViewModel: PatientTabViewModel.sample,
         locationService: MockLocationService.sample,
-        pharmacyService: MockPharmacyService.sample
+        pharmacyService: MockPharmacyService.sample,
+        searchRequestService: MockSearchRequestService.sample
     )
 }

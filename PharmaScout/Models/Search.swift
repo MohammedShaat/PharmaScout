@@ -9,17 +9,28 @@ import Foundation
 
 struct Search: Codable, Identifiable {
     let id: String
-    let userId: String
-    let latitude: Double
-    let longitude: Double
     let fulfilmentMode: FulfilmentMode
     let acceptSubstitute: Bool
     let drugsCount: Int
     let fulfilledDrugsCount: Int
     let status: SearchStatus
+    let items: [SearchItem]
     let createdAt: Date
 }
 
+struct SearchItem: Codable, Identifiable {
+    let id: String
+    let genericName: String
+    let strength: String
+}
+
+
+
+enum SearchItemStatus: String, Codable {
+    case pending = "pending"
+    case fulfilled = "fulfilled"
+    case unfulfilled = "unfulfilled"
+}
 
 enum FulfilmentMode: String, CaseIterable, Codable, Identifiable {
     case singlePharmacy = "single_pharmacy"
@@ -32,5 +43,5 @@ enum SearchStatus: String, Codable {
     case pending = "pending"
     case partiallyFulfilled = "partially_fulfilled"
     case fulfilled = "fulfilled"
-    case expired = "expired"
+    case unfulfilled = "unfulfilled"
 }

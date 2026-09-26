@@ -11,4 +11,6 @@ protocol SearchRequestService {
     func createSearchRequest(request: SearchRequest) async throws
     
     func getNumberOfActiveSearchs(userId: String) async throws -> Int
+    
+    func getSearches(limit: Int, offset: Int) async throws -> [Search]
 }

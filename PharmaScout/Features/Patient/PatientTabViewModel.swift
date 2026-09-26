@@ -24,12 +24,16 @@ class PatientTabViewModel {
         pharmacyPath.append(.details(pharmacy))
         navigateToPharmaciesTab()
     }
+    
+    func navigateToRecentSearchesTab() {
+        selectedTab = .recentSearches
+    }
 }
 
 enum PatientTab {
     case home
     case search
-    case recent
+    case recentSearches
     case pharmacies
     case profile
 }
