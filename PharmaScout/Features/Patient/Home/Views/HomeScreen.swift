@@ -42,6 +42,8 @@ struct HomeScreen: View {
                     
                     searchSection
                     
+                    activeSearchesSection
+                    
                     recentSection
                     
                     nearbyPharmaciesSection
@@ -50,14 +52,7 @@ struct HomeScreen: View {
             }
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
-            .taskOnFirstAppear {
-                vm.getLocation()
-                async let userData = await vm.loadUserData()
-                async let nearbyPharmacies = await vm.loadNearbyPharmacies()
-                async let recentSearches = await vm.loadRecentSearches()
-                
-                _ = await (userData, nearbyPharmacies, recentSearches)
-            }
+            .onAppear(perform: vm.loadDataIfNeeded)
         }
     }
     
@@ -94,12 +89,25 @@ struct HomeScreen: View {
         }
     }
     
+    @ViewBuilder
+    private var activeSearchesSection: some View {
+        ActiveSearchesView(
+            activeSearches: vm.activeSearches,
+            loadingState: vm.activeSearchesloadingState
+        ) { search in
+            patientTabViewModel.navigateToSearchDetailScreen(for: search)
+        }
+        .frame(minHeight: 100, alignment: .top)
+    }
+    
     private var recentSection: some View {
         SearchListView(
             searches: vm.recentSearches,
             loadingState: vm.recentSearchesloadingState
         ) {
             patientTabViewModel.navigateToRecentSearchesTab()
+        } onSearchTapped: { search in
+            patientTabViewModel.navigateToSearchDetailScreen(for: search)
         }
         .frame(minHeight: 250, alignment: .top)
     }

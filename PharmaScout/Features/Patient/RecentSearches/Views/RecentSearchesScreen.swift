@@ -8,10 +8,24 @@
 import SwiftUI
 
 struct RecentSearchesScreen: View {
+    private let searchRequestService: SearchRequestService
+    private let locationService: LocationService
+    private let patientTabViewModel: PatientTabViewModel
+    
+    var path: Binding<[Search]>
     @State private var vm: RecentSearchesViewModel
     @State private var searchesTask: Task<Void, Never>?
     
-    init(searchRequestService: SearchRequestService) {
+    init(
+        path: Binding<[Search]>,
+        searchRequestService: SearchRequestService,
+        locationService: LocationService,
+        patientTabViewModel: PatientTabViewModel
+    ) {
+        self.path = path
+        self.searchRequestService = searchRequestService
+        self.locationService = locationService
+        self.patientTabViewModel = patientTabViewModel
         let viewModel = RecentSearchesViewModel(
             searchRequestService: searchRequestService
         )
@@ -19,63 +33,79 @@ struct RecentSearchesScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: DesignSystem.Spacing.large) {
-                
-                LoadingContentView(
-                    LoadingState: vm.loadingState,
-                    isEmpty: vm.searches.isEmpty,
-                    emptyMessage: "There is no searches") {
-                        LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                            ForEach(vm.searches) { search in
-                                searchItemView(search)
-                                    .onAppear {
-                                        if search.id == vm.searches.last?.id {
-                                            searchesTask?.cancel()
-                                            searchesTask = Task {
-                                                await vm.loadMore()
+        CustomNavStack(path: path) {
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.large) {
+                    
+                    LoadingContentView(
+                        LoadingState: vm.loadingState,
+                        isEmpty: vm.searches.isEmpty,
+                        emptyMessage: "There is no searches") {
+                            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                                ForEach(vm.searches) { search in
+                                    searchItemView(search)
+                                        .onAppear {
+                                            if search.id == vm.searches.last?.id {
+                                                searchesTask?.cancel()
+                                                searchesTask = Task {
+                                                    await vm.loadMore()
+                                                }
                                             }
                                         }
+                                    
+                                    if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
+                                        RingProgressView()
                                     }
-                                
-                                if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
-                                    RingProgressView()
                                 }
                             }
                         }
-                    }
-                
+                    
+                }
+                .padding(DesignSystem.Spacing.xLarge)
             }
-            .padding(DesignSystem.Spacing.xLarge)
-        }
-        .onDisappear {
-            searchesTask?.cancel()
-        }
-        .refreshable(action: vm.refresh)
-        .taskOnFirstAppear {
-            await vm.loadSearches()
+            .customNavBarVisibility(false)
+            .customNavigationDestination(for: Search.self) { search in
+                SearchDetailScreen(
+                    searchRequestService: searchRequestService,
+                    locationService: locationService,
+                    patientTabViewModel: patientTabViewModel,
+                    search: search
+                )
+            }
+            .onDisappear {
+                searchesTask?.cancel()
+            }
+            .refreshable(action: vm.refresh)
+            .onAppear(perform: vm.loadSearchesIfNeeded)
         }
     }
     
     private func searchItemView(_ search: Search) -> some View {
-        VStack(alignment: .leading) {
+        CustomNavValueLink(value: search) {
             VStack(alignment: .leading) {
-                ForEach(search.items) { item in
-                    Text("\(item.genericName) - \(item.strength)")
+                VStack(alignment: .leading) {
+                    ForEach(search.drugs) { searchDrug in
+                        Text("\(searchDrug.genericName) - \(searchDrug.strength)")
+                    }
+                }
+                HStack {
+                    Spacer()
+                    Text(search.status.rawValue)
                 }
             }
-            HStack {
-                Spacer()
-                Text(search.status.rawValue)
-            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.gray.opacity(0.3))
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.gray.opacity(0.3))
     }
 }
 
 #Preview {
+    @State @Previewable var path: [Search] = []
+    
     RecentSearchesScreen(
-        searchRequestService: MockSearchRequestService.sample
+        path: $path,
+        searchRequestService: MockSearchRequestService.sample,
+        locationService: MockLocationService.sample,
+        patientTabViewModel: PatientTabViewModel.sample
     )
 }

@@ -20,6 +20,7 @@ struct SearchItemView: View {
 
 //            returnButton
         }
+        .frame(maxWidth: .infinity)
         .foregroundStyle(.theme.textPrimary)
     }
 
@@ -33,11 +34,11 @@ struct SearchItemView: View {
     
     private var content: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
-            Text(search.items.map(\.genericName), format: .list(type: .and))
+            Text(search.drugs.map(\.genericName), format: .list(type: .and))
                 .font(.headline)
                 .lineLimit(1)
             
-            Text(search.items.map(\.strength).joined(separator: " - "))
+            Text(search.drugs.map(\.strength).joined(separator: " - "))
             .foregroundStyle(.theme.textSecondary)
             .font(.callout)
         }

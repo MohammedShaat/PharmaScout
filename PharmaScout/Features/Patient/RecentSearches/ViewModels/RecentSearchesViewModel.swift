@@ -14,19 +14,44 @@ class RecentSearchesViewModel {
     private(set) var searches: [Search] = []
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
+    private var hasStarted: Bool = false
+    private var firstLoadTask: Task<Void, Never>?
+    
     init(searchRequestService: SearchRequestService) {
         self.searchRequestService = searchRequestService
     }
     
-    func loadSearches(refresh: Bool = false) async {
+    deinit {
+        firstLoadTask?.cancel()
+    }
+    
+    func loadSearchesIfNeeded() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        
+        firstLoadTask = Task {
+            await loadSearches()
+        }
+    }
+    
+    func loadMore() async {
+        await loadSearches()
+    }
+    
+    func refresh() async {
+        await loadSearches(refresh: true)
+    }
+    
+    private func loadSearches(refresh: Bool = false) async {
         loadingState.startLoading(refresh: refresh)
         defer { loadingState.stopLoading() }
         
         do {
-            let newSearchs = try await searchRequestService.getSearches(
-                limit: refresh ? searches.count : loadingState.pagination.pageSize,
+            let params = GetSearchesParams(
+                limit: refresh ? max(searches.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
                 offset: refresh ? 0 : searches.count
             )
+            let newSearchs = try await searchRequestService.getSearches(params)
             
             if refresh {
                 searches = newSearchs
@@ -42,13 +67,5 @@ class RecentSearchesViewModel {
             loadingState.fail(error)
             print("Failed to load searches\n", error)
         }
-    }
-    
-    func loadMore() async {
-        await loadSearches()
-    }
-    
-    func refresh() async {
-        await loadSearches(refresh: true)
     }
 }

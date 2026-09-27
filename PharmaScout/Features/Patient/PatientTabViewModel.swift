@@ -11,6 +11,7 @@ import Foundation
 class PatientTabViewModel {
     var selectedTab: PatientTab = .home
     var pharmacyPath: [PharmacyDestination] = []
+    var recentSearchsPath: [Search] = []
     
     func navigateToSearchTab() {
         selectedTab = .search
@@ -27,6 +28,11 @@ class PatientTabViewModel {
     
     func navigateToRecentSearchesTab() {
         selectedTab = .recentSearches
+    }
+    
+    func navigateToSearchDetailScreen(for search: Search) {
+        recentSearchsPath.append(search)
+        navigateToRecentSearchesTab()
     }
 }
 

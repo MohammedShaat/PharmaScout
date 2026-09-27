@@ -44,7 +44,7 @@ struct PatientTabView: View {
             }
             
             Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {
-                RecentSearchesScreen(searchRequestService: searchRequestService)
+                RecentSearchesScreen(path: $vm.recentSearchsPath, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm)
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {

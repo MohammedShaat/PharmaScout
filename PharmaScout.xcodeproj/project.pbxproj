@@ -10,6 +10,8 @@
 		5D381236304951B300F6BAD7 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 5D381235304951B300F6BAD7 /* GoogleSignIn */; };
 		5D381238304951B300F6BAD7 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D381237304951B300F6BAD7 /* GoogleSignInSwift */; };
 		5D6C82693042D925003017BF /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5D6C82683042D925003017BF /* Supabase */; };
+		5D8809A430693F000083FD13 /* SearchDrugDetail+Samples.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8809A330693F000083FD13 /* SearchDrugDetail+Samples.swift */; };
+		5D8809A8306A6D630083FD13 /* ActiveSearchesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D8809A7306A6D630083FD13 /* ActiveSearchesView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +35,8 @@
 		5D5D0124303F1BC900B95EFC /* PharmaScout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PharmaScout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D5D0131303F1BC900B95EFC /* PharmaScoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PharmaScoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D5D013B303F1BC900B95EFC /* PharmaScoutUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PharmaScoutUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D8809A330693F000083FD13 /* SearchDrugDetail+Samples.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SearchDrugDetail+Samples.swift"; sourceTree = "<group>"; };
+		5D8809A7306A6D630083FD13 /* ActiveSearchesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveSearchesView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -97,6 +101,8 @@
 		5D5D011B303F1BC900B95EFC = {
 			isa = PBXGroup;
 			children = (
+				5D8809A7306A6D630083FD13 /* ActiveSearchesView.swift */,
+				5D8809A330693F000083FD13 /* SearchDrugDetail+Samples.swift */,
 				5D5D0126303F1BC900B95EFC /* PharmaScout */,
 				5D5D0134303F1BC900B95EFC /* PharmaScoutTests */,
 				5D5D013E303F1BC900B95EFC /* PharmaScoutUITests */,
@@ -265,6 +271,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D8809A8306A6D630083FD13 /* ActiveSearchesView.swift in Sources */,
+				5D8809A430693F000083FD13 /* SearchDrugDetail+Samples.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

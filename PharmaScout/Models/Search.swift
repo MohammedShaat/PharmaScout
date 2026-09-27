@@ -7,30 +7,28 @@
 
 import Foundation
 
-struct Search: Codable, Identifiable {
+struct Search: Codable, Identifiable, Hashable {
     let id: String
     let fulfilmentMode: FulfilmentMode
     let acceptSubstitute: Bool
     let drugsCount: Int
     let fulfilledDrugsCount: Int
     let status: SearchStatus
-    let items: [SearchItem]
+    let drugs: [SearchDrug]
     let createdAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id, fulfilmentMode, acceptSubstitute, drugsCount, fulfilledDrugsCount, status, createdAt
+        case drugs = "items"
+    }
 }
 
-struct SearchItem: Codable, Identifiable {
+struct SearchDrug: Codable, Identifiable, Hashable {
     let id: String
     let genericName: String
     let strength: String
 }
 
-
-
-enum SearchItemStatus: String, Codable {
-    case pending = "pending"
-    case fulfilled = "fulfilled"
-    case unfulfilled = "unfulfilled"
-}
 
 enum FulfilmentMode: String, CaseIterable, Codable, Identifiable {
     case singlePharmacy = "single_pharmacy"

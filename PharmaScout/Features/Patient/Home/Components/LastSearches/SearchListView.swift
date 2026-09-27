@@ -31,6 +31,10 @@ struct SearchListView: View {
                         VStack(spacing: 0) {
                             SearchItemView(search: search)
                                 .padding(DesignSystem.Spacing.medium)
+                                .background(.theme.background.opacity(0.001))
+                                .clickable {
+                                    onSearchTapped?(search)
+                                }
                             
                             if search.id != searches.last?.id {
                                 Rectangle()

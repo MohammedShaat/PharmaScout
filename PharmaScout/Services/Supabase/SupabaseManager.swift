@@ -177,6 +177,15 @@ extension SupabaseManager {
                 enum Params {
                     static let limit = "p_limit"
                     static let offset = "p_offset"
+                    static let onlyPending = "p_only_pending"
+                }
+            }
+            
+            enum getSearchDrugDetails {
+                static let name = "get_search_drug_details"
+                
+                enum Params {
+                    static let searchId = "p_search_id"
                 }
             }
         }

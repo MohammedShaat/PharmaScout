@@ -12,5 +12,7 @@ protocol SearchRequestService {
     
     func getNumberOfActiveSearchs(userId: String) async throws -> Int
     
-    func getSearches(limit: Int, offset: Int) async throws -> [Search]
+    func getSearches(_ params: GetSearchesParams) async throws -> [Search]
+    
+    func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail]
 }

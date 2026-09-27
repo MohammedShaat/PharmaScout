@@ -16,13 +16,13 @@ extension Search {
             drugsCount: 2,
             fulfilledDrugsCount: 2,
             status: .fulfilled,
-            items: [
-                SearchItem(
+            drugs: [
+                SearchDrug(
                     id: "item-001",
                     genericName: "Amoxicillin",
                     strength: "500 mg"
                 ),
-                SearchItem(
+                SearchDrug(
                     id: "item-002",
                     genericName: "Ibuprofen",
                     strength: "200 mg"
@@ -38,18 +38,18 @@ extension Search {
             drugsCount: 3,
             fulfilledDrugsCount: 2,
             status: .partiallyFulfilled,
-            items: [
-                SearchItem(
+            drugs: [
+                SearchDrug(
                     id: "item-003",
                     genericName: "Paracetamol",
                     strength: "500 mg"
                 ),
-                SearchItem(
+                SearchDrug(
                     id: "item-004",
                     genericName: "Omeprazole",
                     strength: "20 mg"
                 ),
-                SearchItem(
+                SearchDrug(
                     id: "item-005",
                     genericName: "Cetirizine",
                     strength: "10 mg"
@@ -65,8 +65,8 @@ extension Search {
             drugsCount: 1,
             fulfilledDrugsCount: 0,
             status: .unfulfilled,
-            items: [
-                SearchItem(
+            drugs: [
+                SearchDrug(
                     id: "item-006",
                     genericName: "Azithromycin",
                     strength: "500 mg"
@@ -82,13 +82,13 @@ extension Search {
             drugsCount: 2,
             fulfilledDrugsCount: 1,
             status: .pending,
-            items: [
-                SearchItem(
+            drugs: [
+                SearchDrug(
                     id: "item-007",
                     genericName: "Metformin",
                     strength: "500 mg"
                 ),
-                SearchItem(
+                SearchDrug(
                     id: "item-008",
                     genericName: "Atorvastatin",
                     strength: "20 mg"
@@ -104,9 +104,9 @@ extension Search {
                 drugsCount: 2,
                 fulfilledDrugsCount: 2,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-009", genericName: "Loratadine", strength: "10 mg"),
-                    SearchItem(id: "item-010", genericName: "Omeprazole", strength: "20 mg")
+                drugs: [
+                    SearchDrug(id: "item-009", genericName: "Loratadine", strength: "10 mg"),
+                    SearchDrug(id: "item-010", genericName: "Omeprazole", strength: "20 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-172800)
             ),
@@ -118,10 +118,10 @@ extension Search {
                 drugsCount: 3,
                 fulfilledDrugsCount: 1,
                 status: .partiallyFulfilled,
-                items: [
-                    SearchItem(id: "item-011", genericName: "Amoxicillin", strength: "250 mg"),
-                    SearchItem(id: "item-012", genericName: "Paracetamol", strength: "500 mg"),
-                    SearchItem(id: "item-013", genericName: "Diclofenac", strength: "50 mg")
+                drugs: [
+                    SearchDrug(id: "item-011", genericName: "Amoxicillin", strength: "250 mg"),
+                    SearchDrug(id: "item-012", genericName: "Paracetamol", strength: "500 mg"),
+                    SearchDrug(id: "item-013", genericName: "Diclofenac", strength: "50 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-259200)
             ),
@@ -133,8 +133,8 @@ extension Search {
                 drugsCount: 1,
                 fulfilledDrugsCount: 0,
                 status: .unfulfilled,
-                items: [
-                    SearchItem(id: "item-014", genericName: "Azithromycin", strength: "250 mg")
+                drugs: [
+                    SearchDrug(id: "item-014", genericName: "Azithromycin", strength: "250 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-345600)
             ),
@@ -146,11 +146,11 @@ extension Search {
                 drugsCount: 4,
                 fulfilledDrugsCount: 4,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-015", genericName: "Metformin", strength: "500 mg"),
-                    SearchItem(id: "item-016", genericName: "Amlodipine", strength: "5 mg"),
-                    SearchItem(id: "item-017", genericName: "Atorvastatin", strength: "20 mg"),
-                    SearchItem(id: "item-018", genericName: "Aspirin", strength: "81 mg")
+                drugs: [
+                    SearchDrug(id: "item-015", genericName: "Metformin", strength: "500 mg"),
+                    SearchDrug(id: "item-016", genericName: "Amlodipine", strength: "5 mg"),
+                    SearchDrug(id: "item-017", genericName: "Atorvastatin", strength: "20 mg"),
+                    SearchDrug(id: "item-018", genericName: "Aspirin", strength: "81 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-432000)
             ),
@@ -162,9 +162,9 @@ extension Search {
                 drugsCount: 2,
                 fulfilledDrugsCount: 0,
                 status: .pending,
-                items: [
-                    SearchItem(id: "item-019", genericName: "Cetirizine", strength: "10 mg"),
-                    SearchItem(id: "item-020", genericName: "Salbutamol", strength: "100 mcg")
+                drugs: [
+                    SearchDrug(id: "item-019", genericName: "Cetirizine", strength: "10 mg"),
+                    SearchDrug(id: "item-020", genericName: "Salbutamol", strength: "100 mcg")
                 ],
                 createdAt: Date().addingTimeInterval(-600)
             ),
@@ -176,10 +176,10 @@ extension Search {
                 drugsCount: 3,
                 fulfilledDrugsCount: 2,
                 status: .partiallyFulfilled,
-                items: [
-                    SearchItem(id: "item-021", genericName: "Ibuprofen", strength: "400 mg"),
-                    SearchItem(id: "item-022", genericName: "Pantoprazole", strength: "40 mg"),
-                    SearchItem(id: "item-023", genericName: "Loratadine", strength: "10 mg")
+                drugs: [
+                    SearchDrug(id: "item-021", genericName: "Ibuprofen", strength: "400 mg"),
+                    SearchDrug(id: "item-022", genericName: "Pantoprazole", strength: "40 mg"),
+                    SearchDrug(id: "item-023", genericName: "Loratadine", strength: "10 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-518400)
             ),
@@ -191,8 +191,8 @@ extension Search {
                 drugsCount: 1,
                 fulfilledDrugsCount: 1,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-024", genericName: "Amoxicillin", strength: "500 mg")
+                drugs: [
+                    SearchDrug(id: "item-024", genericName: "Amoxicillin", strength: "500 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-604800)
             ),
@@ -204,9 +204,9 @@ extension Search {
                 drugsCount: 2,
                 fulfilledDrugsCount: 1,
                 status: .partiallyFulfilled,
-                items: [
-                    SearchItem(id: "item-025", genericName: "Losartan", strength: "50 mg"),
-                    SearchItem(id: "item-026", genericName: "Metformin", strength: "850 mg")
+                drugs: [
+                    SearchDrug(id: "item-025", genericName: "Losartan", strength: "50 mg"),
+                    SearchDrug(id: "item-026", genericName: "Metformin", strength: "850 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-691200)
             ),
@@ -218,8 +218,8 @@ extension Search {
                 drugsCount: 1,
                 fulfilledDrugsCount: 0,
                 status: .unfulfilled,
-                items: [
-                    SearchItem(id: "item-027", genericName: "Clarithromycin", strength: "500 mg")
+                drugs: [
+                    SearchDrug(id: "item-027", genericName: "Clarithromycin", strength: "500 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-777600)
             ),
@@ -231,12 +231,12 @@ extension Search {
                 drugsCount: 5,
                 fulfilledDrugsCount: 5,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-028", genericName: "Paracetamol", strength: "500 mg"),
-                    SearchItem(id: "item-029", genericName: "Ibuprofen", strength: "200 mg"),
-                    SearchItem(id: "item-030", genericName: "Cetirizine", strength: "10 mg"),
-                    SearchItem(id: "item-031", genericName: "Omeprazole", strength: "20 mg"),
-                    SearchItem(id: "item-032", genericName: "Diclofenac", strength: "50 mg")
+                drugs: [
+                    SearchDrug(id: "item-028", genericName: "Paracetamol", strength: "500 mg"),
+                    SearchDrug(id: "item-029", genericName: "Ibuprofen", strength: "200 mg"),
+                    SearchDrug(id: "item-030", genericName: "Cetirizine", strength: "10 mg"),
+                    SearchDrug(id: "item-031", genericName: "Omeprazole", strength: "20 mg"),
+                    SearchDrug(id: "item-032", genericName: "Diclofenac", strength: "50 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-864000)
             ),
@@ -248,10 +248,10 @@ extension Search {
                 drugsCount: 3,
                 fulfilledDrugsCount: 0,
                 status: .pending,
-                items: [
-                    SearchItem(id: "item-033", genericName: "Insulin Glargine", strength: "100 units/mL"),
-                    SearchItem(id: "item-034", genericName: "Metformin", strength: "500 mg"),
-                    SearchItem(id: "item-035", genericName: "Gliclazide", strength: "80 mg")
+                drugs: [
+                    SearchDrug(id: "item-033", genericName: "Insulin Glargine", strength: "100 units/mL"),
+                    SearchDrug(id: "item-034", genericName: "Metformin", strength: "500 mg"),
+                    SearchDrug(id: "item-035", genericName: "Gliclazide", strength: "80 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-900)
             ),
@@ -263,9 +263,9 @@ extension Search {
                 drugsCount: 2,
                 fulfilledDrugsCount: 2,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-036", genericName: "Sertraline", strength: "50 mg"),
-                    SearchItem(id: "item-037", genericName: "Quetiapine", strength: "25 mg")
+                drugs: [
+                    SearchDrug(id: "item-036", genericName: "Sertraline", strength: "50 mg"),
+                    SearchDrug(id: "item-037", genericName: "Quetiapine", strength: "25 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-950400)
             ),
@@ -277,11 +277,11 @@ extension Search {
                 drugsCount: 4,
                 fulfilledDrugsCount: 3,
                 status: .partiallyFulfilled,
-                items: [
-                    SearchItem(id: "item-038", genericName: "Amlodipine", strength: "10 mg"),
-                    SearchItem(id: "item-039", genericName: "Losartan", strength: "100 mg"),
-                    SearchItem(id: "item-040", genericName: "Atorvastatin", strength: "40 mg"),
-                    SearchItem(id: "item-041", genericName: "Aspirin", strength: "81 mg")
+                drugs: [
+                    SearchDrug(id: "item-038", genericName: "Amlodipine", strength: "10 mg"),
+                    SearchDrug(id: "item-039", genericName: "Losartan", strength: "100 mg"),
+                    SearchDrug(id: "item-040", genericName: "Atorvastatin", strength: "40 mg"),
+                    SearchDrug(id: "item-041", genericName: "Aspirin", strength: "81 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-1036800)
             ),
@@ -293,8 +293,8 @@ extension Search {
                 drugsCount: 1,
                 fulfilledDrugsCount: 0,
                 status: .unfulfilled,
-                items: [
-                    SearchItem(id: "item-042", genericName: "Salbutamol", strength: "100 mcg")
+                drugs: [
+                    SearchDrug(id: "item-042", genericName: "Salbutamol", strength: "100 mcg")
                 ],
                 createdAt: Date().addingTimeInterval(-1123200)
             ),
@@ -306,10 +306,10 @@ extension Search {
                 drugsCount: 3,
                 fulfilledDrugsCount: 3,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-043", genericName: "Esomeprazole", strength: "40 mg"),
-                    SearchItem(id: "item-044", genericName: "Domperidone", strength: "10 mg"),
-                    SearchItem(id: "item-045", genericName: "Dicyclomine", strength: "20 mg")
+                drugs: [
+                    SearchDrug(id: "item-043", genericName: "Esomeprazole", strength: "40 mg"),
+                    SearchDrug(id: "item-044", genericName: "Domperidone", strength: "10 mg"),
+                    SearchDrug(id: "item-045", genericName: "Dicyclomine", strength: "20 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-1209600)
             ),
@@ -321,9 +321,9 @@ extension Search {
                 drugsCount: 2,
                 fulfilledDrugsCount: 1,
                 status: .partiallyFulfilled,
-                items: [
-                    SearchItem(id: "item-046", genericName: "Hydrochlorothiazide", strength: "25 mg"),
-                    SearchItem(id: "item-047", genericName: "Lisinopril", strength: "10 mg")
+                drugs: [
+                    SearchDrug(id: "item-046", genericName: "Hydrochlorothiazide", strength: "25 mg"),
+                    SearchDrug(id: "item-047", genericName: "Lisinopril", strength: "10 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-1296000)
             ),
@@ -335,8 +335,8 @@ extension Search {
                 drugsCount: 1,
                 fulfilledDrugsCount: 0,
                 status: .pending,
-                items: [
-                    SearchItem(id: "item-048", genericName: "Cefuroxime", strength: "500 mg")
+                drugs: [
+                    SearchDrug(id: "item-048", genericName: "Cefuroxime", strength: "500 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-1200)
             ),
@@ -348,11 +348,11 @@ extension Search {
                 drugsCount: 4,
                 fulfilledDrugsCount: 4,
                 status: .fulfilled,
-                items: [
-                    SearchItem(id: "item-049", genericName: "Levothyroxine", strength: "50 mcg"),
-                    SearchItem(id: "item-050", genericName: "Metformin", strength: "1000 mg"),
-                    SearchItem(id: "item-051", genericName: "Atorvastatin", strength: "20 mg"),
-                    SearchItem(id: "item-052", genericName: "Amlodipine", strength: "5 mg")
+                drugs: [
+                    SearchDrug(id: "item-049", genericName: "Levothyroxine", strength: "50 mcg"),
+                    SearchDrug(id: "item-050", genericName: "Metformin", strength: "1000 mg"),
+                    SearchDrug(id: "item-051", genericName: "Atorvastatin", strength: "20 mg"),
+                    SearchDrug(id: "item-052", genericName: "Amlodipine", strength: "5 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-1382400)
             ),
@@ -364,9 +364,9 @@ extension Search {
                 drugsCount: 2,
                 fulfilledDrugsCount: 1,
                 status: .partiallyFulfilled,
-                items: [
-                    SearchItem(id: "item-053", genericName: "Fluconazole", strength: "150 mg"),
-                    SearchItem(id: "item-054", genericName: "Clotrimazole", strength: "1%")
+                drugs: [
+                    SearchDrug(id: "item-053", genericName: "Fluconazole", strength: "150 mg"),
+                    SearchDrug(id: "item-054", genericName: "Clotrimazole", strength: "1%")
                 ],
                 createdAt: Date().addingTimeInterval(-1468800)
             ),
@@ -378,10 +378,10 @@ extension Search {
                 drugsCount: 3,
                 fulfilledDrugsCount: 0,
                 status: .unfulfilled,
-                items: [
-                    SearchItem(id: "item-055", genericName: "Amoxicillin", strength: "875 mg"),
-                    SearchItem(id: "item-056", genericName: "Clavulanic Acid", strength: "125 mg"),
-                    SearchItem(id: "item-057", genericName: "Azithromycin", strength: "500 mg")
+                drugs: [
+                    SearchDrug(id: "item-055", genericName: "Amoxicillin", strength: "875 mg"),
+                    SearchDrug(id: "item-056", genericName: "Clavulanic Acid", strength: "125 mg"),
+                    SearchDrug(id: "item-057", genericName: "Azithromycin", strength: "500 mg")
                 ],
                 createdAt: Date().addingTimeInterval(-1555200)
             )
