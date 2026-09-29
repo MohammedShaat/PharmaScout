@@ -19,8 +19,11 @@ struct SupabaseManager {
     private init() {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
+        decoder.dateDecodingStrategy = .iso8601
+        
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
+        encoder.dateEncodingStrategy = .iso8601
         
         let options = SupabaseClientOptions(
             db: .init(encoder: encoder, decoder: decoder),
@@ -73,6 +76,18 @@ extension SupabaseManager {
                     static let status = "status"
                     static let fulfilmentMode = "fulfilment_mode"
                     static let createdAt = "created_at"
+                }
+            }
+            
+            enum SearchItem {
+                static let name = "search_item"
+                
+                enum Column {
+                    static let id = "id"
+                    static let searchId = "search_id"
+                    static let drugFormulationId = "drug_formulation_id"
+                    static let status = "status"
+                    static let fulfilledPharmacyInquiryId = "fulfilled_pharmacy_inquiry_id"
                 }
             }
             
@@ -153,6 +168,24 @@ extension SupabaseManager {
                     static let radiusMeters = "p_radius_meters"
                     static let limit = "p_limit"
                     static let offset = "p_offset"
+                }
+            }
+            
+            enum getSearches {
+                static let name = "get_searches"
+                
+                enum Params {
+                    static let limit = "p_limit"
+                    static let offset = "p_offset"
+                    static let onlyPending = "p_only_pending"
+                }
+            }
+            
+            enum getSearchDrugDetails {
+                static let name = "get_search_drug_details"
+                
+                enum Params {
+                    static let searchId = "p_search_id"
                 }
             }
         }

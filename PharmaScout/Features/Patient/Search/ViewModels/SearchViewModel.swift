@@ -34,7 +34,7 @@ class SearchViewModel {
     var hasReachedSearchLimit: Bool { numberOfActiveSearchs ?? 0 >= maxActiveSearches }
     var canStartSearch: Bool { !hasReachedSearchLimit && selectedDrugs.isNotEmpty }
 
-    private(set) var activeSearchsLoadingState: LoadingState = LoadingState()
+    private(set) var numberOfActiveSearchsLoadingState: LoadingState = LoadingState()
     private(set) var requestLoadingState: LoadingState = LoadingState()
     var showNoPharmaciesMessage: Bool = false
     var showSuccessMessage: Bool = false
@@ -59,18 +59,20 @@ class SearchViewModel {
         selectedDrugs.removeAll { $0.id == id }
     }
     
-    func getNumberOfActiveSearchs() async {
-        guard numberOfActiveSearchs == nil else { return }
-        
-        activeSearchsLoadingState.startLoading()
-        defer { activeSearchsLoadingState.stopLoading() }
+    func refresh() async {
+        await getNumberOfActiveSearchs(refresh: true)
+    }
+    
+    func getNumberOfActiveSearchs(refresh: Bool = false) async {
+        numberOfActiveSearchsLoadingState.startLoading(refresh: refresh)
+        defer { numberOfActiveSearchsLoadingState.stopLoading() }
         
         do {
             let userId = try await authService.getUser().id
             numberOfActiveSearchs = try await searchRequestService.getNumberOfActiveSearchs(userId: userId)
             
         } catch {
-            activeSearchsLoadingState.fail(error)
+            numberOfActiveSearchsLoadingState.fail(error)
             print("Failed to get number of active searchs\n", error)
         }
     }
@@ -107,11 +109,6 @@ class SearchViewModel {
             requestLoadingState.fail(error)
             print("Failed to create search\n", error)
         }
-    }
-    
-    func refresh() async {
-        numberOfActiveSearchs = nil
-        await getNumberOfActiveSearchs()
     }
     
     private func createSearchRequest(coordinate: Coordinate, pharmacies: [NearbyPharmacy]) async throws {

@@ -33,96 +33,98 @@ struct SearchScreen: View {
         CustomNavStack {
             ScrollView {
                 VStack(spacing: DesignSystem.Spacing.large) {
-                    // MARK: - Reach search request limit
-                    if vm.hasReachedSearchLimit {
-                        VStack(spacing: DesignSystem.Spacing.large) {
-                            Text("You've reached the request limit")
-                                .font(.largeTitle)
-                            
-                            Text("You have to wait until some of your current requests finishes")
-                            
-                            Text("Pull down to refresh")
-                        }
-                        
-                    } else {
-                        // MARK: - First search nav
-                        if vm.selectedDrugs.isEmpty {
-                            CustomNavValueLink(value: SearchRoute.drugSelection) {
-                                Text("Choose a medicine to start")
-                                    .padding(DesignSystem.Spacing.medium)
-                                    .frame(maxWidth: .infinity)
-                                    .background(.theme.disabledBackground)
-                            }
-                        }
-                        
-                        // MARK: - Selected drugs list
-                        VStack(spacing: DesignSystem.Spacing.large) {
-                            ForEach(vm.selectedDrugs) { selectedDrug in
-                                CustomNavValueLink(value: selectedDrug) {
-                                    selectedDrugItem(selectedDrug: selectedDrug)
-                                }
-                            }
-                        }
-                        
-                        if vm.selectedDrugs.isNotEmpty {
-                            // MARK: - Add more drugs
-                            if vm.canAddDrug {
-                                CustomNavValueLink(value: SearchRoute.drugSelection) {
-                                    Text("Add another medicine?")
-                                        .foregroundStyle(.theme.primary)
-                                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                }
-                            }
-                            
-                            // MARK: - fulfilment + substitue
-                            VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
-                                
-                                // Substitue
-                                Toggle(isOn: $vm.acceptSubstitutes) {
-                                    Text("Accept substitutes")
-                                }
-                                
-                                // Fulfilment mode
-                                VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                                    Text("How should we find them?")
-                                    
-                                    Picker(selection: $vm.fulfilmentMode) {
-                                        ForEach(FulfilmentMode.allCases) { mode in
-                                            Text(mode.rawValue)
+                    LoadingContentView(
+                        LoadingState: vm.numberOfActiveSearchsLoadingState,
+                        isEmpty: vm.hasReachedSearchLimit,
+                        emptyMessage: "You've reached the request limit") {
+                                // MARK: - Reach search request limit
+//                                if vm.hasReachedSearchLimit {
+//                                    VStack(spacing: DesignSystem.Spacing.large) {
+//                                        Text("You've reached the request limit")
+//                                            .font(.largeTitle)
+//                                        
+//                                        Text("You have to wait until some of your current requests finishes")
+//                                        
+//                                        Text("Pull down to refresh")
+//                                    }
+//                                }
+                                    // MARK: - First search nav
+                                    if vm.selectedDrugs.isEmpty {
+                                        CustomNavValueLink(value: SearchRoute.addDrug) {
+                                            Text("Choose a medicine to start")
+                                                .padding(DesignSystem.Spacing.medium)
+                                                .frame(maxWidth: .infinity)
+                                                .background(.theme.disabledBackground)
                                         }
-                                    } label: {
-                                        Text("")
                                     }
-                                    .pickerStyle(.segmented)
                                     
+                                    // MARK: - Selected drugs list
+                                    VStack(spacing: DesignSystem.Spacing.large) {
+                                        ForEach(vm.selectedDrugs) { selectedDrug in
+                                            CustomNavValueLink(value: SearchRoute.editDrug(selectedDrug)) {
+                                                selectedDrugItem(selectedDrug: selectedDrug)
+                                            }
+                                        }
+                                    }
+                                    
+                            if vm.selectedDrugs.isNotEmpty {
+                                // MARK: - Add more drugs
+                                if vm.canAddDrug {
+                                    CustomNavValueLink(value: SearchRoute.addDrug) {
+                                        Text("Add another medicine?")
+                                            .foregroundStyle(.theme.primary)
+                                            .frame(maxWidth: .infinity, alignment: .trailing)
+                                    }
                                 }
                                 
-                                // Distance
-                                Text("Distance to search within \(vm.distanceMeters.meterToKilometer.formatted(.number))")
-                                
-                                
-                                Slider(value: $vm.distanceMeters, in: vm.minDistanceMeters...vm.maxDistanceMeters, step: 1000) {
-                                    Text("Distance to search within \(vm.distanceMeters.meterToKilometer)")
-                                        .foregroundStyle(.theme.primary)
-                                } minimumValueLabel: {
-                                    Text("\(vm.minDistanceMeters.meterToKilometer.formatted()) Km")
-                                } maximumValueLabel: {
-                                    Text("\(vm.maxDistanceMeters.meterToKilometer.formatted()) Km")
+                                // MARK: - fulfilment + substitue
+                                VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
+                                    
+                                    // Substitue
+                                    Toggle(isOn: $vm.acceptSubstitutes) {
+                                        Text("Accept substitutes")
+                                    }
+                                    
+                                    // Fulfilment mode
+                                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
+                                        Text("How should we find them?")
+                                        
+                                        Picker(selection: $vm.fulfilmentMode) {
+                                            ForEach(FulfilmentMode.allCases) { mode in
+                                                Text(mode.rawValue)
+                                            }
+                                        } label: {
+                                            Text("")
+                                        }
+                                        .pickerStyle(.segmented)
+                                        
+                                    }
+                                    
+                                    // Distance
+                                    Text("Distance to search within \(vm.distanceMeters.meterToKilometer.formatted(.number))")
+                                    
+                                    
+                                    Slider(value: $vm.distanceMeters, in: vm.minDistanceMeters...vm.maxDistanceMeters, step: 1000) {
+                                        Text("Distance to search within \(vm.distanceMeters.meterToKilometer)")
+                                            .foregroundStyle(.theme.primary)
+                                    } minimumValueLabel: {
+                                        Text("\(vm.minDistanceMeters.meterToKilometer.formatted()) Km")
+                                    } maximumValueLabel: {
+                                        Text("\(vm.maxDistanceMeters.meterToKilometer.formatted()) Km")
+                                    }
                                 }
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            
-                            // MARK: - Start search
-                            if vm.canStartSearch {
-                                PrimaryButtonView(title: "Start search", isLoading: vm.requestLoadingState.status != .idle) {
-                                    Task {
-                                        await vm.startSearch()
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                
+                                // MARK: - Start search
+                                if vm.canStartSearch {
+                                    PrimaryButtonView(title: "Start search", isLoading: vm.requestLoadingState.status != .idle) {
+                                        Task {
+                                            await vm.startSearch()
+                                        }
                                     }
                                 }
                             }
                         }
-                        
-                    }
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -148,22 +150,22 @@ struct SearchScreen: View {
                 }
             }
             .customNavBarVisibility(false)
-            .customNavigationDestination(for: SelectedDrug.self) { selectedDrug in
-                DrugSelectionScreen(
-                    drugService: drugService,
-                    editingSelectedDrug: selectedDrug,
-                    selectedFormulationIds: vm.selectedDrugs.map { $0.formulation.id }
-                )
-            }
             .customNavigationDestination(for: SearchRoute.self) { route in
                 switch route {
-                case .drugSelection:
+                case .addDrug:
                     DrugSelectionScreen(
                         drugService: drugService,
                         selectedFormulationIds: vm.selectedDrugs.map { $0.formulation.id }
                     ) { selectedDrug in
                         vm.addDrug(selectedDrug: selectedDrug)
                     }
+                
+                case .editDrug(let selectedDrug):
+                    DrugSelectionScreen(
+                        drugService: drugService,
+                        editingSelectedDrug: selectedDrug,
+                        selectedFormulationIds: vm.selectedDrugs.map { $0.formulation.id }
+                    )
                 }
             }
             .refreshable(action: vm.refresh)
@@ -190,8 +192,9 @@ struct SearchScreen: View {
     }
 }
 
-enum SearchRoute {
-    case drugSelection
+enum SearchRoute: Hashable {
+    case addDrug
+    case editDrug(SelectedDrug)
 }
 
 #Preview {

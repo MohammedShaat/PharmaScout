@@ -19,7 +19,8 @@ struct HomeScreen: View {
         drugService: DrugService,
         patientTabViewModel: PatientTabViewModel,
         locationService: LocationService,
-        pharmacyService: PharmacyService
+        pharmacyService: PharmacyService,
+        searchRequestService: SearchRequestService
     ) {
         self.authService = authService
         self.drugService = drugService
@@ -27,7 +28,8 @@ struct HomeScreen: View {
         let viewModel = HomeViewModel(
             authService: authService,
             locationService: locationService,
-            pharmacyService: pharmacyService
+            pharmacyService: pharmacyService,
+            searchRequestService: searchRequestService
         )
         self._vm = State(wrappedValue: viewModel)
     }
@@ -40,6 +42,8 @@ struct HomeScreen: View {
                     
                     searchSection
                     
+                    activeSearchesSection
+                    
                     recentSection
                     
                     nearbyPharmaciesSection
@@ -48,13 +52,7 @@ struct HomeScreen: View {
             }
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
-            .taskOnFirstAppear {
-                vm.getLocation()
-                async let userData = await vm.loadUserData()
-                async let nearbyPharmacies = await vm.loadNearbyPharmacies()
-                
-                _ = await (userData, nearbyPharmacies)
-            }
+            .onAppear(perform: vm.loadDataIfNeeded)
         }
     }
     
@@ -91,8 +89,27 @@ struct HomeScreen: View {
         }
     }
     
+    @ViewBuilder
+    private var activeSearchesSection: some View {
+        ActiveSearchesView(
+            activeSearches: vm.activeSearches,
+            loadingState: vm.activeSearchesloadingState
+        ) { search in
+            patientTabViewModel.navigateToSearchDetailScreen(for: search)
+        }
+        .frame(minHeight: 100, alignment: .top)
+    }
+    
     private var recentSection: some View {
-        SearchListView()
+        SearchListView(
+            searches: vm.recentSearches,
+            loadingState: vm.recentSearchesloadingState
+        ) {
+            patientTabViewModel.navigateToRecentSearchesTab()
+        } onSearchTapped: { search in
+            patientTabViewModel.navigateToSearchDetailScreen(for: search)
+        }
+        .frame(minHeight: 250, alignment: .top)
     }
     
     private var nearbyPharmaciesSection: some View {
@@ -113,6 +130,7 @@ struct HomeScreen: View {
         drugService: MockDrugService.sample,
         patientTabViewModel: PatientTabViewModel.sample,
         locationService: MockLocationService.sample,
-        pharmacyService: MockPharmacyService.sample
+        pharmacyService: MockPharmacyService.sample,
+        searchRequestService: MockSearchRequestService.sample
     )
 }

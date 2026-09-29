@@ -44,4 +44,36 @@ struct DefaultSearchRequestService: SearchRequestService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func getSearches(_ params: GetSearchesParams) async throws -> [Search] {
+        let getSearchesFunc = SupabaseManager.Database.Functions.getSearches.self
+        
+        do {
+            let searchs: [Search] = try await supabase
+                .rpc(getSearchesFunc.name, params: params)
+                .execute()
+                .value
+            
+            return searchs
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail] {
+        let getSearchDrugDetailsFunc = SupabaseManager.Database.Functions.getSearchDrugDetails.self
+
+        do {
+            let searchs: [SearchDrugDetail] = try await supabase
+                .rpc(getSearchDrugDetailsFunc.name, params: params)
+                .execute()
+                .value
+            
+            return searchs
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

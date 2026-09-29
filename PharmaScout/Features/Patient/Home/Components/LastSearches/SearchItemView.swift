@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct SearchItemView: View {
-    let name: String
-    let strength: String
+    let search: Search
     
     var body: some View {
         HStack {
@@ -19,8 +18,9 @@ struct SearchItemView: View {
 
             Spacer()
 
-            returnButton
+//            returnButton
         }
+        .frame(maxWidth: .infinity)
         .foregroundStyle(.theme.textPrimary)
     }
 
@@ -34,11 +34,11 @@ struct SearchItemView: View {
     
     private var content: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
-            Text(name)
+            Text(search.drugs.map(\.genericName), format: .list(type: .and))
                 .font(.headline)
                 .lineLimit(1)
-
-            Text(strength)
+            
+            Text(search.drugs.map(\.strength).joined(separator: " - "))
             .foregroundStyle(.theme.textSecondary)
             .font(.callout)
         }
@@ -56,7 +56,7 @@ struct SearchItemView: View {
 }
 
 #Preview {
-    SearchItemView(name: "Ibuprofen", strength: "200 mg")
+    SearchItemView(search: .samples[0])
         .padding()
         .background(.gray.opacity(0.4))
 }

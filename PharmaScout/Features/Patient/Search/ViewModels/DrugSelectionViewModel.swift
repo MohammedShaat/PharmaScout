@@ -128,14 +128,14 @@ class DrugSelectionViewModel {
             
         } onSuccess: { newDrugFormulations in
             
-            let newUnselectedDrugFormulations = newDrugFormulations.filter {
-                !selectedFormulationIds.contains($0.id)
+            let newNonselectedDrugFormulations = newDrugFormulations.filter { newFormulation in
+                !selectedFormulationIds.contains(newFormulation.id) || editingSelectedDrug?.formulation.id == newFormulation.id
             }
             
             if searchLoadingState.pagination.hasPreviousPage {
-                drugFormulations.append(contentsOf: newUnselectedDrugFormulations)
+                drugFormulations.append(contentsOf: newNonselectedDrugFormulations)
             } else {
-                drugFormulations = newUnselectedDrugFormulations
+                drugFormulations = newNonselectedDrugFormulations
             }
         }
     }

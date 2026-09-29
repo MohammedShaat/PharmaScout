@@ -85,9 +85,7 @@ struct PharmaciesScreen: View {
                 }
             }
             .refreshable(action: vm.refresh)
-            .taskOnFirstAppear{
-                await vm.findNearbyPharmacies()
-            }
+            .onAppear(perform: vm.loadNearbyPharmaciesIfNeeded)
         }
     }
     

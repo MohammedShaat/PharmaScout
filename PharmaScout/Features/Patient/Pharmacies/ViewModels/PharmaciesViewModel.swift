@@ -24,14 +24,49 @@ class PharmaciesViewModel {
         expandToNextRadius && radiusMeters < maxRadiusMeters
     }
     
+    private var hasStarted: Bool = false
+    private var firstLoadTask: Task<Void, Never>?
+    
     init(pharmacyService: PharmacyService, locationService: LocationService) {
         self.pharmacyService = pharmacyService
         self.locationService = locationService
     }
     
-    func findNearbyPharmacies(refresh: Bool = false) async {
-        await getLocation()
-        guard let userCoordinate else { return }
+    deinit {
+        firstLoadTask?.cancel()
+    }
+    
+    func loadNearbyPharmaciesIfNeeded() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        
+        firstLoadTask = Task {
+            await loadNearbyPharmacies()
+        }
+    }
+    
+    func loadMore() async {
+        await loadNearbyPharmacies()
+    }
+    
+    func searchFurther() async {
+        switch radiusMeters.meterToKilometer {
+        case 0...10: radiusMeters *= 2
+        default: radiusMeters += 10
+        }
+        await loadNearbyPharmacies()
+    }
+    
+    func refresh() async {
+        await loadNearbyPharmacies(refresh: true)
+    }
+    
+    private func loadNearbyPharmacies(refresh: Bool = false) async {
+        getLocation()
+        guard let userCoordinate else {
+            loadingState.fail(LocationError.unableToDetermineLocation)
+            return
+        }
         
         loadingState.startLoading(refresh: refresh)
         defer { loadingState.stopLoading() }
@@ -41,7 +76,7 @@ class PharmaciesViewModel {
                 latitude: userCoordinate.latitude,
                 longitude: userCoordinate.longitude,
                 radiusMeters: radiusMeters,
-                limit: refresh ? nearbyPharmacies.count : loadingState.pagination.pageSize,
+                limit: refresh ? max(nearbyPharmacies.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
                 offset: refresh ? 0 : nearbyPharmacies.count
             )
             
@@ -61,7 +96,6 @@ class PharmaciesViewModel {
                     newNearbyPharmacies.count < loadingState.pagination.pageSize
                     ? true : false
             }
-            print("nearybyPharmacies: ", nearbyPharmacies.count)
             
         } catch {
             loadingState.fail(error)
@@ -69,23 +103,7 @@ class PharmaciesViewModel {
         }
     }
     
-    func loadMore() async {
-        await findNearbyPharmacies()
-    }
-    
-    func searchFurther() async {
-        switch radiusMeters.meterToKilometer {
-        case 0...10: radiusMeters *= 2
-        default: radiusMeters += 10
-        }
-        await findNearbyPharmacies()
-    }
-    
-    func refresh() async {
-        await findNearbyPharmacies(refresh: true)
-    }
-    
-    private func getLocation() async {
+    private func getLocation() {
         guard userCoordinate == nil else { return }
         
         locationService.requestPermission()

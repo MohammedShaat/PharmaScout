@@ -36,15 +36,15 @@ struct PatientTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce)
+                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce, searchRequestService: searchRequestService)
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
                 SearchScreen(drugService: drugService, searchRequestService: searchRequestService, authService: authService, locationService: locationService, pharmacySerivce: pharmacySerivce)
             }
             
-            Tab("Recent", image: tabImage(.recent), value: .recent) {
-                
+            Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {
+                RecentSearchesScreen(path: $vm.recentSearchsPath, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm)
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
@@ -65,7 +65,7 @@ struct PatientTabView: View {
             isSelected(tab) ? "homeSelected" : "home"
         case .search:
             isSelected(tab) ? "magnifyingglassSelected" : "magnifyingglass"
-        case .recent:
+        case .recentSearches:
             isSelected(tab) ? "historySelected" : "history"
         case .pharmacies:
             isSelected(tab) ? "locationPlusSelected" : "locationPlus"
