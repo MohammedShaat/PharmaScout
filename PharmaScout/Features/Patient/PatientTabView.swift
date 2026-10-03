@@ -62,15 +62,15 @@ struct PatientTabView: View {
     private func tabImage(_ tab: PatientTab) -> String {
         switch tab {
         case .home:
-            isSelected(tab) ? "homeSelected" : "home"
+            isSelected(tab) ? "home-fill" : "home"
         case .search:
-            isSelected(tab) ? "magnifyingglassSelected" : "magnifyingglass"
+            isSelected(tab) ? "magnifyingglass-plus-fill" : "magnifyingglass-plus"
         case .recentSearches:
-            isSelected(tab) ? "historySelected" : "history"
+            isSelected(tab) ? "history-thick" : "history"
         case .pharmacies:
-            isSelected(tab) ? "locationPlusSelected" : "locationPlus"
+            isSelected(tab) ? "pharmacy-fill" : "pharmacy"
         case .profile:
-            isSelected(tab) ? "profileSelected" : "profile"
+            isSelected(tab) ? "profile-fill" : "profile"
         }
     }
     

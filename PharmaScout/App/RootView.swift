@@ -43,6 +43,9 @@ struct RootView: View {
     var body: some View {
         Group {
             switch router.destination {
+            case .loading:
+                SessionLoadingScreen()
+                
             case .authentication:
                 WelcomeScreen(authSerivce: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
                 
@@ -54,10 +57,17 @@ struct RootView: View {
                 
             case .resetPassword:
                 ResetPasswordScreen(authSerivce: authService, router: router)
-
-            case .main:
+                
+            case .authStateError(let error):
+                AuthenticationStateErrorScreen(error: error)
+                
+            case .patient:
                 PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService)
+            
+            case .pharmacist:
+                PharmacistTabView(authService: authService)
             }
+            
         }
     }
 }

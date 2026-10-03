@@ -115,6 +115,18 @@ extension SupabaseManager {
                     static let timezone = "timezone"
                 }
             }
+            
+            enum PharmacyStaff {
+                static let name = "pharmacy_staff"
+                
+                enum Column {
+                    static let id = "id"
+                    static let userId = "user_id"
+                    static let pharmacyId = "pharmacy_id"
+                    static let role = "role"
+                    static let status = "status"
+                }
+            }
         }
         
         
@@ -186,6 +198,8 @@ extension SupabaseManager {
                 
                 enum Params {
                     static let searchId = "p_search_id"
+                    static let latitude = "latitude"
+                    static let longitude = "longitude"
                 }
             }
         }
