@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Inquiry: Codable, Identifiable {
+struct Inquiry: nonisolated Codable, Identifiable, Hashable {
     let id: String
     let genericName: String
     let drugFormulation: DrugFormulation
@@ -20,7 +20,7 @@ struct Inquiry: Codable, Identifiable {
     let respondedAt: Date?
 }
 
-enum InquiryResponse: String, Codable {
+enum InquiryResponse: String, Codable, CaseIterable {
     case available = "available"
     case unavailable = "unavailable"
     case substitute = "substitute"

@@ -10,12 +10,18 @@ import SwiftUI
 struct PharmacistTabView: View {
     private let authService: AuthService
     private let inquiryService: InquiryService
+    private let drugService: DrugService
     
     @State private var vm: PharmacistTabViewModel
     
-    init(authService: AuthService, inquiryService: InquiryService) {
+    init(
+        authService: AuthService,
+        inquiryService: InquiryService,
+        drugService: DrugService
+    ) {
         self.authService = authService
         self.inquiryService = inquiryService
+        self.drugService = drugService
         
         let viewModel = PharmacistTabViewModel(authService: authService)
         self._vm = State(wrappedValue: viewModel)
@@ -29,7 +35,7 @@ struct PharmacistTabView: View {
             
             if vm.isAuthorized {
                 Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
-                    InquiriesScreen(authService: authService, inquiryService: inquiryService)
+                    InquiriesScreen(authService: authService, inquiryService: inquiryService, drugService: drugService)
                 }
                 
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
@@ -71,6 +77,7 @@ struct PharmacistTabView: View {
 #Preview {
     PharmacistTabView(
         authService: MockAuthService.sample,
-        inquiryService: MockInquiryService.sample
+        inquiryService: MockInquiryService.sample,
+        drugService: MockDrugService.sample
     )
 }
