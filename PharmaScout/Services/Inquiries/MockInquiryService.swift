@@ -18,4 +18,14 @@ struct MockInquiryService: InquiryService {
         
         return Array(filteredInquiries)
     }
+    
+    func getInquiry(forId inquiryId: String) async throws -> Inquiry {
+        try? await Task.sleep(for: .seconds(2))
+        
+        return Inquiry.samples.randomElement()!
+    }
+    
+    func respondToInquiry(_ params: RespondToInquiryParams) async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
 }

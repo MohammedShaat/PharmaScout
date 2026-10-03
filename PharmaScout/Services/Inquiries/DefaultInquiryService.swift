@@ -26,4 +26,37 @@ struct DefaultInquiryService: InquiryService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func getInquiry(forId inquiryId: String) async throws -> Inquiry {
+        let getPharmacyInquiryFunc = SupabaseManager.Database.Functions.getPharmacyInquiry.self
+        let params = getPharmacyInquiryFunc.Params.self
+        
+        do {
+            let inquiry: Inquiry = try await supabase
+                .rpc(
+                    getPharmacyInquiryFunc.name,
+                    params: [params.inquiryId: inquiryId]
+                )
+                .execute()
+                .value
+            
+            return inquiry
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func respondToInquiry(_ params: RespondToInquiryParams) async throws {
+        let respondToInquiryFunc = SupabaseManager.Database.Functions.respondToPharmacyInquiry.self
+        
+        do {
+            try await supabase
+                .rpc(respondToInquiryFunc.name, params: params)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

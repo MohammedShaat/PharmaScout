@@ -9,4 +9,8 @@ import Foundation
 
 protocol InquiryService {
     func getInquiries(_ params: GetInquiriesParams) async throws -> [Inquiry]
+    
+    func getInquiry(forId inquiryId: String) async throws -> Inquiry
+    
+    func respondToInquiry(_ params: RespondToInquiryParams) async throws
 }

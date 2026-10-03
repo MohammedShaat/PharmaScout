@@ -127,6 +127,21 @@ extension SupabaseManager {
                     static let status = "status"
                 }
             }
+            
+            enum pharmacyInquiry {
+                static let name = "pharmacy_inquiry"
+                
+                enum Column {
+                    static let id = "id"
+                    static let drugFormulationId = "drug_formulation_id"
+                    static let pharmacyId = "pharmacy_id"
+                    static let status = "status"
+                    static let response = "response"
+                    static let substituteDrugFormulationId = "substitute_drug_formulation_id"
+                    static let createdAt = "created_at"
+                    static let respondedAt = "responded_at"
+                }
+            }
         }
         
         
@@ -207,8 +222,27 @@ extension SupabaseManager {
                 static let name = "get_pharmacy_inquiries"
                 
                 enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
                     static let limit = "p_limit"
                     static let offset = "p_offset"
+                }
+            }
+            
+            enum getPharmacyInquiry {
+                static let name = "get_pharmacy_inquiry"
+                
+                enum Params {
+                    static let inquiryId = "p_inquiry_id"
+                }
+            }
+            
+            enum respondToPharmacyInquiry {
+                static let name = "respond_to_pharmacy_inquiry"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                    static let response = "p_response"
+                    static let substituteDrugFormulationId = "p_substitute_drug_formulation_id"
                 }
             }
         }
