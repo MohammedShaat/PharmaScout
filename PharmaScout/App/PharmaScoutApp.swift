@@ -17,6 +17,7 @@ struct PharmaScoutApp: App {
     private let locationService: LocationService = DefaultLocationService()
     private let pharmacySerivce: PharmacyService = DefaultPharmacyService()
     private let directionsService: DirectionsService = DefaultDirectionsService()
+    private let inquiryService: InquiryService = DefaultInquiryService()
     
     @State private var router: AppRouter
     
@@ -28,14 +29,15 @@ struct PharmaScoutApp: App {
         WindowGroup {
             RootView(
                 router: router,
-                authService: DefaultAuthService(),
+                authService: authService,
                 googleAuthService: googleAuthService,
                 appleAuthService: appleAuthService,
                 drugService: drugService,
                 searchRequestService: searchRequestService,
                 locationService: locationService,
                 pharmacySerivce: pharmacySerivce,
-                directionsService: directionsService
+                directionsService: directionsService,
+                inquiryService: inquiryService
             )
             .onOpenURL { url in
                 Task {

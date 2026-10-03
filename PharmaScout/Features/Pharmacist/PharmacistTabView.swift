@@ -9,29 +9,36 @@ import SwiftUI
 
 struct PharmacistTabView: View {
     private let authService: AuthService
+    private let inquiryService: InquiryService
     
-    @State private var vm = PharmacistTabViewModel()
+    @State private var vm: PharmacistTabViewModel
     
-    init(authService: AuthService) {
+    init(authService: AuthService, inquiryService: InquiryService) {
         self.authService = authService
+        self.inquiryService = inquiryService
+        
+        let viewModel = PharmacistTabViewModel(authService: authService)
+        self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen()
+                PharmacistHomeScreen(authService: authService)
             }
             
-            Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
-                InquiriesScreen()
-            }
-            
-            Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                InquiriesScreen()
-            }
-            
-            Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
-                InquiriesScreen()
+            if vm.isAuthorized {
+                Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
+                    InquiriesScreen(authService: authService, inquiryService: inquiryService)
+                }
+                
+                Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
+                    
+                }
+                
+                Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
+                    
+                }
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
@@ -62,5 +69,8 @@ struct PharmacistTabView: View {
 }
 
 #Preview {
-    PharmacistTabView(authService: MockAuthService.sample)
+    PharmacistTabView(
+        authService: MockAuthService.sample,
+        inquiryService: MockInquiryService.sample
+    )
 }

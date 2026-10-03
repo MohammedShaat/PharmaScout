@@ -202,6 +202,15 @@ extension SupabaseManager {
                     static let longitude = "longitude"
                 }
             }
+            
+            enum getPharmacyInquiries {
+                static let name = "get_pharmacy_inquiries"
+                
+                enum Params {
+                    static let limit = "p_limit"
+                    static let offset = "p_offset"
+                }
+            }
         }
     }
 }

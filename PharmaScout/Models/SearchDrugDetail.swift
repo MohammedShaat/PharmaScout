@@ -18,7 +18,7 @@ struct SearchDrugDetail: Codable, Identifiable {
 struct SearchDrugResponse: Codable {
     let id: String
     let pharmacy: Pharmacy
-    let pharmacyResponse: PharmacyResponse
+    let pharmacyResponse: InquiryResponse
     let substituteGenericName: String?
     let substituteDrugFormulation: DrugFormulation?
 }
@@ -28,10 +28,4 @@ enum SearchDrugStatus: String, Codable {
     case pending = "pending"
     case fulfilled = "fulfilled"
     case unfulfilled = "unfulfilled"
-}
-
-enum PharmacyResponse: String, Codable {
-    case available = "available"
-    case unavailable = "unavailable"
-    case substitute = "substitute"
 }

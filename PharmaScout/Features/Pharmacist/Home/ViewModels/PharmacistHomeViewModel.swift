@@ -1,16 +1,15 @@
 //
-//  PharmacistTabViewModel.swift
+//  PharmacistHomeViewModel.swift
 //  PharmaScout
 //
-//  Created by Mohammed on 9/29/26.
+//  Created by Mohammed on 10/3/26.
 //
 
 import Foundation
 
 @Observable
-class PharmacistTabViewModel {
+class PharmacistHomeViewModel {
     private let authService: AuthService
-    var selectedTab: PharmacistTab = .home
     
     var isAuthorized: Bool {
         authService.authSession?.pharmacyStaff?.status == .approved
@@ -19,12 +18,4 @@ class PharmacistTabViewModel {
     init(authService: AuthService) {
         self.authService = authService
     }
-}
-
-enum PharmacistTab {
-    case home
-    case inquiries
-    case pharmacy
-    case analytics
-    case profile
 }
