@@ -13,4 +13,5 @@ enum AuthState {
     case authenticated
     case non
     case passwordReset
+    case failed(Error)
 }

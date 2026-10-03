@@ -12,6 +12,7 @@ struct MockAuthService: AuthService {
     let authState: AsyncStream<AuthState> = AsyncStream { continuation in
         continuation.yield(.authenticated)
     }
+    private(set) var authSession: AuthSession?
     
     func signUp(email: String, password: String, redirectTo url: URL?) async throws {}
     

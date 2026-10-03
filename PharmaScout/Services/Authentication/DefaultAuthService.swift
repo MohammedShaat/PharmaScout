@@ -13,8 +13,10 @@ class DefaultAuthService: AuthService {
     lazy var authState: AsyncStream<AuthState> = {
         authChangesStream()
     }()
+    private(set) var authSession: AuthSession?
 
-    private let auth = SupabaseManager.shared.client.auth
+    private let supabase = SupabaseManager.shared.client
+    private var auth: AuthClient { supabase.auth }
     private var passwordRecovery: Bool = false
     
     func signUp(email: String, password: String, redirectTo url: URL?) async throws {
@@ -88,6 +90,33 @@ class DefaultAuthService: AuthService {
             throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
+    
+    private func getPharmacyStaffIfAvailable(userId: String) async throws -> PharmacyStaff? {
+        let pharmacyStaffTable = SupabaseManager.Database.Table.PharmacyStaff.self
+        let columns = pharmacyStaffTable.Column
+        
+        do {
+            let pharmacyStaff: PharmacyStaff? = try await supabase.from(pharmacyStaffTable.name)
+                .select()
+                .equals(columns.userId, value: userId)
+                .maybeSingle()
+                .execute()
+                .value
+            
+            return pharmacyStaff
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    private func makeAuthSession(_ session: Session) async throws -> AuthSession {
+        let user = AppUser(from: session.user)
+        let pharmacyStaff = try await getPharmacyStaffIfAvailable(userId: user.id)
+        let role: UserRole = pharmacyStaff != nil ? .pharmacist : .patient
+        
+        return AuthSession(user: user, role: role, pharmacyStaff: pharmacyStaff)
+    }
 }
 
 extension DefaultAuthService {
@@ -96,34 +125,43 @@ extension DefaultAuthService {
             Task {
                 for await (event, session) in auth.authStateChanges {
                     switch event {
-                    case .initialSession:
-                        if session?.user != nil {
-                            continuation.yield(.authenticated)
-                        } else {
+                        
+                    // Start (authenticated or non-authenticated)
+                    case .initialSession, .signedIn:
+                        guard let session else {
+                            authSession = nil
                             continuation.yield(.non)
+                            continue
                         }
                         
-                    case .signedIn:
-                        if session?.user != nil {
+                        do {
+                            authSession = try await makeAuthSession(session)
+                            
                             if passwordRecovery {
                                 continuation.yield(.passwordReset)
                                 passwordRecovery = false
                             } else {
                                 continuation.yield(.authenticated)
                             }
+                            
+                        } catch {
+                            authSession = nil
+                            continuation.yield(.failed(error))
                         }
                         
-                    case .signedOut:
-                        continuation.yield(.non)
                         
+                    // Password reset
                     case .passwordRecovery:
                         continuation.yield(.passwordReset)
+
+                    // Sign out
+                    case .signedOut:
+                        authSession = nil
+                        continuation.yield(.non)
                         
                     default:
                         continue
                     }
-                    
-                    print("authState: ", event)
                 }
             }
         }

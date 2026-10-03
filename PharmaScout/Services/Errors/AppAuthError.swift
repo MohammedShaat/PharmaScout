@@ -19,6 +19,7 @@ enum AppAuthError: AppError {
     case invalidCredentials
     case overRequestRateLimit
     case samePassword
+    case sessionMissing
     case unknown(Error)
 
     var errorDescription: String {
@@ -34,6 +35,7 @@ enum AppAuthError: AppError {
         case .invalidCredentials: "The email or password you entered is incorrect."
         case .overRequestRateLimit: "Too many attempts. Please wait a moment and try again."
         case .samePassword: "Your new password must be different from your current password."
+        case .sessionMissing: "We couldn't restore your session. Please sign in again."
         case .unknown: "Something went wrong. Please try again."
         }
     }

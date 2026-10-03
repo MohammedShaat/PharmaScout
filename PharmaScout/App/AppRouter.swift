@@ -12,7 +12,8 @@ import GoogleSignIn
 @Observable
 class AppRouter {
     private let authService: AuthService
-    private(set) var destination: Destination = .authentication
+    private(set) var destination: Destination = .loading
+    private(set) var authSession: AuthSession?
     
     init(authService: AuthService) {
         self.authService = authService
@@ -42,19 +43,34 @@ class AppRouter {
     
     func subscribeToAuthStateChanges() async {
         for await state in authService.authState {
+            
+            authSession = authService.authSession
+
             switch state {
             case .authenticated:
-                destination = .main
+                switch authSession?.role {
+                case .patient:
+                    destination = .patient
+                case .pharmacist:
+                    destination = .pharmacist
+                case nil:
+                    destination = .authStateError(AppAuthError.sessionMissing)
+                }
+                
             case .non:
                 destination = .authentication
+                
             case .passwordReset:
                 destination = .resetPassword
+                
+            case .failed(let error):
+                destination = .authStateError(error)
             }
         }
     }
     
     func onPasswordResetSucceeed() {
-        destination = .main
+        destination = .patient
     }
     
     func navigateToSignIn() {
@@ -63,8 +79,11 @@ class AppRouter {
 }
 
 enum Destination {
+    case loading
     case authentication
     case signIn
     case resetPassword
-    case main
+    case authStateError(Error)
+    case patient
+    case pharmacist
 }
