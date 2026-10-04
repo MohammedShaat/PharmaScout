@@ -225,6 +225,7 @@ extension SupabaseManager {
                     static let pharmacyId = "p_pharmacy_id"
                     static let limit = "p_limit"
                     static let offset = "p_offset"
+                    static let statusFilter = "p_status_filter"
                 }
             }
             

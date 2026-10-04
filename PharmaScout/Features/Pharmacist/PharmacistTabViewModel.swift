@@ -11,6 +11,7 @@ import Foundation
 class PharmacistTabViewModel {
     private let authService: AuthService
     var selectedTab: PharmacistTab = .home
+    var inquiriesPath: [Inquiry] = []
     
     var isAuthorized: Bool {
         authService.authSession?.pharmacyStaff?.status == .approved
@@ -18,6 +19,15 @@ class PharmacistTabViewModel {
     
     init(authService: AuthService) {
         self.authService = authService
+    }
+    
+    func navigateToInquiriesTab() {
+        selectedTab = .inquiries
+    }
+    
+    func navigateToInquiryDetailScreen(_ inquiry: Inquiry) {
+        inquiriesPath.append(inquiry)
+        navigateToInquiriesTab()
     }
 }
 

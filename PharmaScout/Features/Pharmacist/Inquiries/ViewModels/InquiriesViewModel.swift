@@ -71,7 +71,6 @@ class InquiriesViewModel {
                     loadingState.pagination.nextPage()
                 }
             }
-            print("inquiries: ", inquiries.count)
             
         } catch {
             loadingState.fail(error)

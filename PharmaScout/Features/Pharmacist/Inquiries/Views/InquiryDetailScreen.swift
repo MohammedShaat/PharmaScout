@@ -126,7 +126,7 @@ struct InquiryDetailScreen: View {
             // MARK: - Response button
             PrimaryButtonView(
                 title: "Respond",
-                isDisabled: !vm.enableResponseButton,
+                isDisabled: !vm.responseIsValid,
                 isLoading: vm.responseLoadingState.status != .idle) {
                     responseTask?.cancel()
                     responseTask = Task {

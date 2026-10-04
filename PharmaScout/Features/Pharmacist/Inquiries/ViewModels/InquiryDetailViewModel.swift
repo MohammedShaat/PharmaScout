@@ -15,7 +15,7 @@ class InquiryDetailViewModel {
     private(set) var refreshLoadingState = LoadingState()
     
     var canRespond: Bool { inquiry.status == .pending }
-    var enableResponseButton: Bool {
+    var responseIsValid: Bool {
         canRespond && response != nil && !(response == .substitute && substituteSelectedDrug == nil)
     }
     var response: InquiryResponse?
@@ -46,8 +46,11 @@ class InquiryDetailViewModel {
     
     func sendResponse() async {
         guard let response,
-              let drugFormulationId = substituteSelectedDrug?.formulation.id
-        else { return }
+                responseIsValid
+        else {
+            print("Response is in valid")
+            return
+        }
         
         responseLoadingState.startLoading(refresh: true)
         defer { responseLoadingState.stopLoading() }
@@ -56,7 +59,7 @@ class InquiryDetailViewModel {
             let params = RespondToInquiryParams(
                 inquiryId: inquiry.id,
                 response: response,
-                substituteDrugFormulationId: drugFormulationId
+                substituteDrugFormulationId: substituteSelectedDrug?.formulation.id
             )
             try await inquiryService.respondToInquiry(params)
             

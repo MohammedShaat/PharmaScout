@@ -30,12 +30,12 @@ struct PharmacistTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen(authService: authService)
+                PharmacistHomeScreen(pharmacistTabViewModel: vm, authService: authService, inquiryService: inquiryService)
             }
             
             if vm.isAuthorized {
                 Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
-                    InquiriesScreen(authService: authService, inquiryService: inquiryService, drugService: drugService)
+                    InquiriesScreen(path: $vm.inquiriesPath, authService: authService, inquiryService: inquiryService, drugService: drugService)
                 }
                 
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {

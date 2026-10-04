@@ -55,6 +55,10 @@ extension PatientTabViewModel {
     static let sample = PatientTabViewModel()
 }
 
+extension PharmacistTabViewModel {
+    static let sample = PharmacistTabViewModel(authService: MockAuthService.sample)
+}
+
 extension AppRouter {
     static let sample = AppRouter(authService: MockAuthService.sample)
 }

@@ -13,4 +13,8 @@ protocol InquiryService {
     func getInquiry(forId inquiryId: String) async throws -> Inquiry
     
     func respondToInquiry(_ params: RespondToInquiryParams) async throws
+    
+    func getNumberOfAllTodaysInquiries(for pharmacyId: String) async throws -> Int
+    
+    func getNumberOfAnsweredTodaysInquiries(for pharmacyId: String) async throws -> Int
 }

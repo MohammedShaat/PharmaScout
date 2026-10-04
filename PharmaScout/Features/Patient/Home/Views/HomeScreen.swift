@@ -57,30 +57,7 @@ struct HomeScreen: View {
     }
     
     private var headerSection: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
-                Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
-                    .foregroundStyle(.theme.textSecondary)
-                
-                HStack(spacing: 0) {
-                    Text("Good \(Date.now.timeOfDay)")
-                    
-                    if let firstName = vm.user?.firstName {
-                        Text(", \(firstName)")
-                    }
-                }
-                .lineLimit(1)
-                .foregroundStyle(.theme.textPrimary)
-                .font(.title3)
-                .fontWeight(.bold)
-            }
-            
-            Spacer()
-            
-            BellView(hasUnreadNotifications: vm.hasUnreadNotifications)
-                .clickable()
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        GreetingHeaderView(user: vm.user, hasUnreadNotifications: vm.hasUnreadNotifications)
     }
     
     private var searchSection: some View {
