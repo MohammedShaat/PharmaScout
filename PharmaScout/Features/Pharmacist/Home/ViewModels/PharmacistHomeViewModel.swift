@@ -42,16 +42,16 @@ class PharmacistHomeViewModel {
         hasStarted = true
         
         firstLoadTask = Task {
-            async let pendingInquiries = await loadPendingInquiries()
-            async let numberOfTodaysInquiries = await getNumberOfTodaysInquiries()
+            async let pendingInquiries = loadPendingInquiries()
+            async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
             
             _ = await (pendingInquiries, numberOfTodaysInquiries)
         }
     }
     
     func refresh() async {
-        async let pendingInquiries = await loadPendingInquiries()
-        async let numberOfTodaysInquiries = await getNumberOfTodaysInquiries()
+        async let pendingInquiries = loadPendingInquiries()
+        async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
         
         _ = await (pendingInquiries, numberOfTodaysInquiries)
     }
@@ -94,17 +94,14 @@ class PharmacistHomeViewModel {
         defer { todaysInquiriesCountLoadingState.stopLoading() }
         
         do {
-            allTodaysInquiriesCount = try await inquiryService.getNumberOfAllTodaysInquiries(for: pharmacyId)
+            async let getAllTodaysInquiries = inquiryService.getNumberOfAllTodaysInquiries(for: pharmacyId)
+            async let getAnsweredTodaysInquiries = inquiryService.getNumberOfAnsweredTodaysInquiries(for: pharmacyId)
+            
+            (allTodaysInquiriesCount, answeredTodaysInquiriesCount) = try await (getAllTodaysInquiries, getAnsweredTodaysInquiries)
+            
         } catch {
             todaysInquiriesCountLoadingState.fail(error)
-            print("Failed to get number of all toay's inquires\n", error)
-        }
-        
-        do {
-            answeredTodaysInquiriesCount = try await inquiryService.getNumberOfAnsweredTodaysInquiries(for: pharmacyId)
-        } catch {
-            todaysInquiriesCountLoadingState.fail(error)
-            print("Failed to get number of answered toay's inquires\n", error)
+            print("Failed to get number of toay's inquires\n", error)
         }
     }
 }

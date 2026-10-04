@@ -48,6 +48,7 @@ struct MockInquiryService: InquiryService {
         return Inquiry.samples.filter {
             $0.createdAt <= startOfDay
             && $0.createdAt < Calendar.current.date(byAdding: .day, value: 1, to: startOfDay) ?? .now
+            && !(onlyAnswered && $0.status != .answered)
         }
         .count
     }

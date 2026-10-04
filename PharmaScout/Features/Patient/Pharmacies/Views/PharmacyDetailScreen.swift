@@ -33,11 +33,8 @@ struct PharmacyDetailScreen: View {
             .padding(DesignSystem.Spacing.xLarge)
         }
         .customNavTitle(vm.pharmacy.name)
-        .taskOnFirstAppear {
-            async let contact = await vm.loadContact()
-            async let workingHours = await vm.loadWorkingHours()
-            
-            _ = await (contact, workingHours)
+        .onAppear {
+            vm.loadContactAndWorkingHoursIfNeeded()
         }
     }
     
