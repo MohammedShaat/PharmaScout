@@ -12,11 +12,11 @@ struct PharmaciesScreen: View {
     private let directionsService: DirectionsService
     
     @State private var vm: PharmaciesViewModel
-    var path: Binding<[PharmacyDestination]>
+    var path: Binding<NavigationPath>
     @State private var searchFurtherTask: Task<Void, Never>? = nil
     
     init(
-        path: Binding<[PharmacyDestination]>,
+        path: Binding<NavigationPath>,
         pharmacyService: PharmacyService,
         locationService: LocationService,
         directionsService: DirectionsService
@@ -97,7 +97,7 @@ struct PharmaciesScreen: View {
 }
 
 #Preview {
-    @State @Previewable var path: [PharmacyDestination] = []
+    @State @Previewable var path = NavigationPath()
     
     PharmaciesScreen(
         path: $path,

@@ -58,21 +58,23 @@ class HomeViewModel {
         
         firstLoadTask = Task {
             getLocation()
-            async let loadUserData = await loadUserData()
-            async let loadActiveSearches = await loadActiveSearches()
-            async let loadRecentSearches = await loadRecentSearches()
-            async let loadNearbyPharmacies = await loadNearbyPharmacies()
+            async let loadUserData = loadUserData()
+            async let loadActiveSearches = loadActiveSearches()
+            async let loadRecentSearches = loadRecentSearches()
+            async let loadNearbyPharmacies = loadNearbyPharmacies()
             
             _ = await (loadUserData, loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
         }
     }
     
     func refresh() async {
-        async let nearbyPharmacies = await loadNearbyPharmacies(refresh: true)
-        async let recentSearches = await loadRecentSearches(refresh: true)
-        async let activeSearches = await loadActiveSearches(refresh: true)
+        getLocation()
+        async let loadUserData = loadUserData()
+        async let loadActiveSearches = loadActiveSearches()
+        async let loadRecentSearches = loadRecentSearches()
+        async let loadNearbyPharmacies = loadNearbyPharmacies()
         
-        _ = await (nearbyPharmacies, recentSearches, activeSearches)
+        _ = await (loadUserData, loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
     }
     
     private func loadUserData() async {

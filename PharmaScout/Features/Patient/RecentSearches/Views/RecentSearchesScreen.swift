@@ -12,12 +12,12 @@ struct RecentSearchesScreen: View {
     private let locationService: LocationService
     private let patientTabViewModel: PatientTabViewModel
     
-    var path: Binding<[Search]>
+    var path: Binding<NavigationPath>
     @State private var vm: RecentSearchesViewModel
     @State private var searchesTask: Task<Void, Never>?
     
     init(
-        path: Binding<[Search]>,
+        path: Binding<NavigationPath>,
         searchRequestService: SearchRequestService,
         locationService: LocationService,
         patientTabViewModel: PatientTabViewModel
@@ -100,7 +100,7 @@ struct RecentSearchesScreen: View {
 }
 
 #Preview {
-    @State @Previewable var path: [Search] = []
+    @State @Previewable var path = NavigationPath()
     
     RecentSearchesScreen(
         path: $path,

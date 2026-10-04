@@ -18,12 +18,31 @@ class PharmacyDetailViewModel {
     private(set) var contactLoadingState = LoadingState()
     private(set) var workingHoursLoadingState = LoadingState()
     
+    private var hasStarted: Bool = false
+    private var firstLoadTask: Task<Void, Never>?
+    
     init(pharmacyService: PharmacyService, pharmacy: Pharmacy) {
         self.pharmacyService = pharmacyService
         self.pharmacy = pharmacy
     }
     
-    func loadContact() async {
+    deinit {
+        firstLoadTask?.cancel()
+    }
+    
+    func loadContactAndWorkingHoursIfNeeded() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        
+        firstLoadTask = Task {
+            async let loadContact = loadContact()
+            async let loadWorkingHours = loadWorkingHours()
+            
+            _ = await (loadContact, loadWorkingHours)
+        }
+    }
+    
+    private func loadContact() async {
         contactLoadingState.startLoading()
         defer { contactLoadingState.stopLoading() }
         
@@ -36,7 +55,7 @@ class PharmacyDetailViewModel {
         }
     }
     
-    func loadWorkingHours() async {
+    private func loadWorkingHours() async {
         workingHoursLoadingState.startLoading()
         defer { workingHoursLoadingState.stopLoading() }
         

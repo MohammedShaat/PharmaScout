@@ -11,12 +11,12 @@ struct InquiriesScreen: View {
     private let inquiryService: InquiryService
     private let drugService: DrugService
     
-    private var path: Binding<[Inquiry]>
+    private var path: Binding<NavigationPath>
     @State private var vm: InquiriesViewModel
     @State private var loadMoreTask: Task<Void, Never>?
     
     init(
-        path: Binding<[Inquiry]>,
+        path: Binding<NavigationPath>,
         authService: AuthService,
         inquiryService: InquiryService,
         drugService: DrugService
@@ -84,7 +84,7 @@ struct InquiriesScreen: View {
 }
 
 #Preview {
-    @State @Previewable var path: [Inquiry] = []
+    @State @Previewable var path = NavigationPath()
     
     InquiriesScreen(
         path: $path,

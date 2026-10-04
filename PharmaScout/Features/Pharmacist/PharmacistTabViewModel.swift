@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import SwiftUI
 
 @Observable
 class PharmacistTabViewModel {
     private let authService: AuthService
     var selectedTab: PharmacistTab = .home
-    var inquiriesPath: [Inquiry] = []
+    var inquiriesPath = NavigationPath()
     
     var isAuthorized: Bool {
         authService.authSession?.pharmacyStaff?.status == .approved
