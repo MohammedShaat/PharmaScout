@@ -246,6 +246,32 @@ extension SupabaseManager {
                     static let substituteDrugFormulationId = "p_substitute_drug_formulation_id"
                 }
             }
+            
+            enum getPharmacyDetails {
+                static let name = "get_pharmacy_details"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                    static let latitude = "p_latitude"
+                    static let longitude = "p_longitude"
+                }
+            }
+            
+            enum getPharmacyStaffMemberByUserId {
+                static let name = "get_pharmacy_staff_member_by_user_id"
+                
+                enum Params {
+                    static let userId = "p_user_id"
+                }
+            }
+            
+            enum getPharmacyStaff {
+                static let name = "get_pharmacy_staff"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                }
+            }
         }
     }
 }

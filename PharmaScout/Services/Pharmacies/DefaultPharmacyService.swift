@@ -93,4 +93,41 @@ struct DefaultPharmacyService: PharmacyService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func getPharmacy(_ params: GetPharmacyDetailsParams) async throws -> Pharmacy {
+        let getPharmacyDetailsFunc = SupabaseManager.Database.Functions.getPharmacyDetails.self
+        
+        do {
+            let pharmacy: Pharmacy = try await supabase
+                .rpc(getPharmacyDetailsFunc.name, params: params)
+                .single()
+                .execute()
+                .value
+            
+            return pharmacy
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getStaff(for pharmacyId: String) async throws -> [PharmacyStaffMember] {
+        let getPharmacyStaffFunc = SupabaseManager.Database.Functions.getPharmacyStaff.self
+        let params = getPharmacyStaffFunc.Params.self
+        
+        do {
+            let staff: [PharmacyStaffMember] = try await supabase
+                .rpc(
+                    getPharmacyStaffFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .execute()
+                .value
+            
+            return staff
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

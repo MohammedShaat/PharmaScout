@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Pharmacy: Codable, Identifiable, Hashable {
+struct Pharmacy: nonisolated Codable, Identifiable, Hashable {
     let id: String
     let name: String
     let latitude: Double

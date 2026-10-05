@@ -24,11 +24,11 @@ struct PharmacyDetailScreen: View {
             VStack(spacing: DesignSystem.Spacing.large) {
                 seeMap
 
-                addressAndDistance
+                PharmacyAddressAndDistanceView(pharmacy: vm.pharmacy)
                 
-                contact
+                PharmacyContactView(contacts: vm.contacts, loadingState: vm.contactLoadingState)
                 
-                workingHours
+                PharmacyWorkingHoursView(workingHours: vm.workingHours, loadingState: vm.workingHoursLoadingState)
             }
             .padding(DesignSystem.Spacing.xLarge)
         }
@@ -44,63 +44,6 @@ struct PharmacyDetailScreen: View {
                 Text("See location on map")
                 Image(systemName: "globe")
             }
-        }
-    }
-    
-    private var addressAndDistance: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            HStack {
-                Text(vm.pharmacy.address)
-                Spacer()
-                Text(vm.pharmacy.distanceMeters.meterToKilometer.formatted(.number.precision(.fractionLength(2))))
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    
-    @ViewBuilder
-    private var contact: some View {
-        LoadingContentView(
-            LoadingState: vm.contactLoadingState,
-            isEmpty: vm.contacts.isEmpty,
-            emptyMessage: "There is no contact info"
-        ) {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                ForEach(vm.contacts) { contact in
-                    HStack {
-                        Text("\(contact.title) : ")
-                        Text(contact.value)
-                    }
-                    .background(.gray.opacity(0.2))
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-    
-    private var workingHours: some View {
-        LoadingContentView(
-            LoadingState: vm.workingHoursLoadingState,
-            isEmpty: vm.workingHours.isEmpty,
-            emptyMessage: "There is no working hours info"
-        ) {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                ForEach(vm.workingHours) { workinghour in
-                    VStack {
-                        Text("\(workinghour.day)")
-                        HStack {
-                            Text("Opens at: ")
-                            Text(workinghour.opensAt.description)
-                        }
-                        HStack {
-                            Text("Closes at: ")
-                            Text(workinghour.closesAt.description)
-                        }
-                    }
-                    .background(.gray.opacity(0.2))
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 }

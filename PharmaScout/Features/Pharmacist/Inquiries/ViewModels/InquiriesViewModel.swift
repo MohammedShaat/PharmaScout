@@ -45,14 +45,15 @@ class InquiriesViewModel {
     }
     
     private func loadInquiries(refresh: Bool = false) async {
-        loadingState.startLoading(refresh: refresh)
-        defer { loadingState.stopLoading() }
-        
         guard let pharmacyId = authService.authSession?.pharmacyStaff?.pharmacyId else {
             loadingState.fail(PharmacyStaffError.notFound)
             print("No pharmacy id")
             return
         }
+
+        loadingState.startLoading(refresh: refresh)
+        defer { loadingState.stopLoading() }
+        
         
         do {
             let params = GetInquiriesParams(
