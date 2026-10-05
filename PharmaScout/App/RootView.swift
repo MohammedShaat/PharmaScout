@@ -17,6 +17,7 @@ struct RootView: View {
     private let locationService: LocationService
     private let pharmacySerivce: PharmacyService
     private let directionsService: DirectionsService
+    private let inquiryService: InquiryService
     
     init(
         router: AppRouter,
@@ -27,7 +28,8 @@ struct RootView: View {
         searchRequestService: SearchRequestService,
         locationService: LocationService,
         pharmacySerivce: PharmacyService,
-        directionsService: DirectionsService
+        directionsService: DirectionsService,
+        inquiryService: InquiryService
     ) {
         self.router = router
         self.authService = authService
@@ -38,6 +40,7 @@ struct RootView: View {
         self.locationService = locationService
         self.pharmacySerivce = pharmacySerivce
         self.directionsService = directionsService
+        self.inquiryService = inquiryService
     }
     
     var body: some View {
@@ -65,7 +68,7 @@ struct RootView: View {
                 PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService)
             
             case .pharmacist:
-                PharmacistTabView(authService: authService)
+                PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService)
             }
             
         }
@@ -86,7 +89,8 @@ struct RootView: View {
         searchRequestService: MockSearchRequestService.sample,
         locationService: MockLocationService.sample,
         pharmacySerivce: MockPharmacyService.sample,
-        directionsService: MockDirectionsSrevice.sample
+        directionsService: MockDirectionsSrevice.sample,
+        inquiryService: MockInquiryService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

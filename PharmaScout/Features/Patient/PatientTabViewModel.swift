@@ -6,12 +6,13 @@
 //
 
 import Foundation
+import SwiftUI
 
 @Observable
 class PatientTabViewModel {
     var selectedTab: PatientTab = .home
-    var pharmacyPath: [PharmacyDestination] = []
-    var recentSearchsPath: [Search] = []
+    var pharmacyPath = NavigationPath()
+    var recentSearchsPath = NavigationPath()
     
     func navigateToSearchTab() {
         selectedTab = .search
@@ -22,7 +23,7 @@ class PatientTabViewModel {
     }
     
     func navigateToPharmacyDetailScreen(for pharmacy: Pharmacy) {
-        pharmacyPath.append(.details(pharmacy))
+        pharmacyPath.append(PharmacyDestination.details(pharmacy))
         navigateToPharmaciesTab()
     }
     

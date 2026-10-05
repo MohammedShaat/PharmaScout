@@ -39,6 +39,10 @@ extension MockDirectionsSrevice {
     static let sample = MockDirectionsSrevice()
 }
 
+extension MockInquiryService {
+    static let sample = MockInquiryService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,
@@ -49,6 +53,10 @@ extension SignUpViewModel {
 
 extension PatientTabViewModel {
     static let sample = PatientTabViewModel()
+}
+
+extension PharmacistTabViewModel {
+    static let sample = PharmacistTabViewModel(authService: MockAuthService.sample)
 }
 
 extension AppRouter {

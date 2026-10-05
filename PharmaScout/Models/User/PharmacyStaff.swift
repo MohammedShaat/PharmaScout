@@ -9,7 +9,7 @@ import Foundation
 
 struct PharmacyStaff: Codable {
     let id: String
-    let pharmacyId: String?
+    let pharmacyId: String
     let role: PharmacyStaffRole
     let status: PharmacyStaffStatus
 }

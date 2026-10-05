@@ -9,29 +9,42 @@ import SwiftUI
 
 struct PharmacistTabView: View {
     private let authService: AuthService
+    private let inquiryService: InquiryService
+    private let drugService: DrugService
     
-    @State private var vm = PharmacistTabViewModel()
+    @State private var vm: PharmacistTabViewModel
     
-    init(authService: AuthService) {
+    init(
+        authService: AuthService,
+        inquiryService: InquiryService,
+        drugService: DrugService
+    ) {
         self.authService = authService
+        self.inquiryService = inquiryService
+        self.drugService = drugService
+        
+        let viewModel = PharmacistTabViewModel(authService: authService)
+        self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen()
+                PharmacistHomeScreen(pharmacistTabViewModel: vm, authService: authService, inquiryService: inquiryService)
             }
             
-            Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
-                InquiriesScreen()
-            }
-            
-            Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                InquiriesScreen()
-            }
-            
-            Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
-                InquiriesScreen()
+            if vm.isAuthorized {
+                Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
+                    InquiriesScreen(path: $vm.inquiriesPath, authService: authService, inquiryService: inquiryService, drugService: drugService)
+                }
+                
+                Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
+                    
+                }
+                
+                Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
+                    
+                }
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
@@ -62,5 +75,9 @@ struct PharmacistTabView: View {
 }
 
 #Preview {
-    PharmacistTabView(authService: MockAuthService.sample)
+    PharmacistTabView(
+        authService: MockAuthService.sample,
+        inquiryService: MockInquiryService.sample,
+        drugService: MockDrugService.sample
+    )
 }

@@ -22,19 +22,16 @@ class HomeViewModel {
     
     private var locationCoordinate: Coordinate?
     var locationError: AppError?
-    private(set) var nearbyPharmaciesLoadingState: LoadingState = .init(pageSize: AppConstants.Network.pageSize)
+    private(set) var nearbyPharmaciesLoadingState: LoadingState = .init(pageSize: 3)
     
-    private let nearbyPharmaciesLimit: Int = 3
     private(set) var radiusMeters: Double = AppConstants.Search.minBrowseDistanceMeters
     private let maxRadiusMeters: Double = AppConstants.Search.maxBrowseDistanceMeters
     
     private(set) var recentSearches: [Search] = []
-    private(set) var recentSearchesloadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
-    private let recentSearchesLimit: Int = 3
+    private(set) var recentSearchesloadingState = LoadingState(pageSize: 3)
     
     private(set) var activeSearches: [Search] = []
-    private(set) var activeSearchesloadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
-    private let activeSearchesLimit: Int = 2
+    private(set) var activeSearchesloadingState = LoadingState(pageSize: 2)
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
@@ -61,19 +58,23 @@ class HomeViewModel {
         
         firstLoadTask = Task {
             getLocation()
-            async let loadUserData = await loadUserData()
-            async let loadActiveSearches = await loadActiveSearches()
-            async let loadRecentSearches = await loadRecentSearches()
-            async let loadNearbyPharmacies = await loadNearbyPharmacies()
+            async let loadUserData = loadUserData()
+            async let loadActiveSearches = loadActiveSearches()
+            async let loadRecentSearches = loadRecentSearches()
+            async let loadNearbyPharmacies = loadNearbyPharmacies()
             
             _ = await (loadUserData, loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
         }
     }
     
     func refresh() async {
-        await loadNearbyPharmacies(refresh: true)
-        await loadRecentSearches(refresh: true)
-        await loadActiveSearches(refresh: true)
+        getLocation()
+        async let loadUserData = loadUserData()
+        async let loadActiveSearches = loadActiveSearches()
+        async let loadRecentSearches = loadRecentSearches()
+        async let loadNearbyPharmacies = loadNearbyPharmacies()
+        
+        _ = await (loadUserData, loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
     }
     
     private func loadUserData() async {
@@ -102,13 +103,15 @@ class HomeViewModel {
         
         do {
             var keepSearching = refresh
-            while (nearbyPharmacies.count < nearbyPharmaciesLimit && radiusMeters <= maxRadiusMeters)
-            || keepSearching {
+            let limit = nearbyPharmaciesLoadingState.pagination.pageSize
+            
+            while (nearbyPharmacies.count < limit && radiusMeters <= maxRadiusMeters)
+                    || keepSearching {
                 let params = FindNearbyPharmaciesParams(
                     latitude: locationCoordinate.latitude,
                     longitude: locationCoordinate.longitude,
                     radiusMeters: radiusMeters,
-                    limit: nearbyPharmaciesLimit,
+                    limit: limit,
                     offset: refresh ? 0 : nearbyPharmacies.count
                 )
                 
@@ -116,14 +119,14 @@ class HomeViewModel {
                 
                 if refresh {
                     nearbyPharmacies = newPharmacies
-                    keepSearching = nearbyPharmacies.count < nearbyPharmaciesLimit
+                    keepSearching = nearbyPharmacies.count < limit
                 } else {
                     nearbyPharmacies.append(
-                        contentsOf: newPharmacies.prefix(nearbyPharmaciesLimit - nearbyPharmacies.count)
+                        contentsOf: newPharmacies.prefix(limit - nearbyPharmacies.count)
                     )
                 }
                 
-                if nearbyPharmacies.count < nearbyPharmaciesLimit {
+                if nearbyPharmacies.count < limit {
                     expandRadius()
                 }
             }
@@ -140,21 +143,11 @@ class HomeViewModel {
         
         do {
             let params = GetSearchesParams(
-                limit: recentSearchesLimit,
+                limit: recentSearchesloadingState.pagination.pageSize,
                 offset: 0,
                 filter: .nonPending
             )
-            let newSearchs = try await searchRequestService.getSearches(params)
-            
-            if refresh {
-                recentSearches = newSearchs
-            } else {
-                recentSearches.append(contentsOf: newSearchs)
-            }
-
-            if newSearchs.isNotEmpty {
-                recentSearchesloadingState.pagination.nextPage()
-            }
+            recentSearches = try await searchRequestService.getSearches(params)
             
         } catch {
             recentSearchesloadingState.fail(error)
@@ -168,21 +161,11 @@ class HomeViewModel {
         
         do {
             let params = GetSearchesParams(
-                limit: recentSearchesLimit,
+                limit: activeSearchesloadingState.pagination.pageSize,
                 offset: 0,
                 filter: .pending
             )
-            let newSearchs = try await searchRequestService.getSearches(params)
-            
-            if refresh {
-                activeSearches = newSearchs
-            } else {
-                activeSearches.append(contentsOf: newSearchs)
-            }
-
-            if newSearchs.isNotEmpty {
-                activeSearchesloadingState.pagination.nextPage()
-            }
+            activeSearches = try await searchRequestService.getSearches(params)
             
         } catch {
             activeSearchesloadingState.fail(error)

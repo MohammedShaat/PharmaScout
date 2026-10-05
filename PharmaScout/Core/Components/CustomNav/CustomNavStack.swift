@@ -7,17 +7,17 @@
 
 import SwiftUI
 
-struct CustomNavStack<Content: View, H: Hashable>: View {
+struct CustomNavStack<Content: View>: View {
     private let content: Content
-    private let path: Binding<[H]>?
+    private let path: Binding<NavigationPath>?
     @State private var defaultPath = NavigationPath()
     
-    init(path: Binding<[H]>, @ViewBuilder contet: () -> Content) {
+    init(path: Binding<NavigationPath>, @ViewBuilder contet: () -> Content) {
         self.path = path
         self.content = contet()
     }
     
-    init(@ViewBuilder contet: () -> Content) where H == String {
+    init(@ViewBuilder contet: () -> Content) {
         self.path = nil
         self.content = contet()
     }

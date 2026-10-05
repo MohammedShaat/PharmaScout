@@ -12,7 +12,11 @@ struct MockAuthService: AuthService {
     let authState: AsyncStream<AuthState> = AsyncStream { continuation in
         continuation.yield(.authenticated)
     }
-    private(set) var authSession: AuthSession?
+    let authSession: AuthSession? = {
+        let user = AppUser(id: "1", fullName: "Mohammed Shaat", email: "mohammed@email.com")
+        let pharmacyStaff = PharmacyStaff(id: "1", pharmacyId: Pharmacy.samples[0].id, role: .owner, status: .approved)
+        return AuthSession(user: user, role: .pharmacist, pharmacyStaff: pharmacyStaff)
+    }()
     
     func signUp(email: String, password: String, redirectTo url: URL?) async throws {}
     

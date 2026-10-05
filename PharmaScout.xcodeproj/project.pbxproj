@@ -32,6 +32,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5D1EF6DD30728A9300223C43 /* GazaLocation.gpx */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = GazaLocation.gpx; path = PharmaScout/PreviewAssets/GazaLocation.gpx; sourceTree = "<group>"; };
 		5D5D0124303F1BC900B95EFC /* PharmaScout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PharmaScout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D5D0131303F1BC900B95EFC /* PharmaScoutTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PharmaScoutTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5D5D013B303F1BC900B95EFC /* PharmaScoutUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PharmaScoutUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,6 +102,7 @@
 		5D5D011B303F1BC900B95EFC = {
 			isa = PBXGroup;
 			children = (
+				5D1EF6DD30728A9300223C43 /* GazaLocation.gpx */,
 				5D8809A7306A6D630083FD13 /* ActiveSearchesView.swift */,
 				5D8809A330693F000083FD13 /* SearchDrugDetail+Samples.swift */,
 				5D5D0126303F1BC900B95EFC /* PharmaScout */,
@@ -202,7 +204,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2660;
-				LastUpgradeCheck = 2660;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					5D5D0123303F1BC900B95EFC = {
 						CreatedOnToolsVersion = 26.6;
@@ -364,6 +366,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -420,6 +423,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
