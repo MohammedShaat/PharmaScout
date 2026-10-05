@@ -1,5 +1,5 @@
 //
-//  PharmacyStaff.swift
+//  PharmacyStaffMember.swift
 //  PharmaScout
 //
 //  Created by Mohammed on 9/29/26.
@@ -7,8 +7,9 @@
 
 import Foundation
 
-struct PharmacyStaff: Codable {
+struct PharmacyStaffMember: Codable, Identifiable {
     let id: String
+    let userInfo: AppUser
     let pharmacyId: String
     let role: PharmacyStaffRole
     let status: PharmacyStaffStatus

@@ -11,17 +11,20 @@ struct PharmacistTabView: View {
     private let authService: AuthService
     private let inquiryService: InquiryService
     private let drugService: DrugService
+    private let pharmacyService: PharmacyService
     
     @State private var vm: PharmacistTabViewModel
     
     init(
         authService: AuthService,
         inquiryService: InquiryService,
-        drugService: DrugService
+        drugService: DrugService,
+        pharmacyService: PharmacyService
     ) {
         self.authService = authService
         self.inquiryService = inquiryService
         self.drugService = drugService
+        self.pharmacyService = pharmacyService
         
         let viewModel = PharmacistTabViewModel(authService: authService)
         self._vm = State(wrappedValue: viewModel)
@@ -39,7 +42,7 @@ struct PharmacistTabView: View {
                 }
                 
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                    
+                    PharmacyScreen(authService: authService, pharmacyService: pharmacyService)
                 }
                 
                 Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
@@ -78,6 +81,7 @@ struct PharmacistTabView: View {
     PharmacistTabView(
         authService: MockAuthService.sample,
         inquiryService: MockInquiryService.sample,
-        drugService: MockDrugService.sample
+        drugService: MockDrugService.sample,
+        pharmacyService: MockPharmacyService.sample
     )
 }

@@ -13,9 +13,9 @@ struct MockAuthService: AuthService {
         continuation.yield(.authenticated)
     }
     let authSession: AuthSession? = {
-        let user = AppUser(id: "1", fullName: "Mohammed Shaat", email: "mohammed@email.com")
-        let pharmacyStaff = PharmacyStaff(id: "1", pharmacyId: Pharmacy.samples[0].id, role: .owner, status: .approved)
-        return AuthSession(user: user, role: .pharmacist, pharmacyStaff: pharmacyStaff)
+        let user = AppUser.samples[0]
+        let pharmacyStaffMember = PharmacyStaffMember.samples[0]
+        return AuthSession(user: user, role: .pharmacist, pharmacyStaff: pharmacyStaffMember)
     }()
     
     func signUp(email: String, password: String, redirectTo url: URL?) async throws {}

@@ -68,7 +68,7 @@ struct RootView: View {
                 PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService)
             
             case .pharmacist:
-                PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService)
+                PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce)
             }
             
         }

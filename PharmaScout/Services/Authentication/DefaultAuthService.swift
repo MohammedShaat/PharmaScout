@@ -91,14 +91,16 @@ class DefaultAuthService: AuthService {
         }
     }
     
-    private func getPharmacyStaffIfAvailable(userId: String) async throws -> PharmacyStaff? {
-        let pharmacyStaffTable = SupabaseManager.Database.Table.PharmacyStaff.self
-        let columns = pharmacyStaffTable.Column
+    private func getPharmacyStaffIfAvailable(userId: String) async throws -> PharmacyStaffMember? {
+        let getPharmacyStaffMemberByUserIdFunc = SupabaseManager.Database.Functions.getPharmacyStaffMemberByUserId.self
+        let params = getPharmacyStaffMemberByUserIdFunc.Params.self
         
         do {
-            let pharmacyStaff: PharmacyStaff? = try await supabase.from(pharmacyStaffTable.name)
-                .select()
-                .equals(columns.userId, value: userId)
+            let pharmacyStaff: PharmacyStaffMember? = try await supabase
+                .rpc(
+                    getPharmacyStaffMemberByUserIdFunc.name,
+                    params: [params.userId: userId]
+                )
                 .maybeSingle()
                 .execute()
                 .value
