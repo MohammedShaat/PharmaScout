@@ -15,11 +15,8 @@ class PharmacyEditAddressViewModel {
     var name: String = ""
     var address: String = ""
     
-    var isInfoValid: Bool {
-        name.count >= 3 && address.count >= 3
-    }
     var canUpdate: Bool {
-        isInfoValid
+        name.count >= 3 && address.count >= 3
         && (name != pharmacy.name || address != pharmacy.address)
     }
     

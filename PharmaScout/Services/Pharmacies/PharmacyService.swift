@@ -21,4 +21,8 @@ protocol PharmacyService {
     func getStaff(for pharmacyId: String) async throws -> [PharmacyStaffMember]
     
     func updatePharmacy(for pharmacyId: String, request: UpdatePharmacyRequest) async throws
+    
+    func createOrUpdateContacts(for pharmacyId: String, contacts: [PharmacyContact]) async throws
+    
+    func deleteContacts(for pharmacyId: String, ids: [String]) async throws
 }

@@ -10,6 +10,7 @@ import SwiftUI
 struct SectionHeaderView<Icon: View>: View {
     let title: String
     let actionName: String
+    var isActionDisabled: Bool = false
     @ViewBuilder let icon: Icon
     var onActionTapped: (() -> Void)?
     
@@ -28,7 +29,7 @@ struct SectionHeaderView<Icon: View>: View {
                 icon
             }
             .font(.subheadline)
-            .clickable(action: onActionTapped)
+            .clickable(isDisabled: isActionDisabled, action: onActionTapped)
             
         }
         .foregroundStyle(.theme.textPrimary)

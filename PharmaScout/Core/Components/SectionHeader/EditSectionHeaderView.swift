@@ -9,10 +9,11 @@ import SwiftUI
 
 struct EditSectionHeaderView: View {
     let title: String
+    var isActionDisabled: Bool = false
     var onActionTapped: (() -> Void)?
     
     var body: some View {
-        SectionHeaderView(title: title, actionName: "Edit") {
+        SectionHeaderView(title: title, actionName: "Edit", isActionDisabled: isActionDisabled) {
             Image(systemName: "pencil")
         } onActionTapped: {
             onActionTapped?()
