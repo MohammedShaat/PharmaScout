@@ -69,7 +69,7 @@ struct DefaultInquiryService: InquiryService {
     }
     
     private func getNumberOfTodaysInquiries(for pharmacyId: String, onlyAnswered: Bool = false) async throws -> Int {
-        let inquiryTable = SupabaseManager.Database.Table.pharmacyInquiry.self
+        let inquiryTable = SupabaseManager.Database.Table.PharmacyInquiry.self
         let columns = inquiryTable.Column.self
         
         let calendar = Calendar.current

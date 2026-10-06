@@ -14,7 +14,7 @@ extension PharmacyContact {
             pharmacyId: "5748b784-ec20-4267-a97d-d217aeaa24b5",
             title: "WhatsApp",
             type: .number,
-            value: "+1-202-555-0112"
+            value: "+12025550112"
         ),
 
         PharmacyContact(

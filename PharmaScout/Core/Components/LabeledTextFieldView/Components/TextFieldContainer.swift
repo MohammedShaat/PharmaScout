@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct TextFieldContainer<TextField: View>: View {
-    let label: String
+    let label: String?
     let capitalization: TextInputAutocapitalization
     let textField: TextField?
     
     init(
-        label: String,
+        label: String?,
         capitalization: TextInputAutocapitalization = .never,
         @ViewBuilder textField: () -> TextField
     ) {
@@ -26,9 +26,11 @@ struct TextFieldContainer<TextField: View>: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-            Text(label)
-                .font(.headline)
-                .foregroundStyle(.theme.textLabel)
+            if let label {
+                Text(label)
+                    .font(.headline)
+                    .foregroundStyle(.theme.textLabel)
+            }
             
             textField
                 .focused($isFocused)

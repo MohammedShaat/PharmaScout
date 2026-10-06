@@ -10,12 +10,12 @@ import Foundation
 struct PharmacyContact: Identifiable, Codable {
     let id: String
     let pharmacyId: String
-    let title: String
-    let type: ContactType
-    let value: String
+    var title: String
+    var type: ContactType
+    var value: String
 }
 
-enum ContactType: String, Codable {
+enum ContactType: String, Codable, CaseIterable {
     case number = "number"
     case link = "link"
     case email = "email"

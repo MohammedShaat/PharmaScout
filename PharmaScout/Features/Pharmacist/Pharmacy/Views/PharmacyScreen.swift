@@ -43,10 +43,13 @@ struct PharmacyScreen: View {
             .customBackButtonVisibility(false)
             .customNavTitle(vm.pharmacy?.name ?? "")
             .customNavigationDestination(for: PharmacyRoute.self) { route in
-                switch route {
-                case .editAddress:
-                    if let pharmacy = vm.pharmacy {
+                if let pharmacy = vm.pharmacy {
+                    switch route {
+                    case .editAddress:
                         PharmacyEditAddressScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
+                        
+                    case .editContact:
+                        PharmacyEditContactScreen(pharmacyService: pharmacyService, pharmacy: pharmacy, contacts: vm.contacts)
                     }
                 }
             }
@@ -59,7 +62,7 @@ struct PharmacyScreen: View {
     
     private var pharmacySection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Pharmacy Info") {
+            EditSectionHeaderView(title: "Pharmacy Info", isActionDisabled: !vm.canEdit) {
                 path.append(PharmacyRoute.editAddress)
             }
             
@@ -76,7 +79,9 @@ struct PharmacyScreen: View {
     
     private var contactSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Contact")
+            EditSectionHeaderView(title: "Contact", isActionDisabled: !vm.canEdit) {
+                path.append(PharmacyRoute.editContact)
+            }
             
             PharmacyContactView(contacts: vm.contacts, loadingState: vm.contactLoadingState)
         }
@@ -84,7 +89,7 @@ struct PharmacyScreen: View {
     
     private var workingHoursSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Working Hours")
+            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !vm.canEdit)
             
             PharmacyWorkingHoursView(workingHours: vm.workingHours, loadingState: vm.workingHoursLoadingState)
         }
@@ -92,7 +97,7 @@ struct PharmacyScreen: View {
     
     private var staffSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Staff")
+            EditSectionHeaderView(title: "Staff", isActionDisabled: !vm.canEdit)
             
             LoadingContentView(
                 LoadingState: vm.staffLoadingState,
@@ -110,6 +115,7 @@ struct PharmacyScreen: View {
 
 enum PharmacyRoute {
     case editAddress
+    case editContact
 }
 
 #Preview {

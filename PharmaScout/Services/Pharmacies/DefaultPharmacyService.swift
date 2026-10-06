@@ -146,4 +146,34 @@ struct DefaultPharmacyService: PharmacyService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func createOrUpdateContacts(for pharmacyId: String, contacts: [PharmacyContact]) async throws {
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        
+        do {
+            try await supabase
+                .from(pharmacyContactTable.name)
+                .upsert(contacts)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func deleteContacts(for pharmacyId: String, ids: [String]) async throws {
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        let columns = pharmacyContactTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyContactTable.name)
+                .delete()
+                .in(columns.id, values: ids)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

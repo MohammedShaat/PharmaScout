@@ -20,6 +20,7 @@ class PharmacyViewModel {
     private(set) var workingHours: [WorkingHour] = []
     private(set) var pharmacyStaff: [PharmacyStaffMember] = []
     
+    var canEdit: Bool { authSession?.pharmacyStaff?.role == .owner }
     
     private(set) var pharmacyLoadingState = LoadingState()
     private(set) var contactLoadingState = LoadingState()
