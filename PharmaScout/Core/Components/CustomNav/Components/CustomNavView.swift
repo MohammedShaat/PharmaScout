@@ -12,6 +12,7 @@ struct CustomNavView<Content: View>: View {
     
     @State private var title: String = ""
     @State private var showNavBar: Bool = true
+    @State private var showBackButton: Bool = true
     
     init(@ViewBuilder contet: () -> Content) {
         self.content = contet()
@@ -35,6 +36,9 @@ struct CustomNavView<Content: View>: View {
         .onPreferenceChange(CustomNavStackNavBarVisibilityPreferenceKey.self) { newValue in
             showNavBar = newValue
         }
+        .onPreferenceChange(CustomNavStackBackButtonVisibilityPreferenceKey.self) { newValue in
+            showBackButton = newValue
+        }
         .onPreferenceChange(CustomNavStackTitle.self) { newValue in
             title = newValue
         }
@@ -44,6 +48,10 @@ struct CustomNavView<Content: View>: View {
 extension View {
     func customNavBarVisibility(_ visibility: Bool) -> some View {
         preference(key: CustomNavStackNavBarVisibilityPreferenceKey.self, value: visibility)
+    }
+    
+    func customBackButtonVisibility(_ visibility: Bool) -> some View {
+        preference(key: CustomNavStackBackButtonVisibilityPreferenceKey.self, value: visibility)
     }
     
     func customNavTitle(_ title: String) -> some View {

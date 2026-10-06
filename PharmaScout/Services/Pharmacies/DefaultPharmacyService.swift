@@ -130,4 +130,20 @@ struct DefaultPharmacyService: PharmacyService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func updatePharmacy(for pharmacyId: String, request: UpdatePharmacyRequest) async throws {
+        let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
+        let columns = pharmacyTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyTable.name)
+                .update(request)
+                .equals(columns.id, value: pharmacyId)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

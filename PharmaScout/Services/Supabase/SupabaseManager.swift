@@ -142,6 +142,20 @@ extension SupabaseManager {
                     static let respondedAt = "responded_at"
                 }
             }
+            
+            enum Pharmacy {
+                static let name = "pharmacy"
+                
+                enum Column {
+                    static let id = "id"
+                    static let name = "name"
+                    static let latitude = "latitude"
+                    static let longitude = "longitude"
+                    static let address = "address"
+                    static let status = "status"
+                    static let timezone = "timezone"
+                }
+            }
         }
         
         
