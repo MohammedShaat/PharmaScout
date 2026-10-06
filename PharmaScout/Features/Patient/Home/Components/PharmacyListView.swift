@@ -10,12 +10,12 @@ import SwiftUI
 struct PharmacyListView: View {
     let pharmacies: [Pharmacy]
     let loadingState: LoadingState
-    var onSeeAllClicked: (() -> Void)?
+    var onSeeAllTapped: (() -> Void)?
     var onPharmacyTapped: ((Pharmacy) -> Void)?
     
     var body: some View {
         VStack {
-            SectionHeaderView(title: "Nearby pharmacies", onSeeAllClicked: onSeeAllClicked)
+            MoreSectionHeaderView(title: "Nearby pharmacies", onActionTapped: onSeeAllTapped)
             
             list
         }

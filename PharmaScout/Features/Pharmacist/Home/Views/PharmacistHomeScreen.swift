@@ -59,7 +59,7 @@ struct PharmacistHomeScreen: View {
     
     private var recentPendingInquiries: some View {
         VStack {
-            SectionHeaderView(title: "Pending inquiries") {
+            MoreSectionHeaderView(title: "Pending inquiries") {
                 pharmacistTabViewModel.navigateToInquiriesTab()
             }
             

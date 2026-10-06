@@ -26,3 +26,9 @@ struct Pharmacy: nonisolated Codable, Identifiable, Hashable {
         Coordinate(latitude: latitude, longitude: longitude)
     }
 }
+
+enum PharmacyStatus: String, Codable {
+    case pending
+    case approved
+    case rejected
+}

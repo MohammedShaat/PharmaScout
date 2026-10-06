@@ -60,6 +60,8 @@ class PharmacyViewModel {
         
         _ = await (loadPharmacy, loadContact, loadWorkingHours, loadStaff)
     }
+    
+    
  
     private func loadPharmacy(refresh: Bool = false) async {
         guard let pharmacyId else {

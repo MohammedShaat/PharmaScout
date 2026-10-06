@@ -10,12 +10,12 @@ import SwiftUI
 struct SearchListView: View {
     let searches: [Search]
     let loadingState: LoadingState
-    var onSeeAllClicked: (() -> Void)?
+    var onSeeAllTapped: (() -> Void)?
     var onSearchTapped: ((Search) -> Void)?
     
     var body: some View {
         VStack {
-            SectionHeaderView(title: "Recent searchs", onSeeAllClicked: onSeeAllClicked)
+            MoreSectionHeaderView(title: "Recent searchs", onActionTapped: onSeeAllTapped)
             
             list
         }

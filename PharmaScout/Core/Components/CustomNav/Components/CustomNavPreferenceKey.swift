@@ -15,6 +15,14 @@ struct CustomNavStackNavBarVisibilityPreferenceKey: PreferenceKey {
     }
 }
 
+struct CustomNavStackBackButtonVisibilityPreferenceKey: PreferenceKey {
+    static var defaultValue: Bool = true
+    
+    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+        value = nextValue()
+    }
+}
+
 struct CustomNavStackTitle: PreferenceKey {
     static var defaultValue: String = ""
     

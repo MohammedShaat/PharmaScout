@@ -54,4 +54,8 @@ struct MockPharmacyService: PharmacyService {
         return PharmacyStaffMember.samples
             .filter { $0.pharmacyId == pharmacyId }
     }
+    
+    func updatePharmacy(for pharmacyId: String, request: UpdatePharmacyRequest) async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
 }
