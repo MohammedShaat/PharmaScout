@@ -50,6 +50,9 @@ struct PharmacyScreen: View {
                         
                     case .editContact:
                         PharmacyEditContactScreen(pharmacyService: pharmacyService, pharmacy: pharmacy, contacts: vm.contacts)
+                        
+                    case .editWorkingHours:
+                        PharmacyEditWorkingHourScreen(pharmacyService: pharmacyService, pharmacy: pharmacy, workingHours: vm.workingHours)
                     }
                 }
             }
@@ -89,7 +92,9 @@ struct PharmacyScreen: View {
     
     private var workingHoursSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !vm.canEdit)
+            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !vm.canEdit) {
+                path.append(PharmacyRoute.editWorkingHours)
+            }
             
             PharmacyWorkingHoursView(workingHours: vm.workingHours, loadingState: vm.workingHoursLoadingState)
         }
@@ -116,6 +121,7 @@ struct PharmacyScreen: View {
 enum PharmacyRoute {
     case editAddress
     case editContact
+    case editWorkingHours
 }
 
 #Preview {

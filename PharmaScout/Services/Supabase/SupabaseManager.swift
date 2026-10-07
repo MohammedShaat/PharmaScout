@@ -108,11 +108,10 @@ extension SupabaseManager {
                 
                 enum Column {
                     static let id = "id"
-                    static let day = "day"
                     static let pharmacyId = "pharmacy_id"
+                    static let day = "day"
                     static let opensAt = "opens_at"
                     static let closesAt = "closes_at"
-                    static let timezone = "timezone"
                 }
             }
             
