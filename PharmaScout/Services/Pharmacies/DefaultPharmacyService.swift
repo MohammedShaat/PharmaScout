@@ -76,9 +76,9 @@ struct DefaultPharmacyService: PharmacyService {
     }
     
     func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour] {
-        
         let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
         let columns = pharmacyHoursTable.Column.self
+
         do {
             let hours: [WorkingHour] = try await supabase
                 .from(pharmacyHoursTable.name)
@@ -168,6 +168,36 @@ struct DefaultPharmacyService: PharmacyService {
         do {
             try await supabase
                 .from(pharmacyContactTable.name)
+                .delete()
+                .in(columns.id, values: ids)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func createOrUpdateWokringHours(for pharmacyId: String, workingHours: [WorkingHour]) async throws {
+        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
+        
+        do {
+            try await supabase
+                .from(pharmacyHoursTable.name)
+                .upsert(workingHours)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func deleteWokringHours(for pharmacyId: String, ids: [String]) async throws {
+        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
+        let columns = pharmacyHoursTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyHoursTable.name)
                 .delete()
                 .in(columns.id, values: ids)
                 .execute()

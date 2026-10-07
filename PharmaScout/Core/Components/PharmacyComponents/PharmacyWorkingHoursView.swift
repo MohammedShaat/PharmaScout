@@ -19,15 +19,17 @@ struct PharmacyWorkingHoursView: View {
         ) {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                 ForEach(workingHours) { workinghour in
-                    VStack {
-                        Text("\(workinghour.day)")
+                    VStack(alignment: .leading) {
+                        Text(workinghour.day.rawValue.capitalized)
+                        
                         HStack {
                             Text("Opens at: ")
-                            Text(workinghour.opensAt.description)
+                            Text(workinghour.opensAt.formattedTime)
                         }
+                        
                         HStack {
                             Text("Closes at: ")
-                            Text(workinghour.closesAt.description)
+                            Text(workinghour.closesAt.formattedTime)
                         }
                     }
                     .background(.gray.opacity(0.2))
@@ -39,8 +41,12 @@ struct PharmacyWorkingHoursView: View {
 }
 
 #Preview {
+    let pharmacy = Pharmacy.samples[0]
+    let workingHours = WorkingHour.samples.filter { $0.pharmacyId == pharmacy.id }
+    
     PharmacyWorkingHoursView(
-        workingHours: [],
+        workingHours: workingHours,
         loadingState: LoadingState()
     )
+    .padding()
 }

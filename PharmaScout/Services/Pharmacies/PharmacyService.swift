@@ -25,4 +25,8 @@ protocol PharmacyService {
     func createOrUpdateContacts(for pharmacyId: String, contacts: [PharmacyContact]) async throws
     
     func deleteContacts(for pharmacyId: String, ids: [String]) async throws
+    
+    func createOrUpdateWokringHours(for pharmacyId: String, workingHours: [WorkingHour]) async throws
+    
+    func deleteWokringHours(for pharmacyId: String, ids: [String]) async throws
 }
