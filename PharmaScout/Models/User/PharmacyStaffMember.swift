@@ -7,20 +7,20 @@
 
 import Foundation
 
-struct PharmacyStaffMember: Codable, Identifiable {
+struct PharmacyStaffMember: Codable, Identifiable, Hashable {
     let id: String
     let userInfo: AppUser
     let pharmacyId: String
-    let role: PharmacyStaffRole
-    let status: PharmacyStaffStatus
+    var role: PharmacyStaffRole
+    var status: PharmacyStaffStatus
 }
 
-enum PharmacyStaffRole: String, Codable {
+enum PharmacyStaffRole: String, Codable, CaseIterable, Hashable {
     case owner = "owner"
     case employee = "employee"
 }
 
-enum PharmacyStaffStatus: String, Codable {
+enum PharmacyStaffStatus: String, Codable, CaseIterable, Hashable {
     case pending = "pending"
     case approved = "approved"
     case rejected = "rejected"

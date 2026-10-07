@@ -35,8 +35,8 @@ class PharmacyEditContactViewModel {
         defer { loadingState.stopLoading() }
         
         do {
-            async let createOrUpdateContacts = pharmacyService.createOrUpdateContacts(for: pharmacy.id, contacts: contacts)
-            async let deleteContacts = pharmacyService.deleteContacts(for: pharmacy.id, ids: deletedContactIds)
+            async let createOrUpdateContacts = pharmacyService.createOrUpdateContacts(contacts: contacts)
+            async let deleteContacts = pharmacyService.deleteContacts(ids: deletedContactIds)
             
             _ = try await (createOrUpdateContacts, deleteContacts)
             
