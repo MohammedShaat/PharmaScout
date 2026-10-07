@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PharmacyScreen: View {
+    private let authService: AuthService
     private let pharmacyService: PharmacyService
     
     @State private var vm: PharmacyViewModel
@@ -17,6 +18,7 @@ struct PharmacyScreen: View {
         authService: AuthService,
         pharmacyService: PharmacyService
     ) {
+        self.authService = authService
         self.pharmacyService = pharmacyService
         
         let viewModel = PharmacyViewModel(
@@ -53,6 +55,9 @@ struct PharmacyScreen: View {
                         
                     case .editWorkingHours:
                         PharmacyEditWorkingHourScreen(pharmacyService: pharmacyService, pharmacy: pharmacy, workingHours: vm.workingHours)
+                        
+                    case .editStaff:
+                        PharmacyEditStaffScreen(authService: authService, pharmacyService: pharmacyService, pharmacy: pharmacy, staffMembers: vm.pharmacyStaff)
                     }
                 }
             }
@@ -102,7 +107,9 @@ struct PharmacyScreen: View {
     
     private var staffSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Staff", isActionDisabled: !vm.canEdit)
+            EditSectionHeaderView(title: "Staff", isActionDisabled: !vm.canEdit) {
+                path.append(PharmacyRoute.editStaff)
+            }
             
             LoadingContentView(
                 LoadingState: vm.staffLoadingState,
@@ -122,6 +129,7 @@ enum PharmacyRoute {
     case editAddress
     case editContact
     case editWorkingHours
+    case editStaff
 }
 
 #Preview {

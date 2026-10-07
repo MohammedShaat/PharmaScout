@@ -181,7 +181,7 @@ extension OAuthProvider {
 
 extension AppUser {
     init(from user: User) {
-        self.id = user.id.uuidString
+        self.id = user.id.uuidString.lowercased()
         self.fullName = user.userMetadata["full_name"]?.stringValue
         self.email = user.email
     }

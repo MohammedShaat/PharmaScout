@@ -131,7 +131,7 @@ struct DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func updatePharmacy(for pharmacyId: String, request: UpdatePharmacyRequest) async throws {
+    func updatePharmacy( for pharmacyId: String, request: UpdatePharmacyRequest) async throws {
         let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
         let columns = pharmacyTable.Column.self
         
@@ -147,7 +147,7 @@ struct DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func createOrUpdateContacts(for pharmacyId: String, contacts: [PharmacyContact]) async throws {
+    func createOrUpdateContacts(contacts: [PharmacyContact]) async throws {
         let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
         
         do {
@@ -161,7 +161,7 @@ struct DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func deleteContacts(for pharmacyId: String, ids: [String]) async throws {
+    func deleteContacts(ids: [String]) async throws {
         let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
         let columns = pharmacyContactTable.Column.self
         
@@ -177,7 +177,7 @@ struct DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func createOrUpdateWokringHours(for pharmacyId: String, workingHours: [WorkingHour]) async throws {
+    func createOrUpdateWokringHours(workingHours: [WorkingHour]) async throws {
         let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
         
         do {
@@ -191,13 +191,41 @@ struct DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func deleteWokringHours(for pharmacyId: String, ids: [String]) async throws {
+    func deleteWokringHours(ids: [String]) async throws {
         let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
         let columns = pharmacyHoursTable.Column.self
         
         do {
             try await supabase
                 .from(pharmacyHoursTable.name)
+                .delete()
+                .in(columns.id, values: ids)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func updateStaffMembers(request: UpdatePharmacyStaffRequest) async throws {
+        let updatePharmacyStaffFunc = SupabaseManager.Database.Functions.updatePharmacyStaffMembers.self
+        do {
+            try await supabase
+                .rpc(updatePharmacyStaffFunc.name, params: request)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func deleteStaffMembers(ids: [String]) async throws {
+        let pharmacyStaffTable = SupabaseManager.Database.Table.PharmacyStaff.self
+        let columns = pharmacyStaffTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyStaffTable.name)
                 .delete()
                 .in(columns.id, values: ids)
                 .execute()

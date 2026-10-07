@@ -43,8 +43,8 @@ class PharmacyEditWorkingHourViewModel {
         defer { loadingState.stopLoading() }
         
         do {
-            async let createOrUpdateWokringHours = pharmacyService.createOrUpdateWokringHours(for: pharmacy.id, workingHours: workingHours)
-            async let deleteWokringHours = pharmacyService.deleteWokringHours(for: pharmacy.id, ids: deletedworkingHourIds)
+            async let createOrUpdateWokringHours = pharmacyService.createOrUpdateWokringHours(workingHours: workingHours)
+            async let deleteWokringHours = pharmacyService.deleteWokringHours(ids: deletedworkingHourIds)
             
             _ = try await (createOrUpdateWokringHours, deleteWokringHours)
             

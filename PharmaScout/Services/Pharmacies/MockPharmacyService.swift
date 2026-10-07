@@ -59,19 +59,27 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func createOrUpdateContacts(for pharmacyId: String, contacts: [PharmacyContact]) async throws {
+    func createOrUpdateContacts(contacts: [PharmacyContact]) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func deleteContacts(for pharmacyId: String, ids: [String]) async throws {
+    func deleteContacts(ids: [String]) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func createOrUpdateWokringHours(for pharmacyId: String, workingHours: [WorkingHour]) async throws {
+    func createOrUpdateWokringHours(workingHours: [WorkingHour]) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func deleteWokringHours(for pharmacyId: String, ids: [String]) async throws {
+    func deleteWokringHours(ids: [String]) async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
+    
+    func updateStaffMembers(request: UpdatePharmacyStaffRequest) async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
+    
+    func deleteStaffMembers(ids: [String]) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
 }

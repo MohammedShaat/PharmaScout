@@ -285,6 +285,14 @@ extension SupabaseManager {
                     static let pharmacyId = "p_pharmacy_id"
                 }
             }
+            
+            enum updatePharmacyStaffMembers {
+                static let name = "update_pharmacy_staff_members"
+                
+                enum Params {
+                    static let staffMembers = "p_staff_members"
+                }
+            }
         }
     }
 }
