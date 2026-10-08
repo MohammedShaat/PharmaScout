@@ -20,7 +20,7 @@ class PharmacyViewModel {
     private(set) var workingHours: [WorkingHour] = []
     private(set) var pharmacyStaff: [PharmacyStaffMember] = []
     
-    var canEdit: Bool { authSession?.pharmacyStaff?.role == .owner }
+    var isOwner: Bool { authSession?.pharmacyStaff?.role == .owner }
     
     private(set) var pharmacyLoadingState = LoadingState()
     private(set) var contactLoadingState = LoadingState()
@@ -123,7 +123,7 @@ class PharmacyViewModel {
     }
     
     private func loadStaff(refresh: Bool = false) async {
-        guard let pharmacyId else {
+        guard let pharmacyId, isOwner else {
             staffLoadingState.fail(PharmacyStaffError.notFound)
             print("No pharmacy id")
             return

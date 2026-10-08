@@ -11,6 +11,10 @@ import Foundation
 class ProfileViewModel {
     private let authService: AuthService
     
+    var canJoinPharmacy: Bool {
+        authService.authSession?.role != .pharmacist
+    }
+    
     init(authService: AuthService) {
         self.authService = authService
     }

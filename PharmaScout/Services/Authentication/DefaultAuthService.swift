@@ -91,6 +91,16 @@ class DefaultAuthService: AuthService {
         }
     }
     
+    func refreshAuthSession() async throws {
+        do {
+            let session = try await auth.session
+            authSession = try await makeAuthSession(session)
+            
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
+        }
+    }
+    
     private func getPharmacyStaffIfAvailable(userId: String) async throws -> PharmacyStaffMember? {
         let getPharmacyStaffMemberByUserIdFunc = SupabaseManager.Database.Functions.getPharmacyStaffMemberByUserId.self
         let params = getPharmacyStaffMemberByUserIdFunc.Params.self

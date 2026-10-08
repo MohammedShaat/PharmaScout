@@ -82,4 +82,24 @@ struct MockPharmacyService: PharmacyService {
     func deleteStaffMembers(ids: [String]) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
+    
+    func getActiveJoinCode(for pharmacyId: String) async throws -> JoinCode? {
+        try? await Task.sleep(for: .seconds(2))
+        
+        let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
+        return JoinCode(code: "A7K2M9", expiresAt: expirationDate)
+    }
+    
+    func generateJoinCode(for pharmacyId: String) async throws -> JoinCode {
+        try? await Task.sleep(for: .seconds(2))
+        
+        let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
+        return JoinCode(code: "A7K2M9", expiresAt: expirationDate)
+    }
+    
+    func joinPharmacy(code: String) async throws -> String {
+        try? await Task.sleep(for: .seconds(2))
+        
+        return Pharmacy.samples[0].id
+    }
 }

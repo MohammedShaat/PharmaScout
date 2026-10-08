@@ -29,5 +29,7 @@ protocol AuthService {
     func signInWithCredential(_ credential: OAuthCredential) async throws
     
     func getUser() async throws -> AppUser
+    
+    func refreshAuthSession() async throws
 }
 

@@ -25,6 +25,8 @@ class PharmacistHomeViewModel {
     private(set) var answeredTodaysInquiriesCount: Int = 0
     private(set) var todaysInquiriesCountLoadingState = LoadingState()
     
+    private(set) var authSessionLoadingState = LoadingState()
+    
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
@@ -50,10 +52,31 @@ class PharmacistHomeViewModel {
     }
     
     func refresh() async {
+        if !isAuthorized {
+            await refreshAuthSession()
+        } else {
+            await refreshData()
+        }
+    }
+    
+    private func refreshData() async {
         async let pendingInquiries = loadPendingInquiries()
         async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
         
         _ = await (pendingInquiries, numberOfTodaysInquiries)
+    }
+    
+    private func refreshAuthSession() async {
+        authSessionLoadingState.startLoading(refresh: true)
+        defer { authSessionLoadingState.stopLoading() }
+        
+        do {
+            try await authService.refreshAuthSession()
+            
+        } catch {
+            authSessionLoadingState.fail(error)
+            print("Failed to refresh auth session\n", error)
+        }
     }
     
     private func loadPendingInquiries(refresh: Bool = false) async {
