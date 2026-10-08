@@ -52,7 +52,7 @@ struct PatientTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                ProfileScreen(authService: authService)
+                ProfileScreen(authService: authService, pharmacyService: pharmacySerivce)
             }
         }
         .tint(.theme.textPrimary)	

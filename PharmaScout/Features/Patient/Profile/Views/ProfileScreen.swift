@@ -8,26 +8,50 @@
 import SwiftUI
 
 struct ProfileScreen: View {
-    let authService: AuthService
+    private let authService: AuthService
+    private let pharmacyService: PharmacyService
     @State private var vm: ProfileViewModel
     
-    init(authService: AuthService) {
+    init(authService: AuthService, pharmacyService: PharmacyService) {
         self.authService = authService
+        self.pharmacyService = pharmacyService
         let viewModel = ProfileViewModel(authService: authService)
         self._vm = State(initialValue: viewModel)
     }
     
     var body: some View {
-        Form {
-            Button("Log out") {
-                Task {
-                    try? await authService.signOut()
+        CustomNavStack {
+            Form {
+                if vm.canJoinPharmacy {
+                    CustomNavValueLink(value: ProfileRoute.joinPharmacy) {
+                        Text("Join a pharmacy")
+                    }
+                }
+                
+                Button("Log out") {
+                    Task {
+                        try? await authService.signOut()
+                    }
+                }
+            }
+            .customBackButtonVisibility(false)
+            .customNavigationDestination(for: ProfileRoute.self) { route in
+                switch route {
+                case .joinPharmacy:
+                    JoinPharmacyScreen(authService: authService, pharmacyService: pharmacyService)
                 }
             }
         }
     }
 }
 
+enum ProfileRoute {
+    case joinPharmacy
+}
+
 #Preview {
-    ProfileScreen(authService: MockAuthService.sample)
+    ProfileScreen(
+        authService: MockAuthService.sample,
+        pharmacyService: MockPharmacyService.sample
+    )
 }

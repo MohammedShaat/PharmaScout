@@ -293,6 +293,30 @@ extension SupabaseManager {
                     static let staffMembers = "p_staff_members"
                 }
             }
+            
+            enum generatePharmacyJoinCode {
+                static let name = "create_pharmacy_join_code"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                }
+            }
+            
+            enum getActivePharmacyJoinCode {
+                static let name = "get_active_pharmacy_join_code"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                }
+            }
+            
+            enum joinPharmacy {
+                static let name = "join_pharmacy"
+                
+                enum Params {
+                    static let code = "p_code"
+                }
+            }
         }
     }
 }

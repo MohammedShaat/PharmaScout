@@ -29,7 +29,7 @@ enum SupabaseErrorMapper {
             NetworkError.init(from: urlError)
             
         case let pgError as PostgrestError:
-            pgError
+            mapPostgrestErrorToAppError(pgError)
             
         default:
             error
@@ -56,6 +56,21 @@ extension SupabaseErrorMapper {
             
         default: .unknown(error)
             
+        }
+    }
+    
+    static private func mapPostgrestErrorToAppError(_ error: PostgrestError) -> AppError {
+        switch error.code {
+        // MARK: Join pharmacy error
+        case "P1001": JoinCodeError.invalidJoinCode
+        
+        case "P1002": JoinCodeError.revokedJoinCode
+        
+        case "P1003": JoinCodeError.expiredJoinCode
+        
+        case "P1004": JoinCodeError.alreadyPharmacyMember
+        
+        default: UnknownError.unKnown(error)
         }
     }
 }

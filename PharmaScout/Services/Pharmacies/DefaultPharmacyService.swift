@@ -234,4 +234,66 @@ struct DefaultPharmacyService: PharmacyService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func getActiveJoinCode(for pharmacyId: String) async throws -> JoinCode? {
+        let getActivePharmacyJoinCodeFunc = SupabaseManager.Database.Functions.getActivePharmacyJoinCode.self
+        let params = getActivePharmacyJoinCodeFunc.Params.self
+        
+        do {
+            let joinCode: JoinCode? = try await supabase
+                .rpc(
+                    getActivePharmacyJoinCodeFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .maybeSingle()
+                .execute()
+                .value
+            
+            return joinCode
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func generateJoinCode(for pharmacyId: String) async throws -> JoinCode {
+        let generatePharmacyJoinCodeFunc = SupabaseManager.Database.Functions.generatePharmacyJoinCode.self
+        let params = generatePharmacyJoinCodeFunc.Params.self
+        
+        do {
+            let joinCode: JoinCode = try await supabase
+                .rpc(
+                    generatePharmacyJoinCodeFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .single()
+                .execute()
+                .value
+            
+            return joinCode
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func joinPharmacy(code: String) async throws -> String {
+        let joinPharmacyFunc = SupabaseManager.Database.Functions.joinPharmacy.self
+        let params = joinPharmacyFunc.Params.self
+        
+        do {
+            let pharmacyId: String = try await supabase
+                .rpc(
+                    joinPharmacyFunc.name,
+                    params: [params.code: code]
+                )
+                .execute()
+                .value
+            
+            return pharmacyId
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }

@@ -38,7 +38,11 @@ struct PharmacyScreen: View {
                     
                     workingHoursSection
                     
-                    staffSection
+                    if vm.isOwner {
+                        staffSection
+                        
+                        inviteSection
+                    }
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -58,6 +62,9 @@ struct PharmacyScreen: View {
                         
                     case .editStaff:
                         PharmacyEditStaffScreen(authService: authService, pharmacyService: pharmacyService, pharmacy: pharmacy, staffMembers: vm.pharmacyStaff)
+                    
+                    case .joinCode:
+                        JoinCodeScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
                     }
                 }
             }
@@ -70,7 +77,7 @@ struct PharmacyScreen: View {
     
     private var pharmacySection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Pharmacy Info", isActionDisabled: !vm.canEdit) {
+            EditSectionHeaderView(title: "Pharmacy Info", isActionDisabled: !vm.isOwner) {
                 path.append(PharmacyRoute.editAddress)
             }
             
@@ -87,7 +94,7 @@ struct PharmacyScreen: View {
     
     private var contactSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Contact", isActionDisabled: !vm.canEdit) {
+            EditSectionHeaderView(title: "Contact", isActionDisabled: !vm.isOwner) {
                 path.append(PharmacyRoute.editContact)
             }
             
@@ -97,7 +104,7 @@ struct PharmacyScreen: View {
     
     private var workingHoursSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !vm.canEdit) {
+            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !vm.isOwner) {
                 path.append(PharmacyRoute.editWorkingHours)
             }
             
@@ -107,7 +114,7 @@ struct PharmacyScreen: View {
     
     private var staffSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Staff", isActionDisabled: !vm.canEdit) {
+            EditSectionHeaderView(title: "Staff", isActionDisabled: !vm.isOwner) {
                 path.append(PharmacyRoute.editStaff)
             }
             
@@ -123,6 +130,12 @@ struct PharmacyScreen: View {
                 }
         }
     }
+    
+    private var inviteSection: some View {
+        CustomNavValueLink(value: PharmacyRoute.joinCode) {
+            Text("Invite a pharmacist?")
+        }
+    }
 }
 
 enum PharmacyRoute {
@@ -130,6 +143,7 @@ enum PharmacyRoute {
     case editContact
     case editWorkingHours
     case editStaff
+    case joinCode
 }
 
 #Preview {

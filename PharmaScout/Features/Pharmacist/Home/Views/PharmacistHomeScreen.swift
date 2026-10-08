@@ -10,6 +10,7 @@ import SwiftUI
 struct PharmacistHomeScreen: View {
     private let pharmacistTabViewModel: PharmacistTabViewModel
     @State private var vm: PharmacistHomeViewModel
+    @State private var refreshAuthSessionTask: Task<Void, Never>?
     
     init(
         pharmacistTabViewModel: PharmacistTabViewModel,
@@ -45,12 +46,38 @@ struct PharmacistHomeScreen: View {
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadDataIfNeeded)
+            .onDisappear {
+                refreshAuthSessionTask?.cancel()
+            }
         }
     }
     
+    @ViewBuilder
     private var notAuthorizedSection: some View {
-        Text("Your're not authorized yet")
-            .font(.largeTitle)
+        LoadingContentView(
+            LoadingState: vm.authSessionLoadingState,
+            isEmpty: vm.authSession == nil,
+            emptyMessage: "") {
+                VStack {
+                    switch vm.authSession?.pharmacyStaff?.status {
+                    case .pending:
+                        Text("Your request is pending. Waiting for the pharmacy owner’s approval.")
+                            .font(.title)
+                            .multilineTextAlignment(.center)
+                        
+                    case .rejected:
+                        VStack {
+                            Text("Your request was rejected.")
+                                .font(.title)
+                            Text("Contact the pharmacy owner for more information.")
+                        }
+                        .multilineTextAlignment(.center)
+                        
+                    default:
+                        EmptyView()
+                    }
+                }
+            }
     }
     
     private var headerSection: some View {
