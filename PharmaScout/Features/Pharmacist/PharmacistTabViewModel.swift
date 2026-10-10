@@ -14,8 +14,14 @@ class PharmacistTabViewModel {
     var selectedTab: PharmacistTab = .home
     var inquiriesPath = NavigationPath()
     
+    var authSession: AuthSession? {
+        authService.authSession
+    }
     var isAuthorized: Bool {
-        authService.authSession?.pharmacyStaff?.status == .approved
+        authSession?.pharmacyStaff?.status == .approved
+    }
+    var isOwner: Bool {
+        authSession?.pharmacyStaff?.role == .owner
     }
     
     init(authService: AuthService) {

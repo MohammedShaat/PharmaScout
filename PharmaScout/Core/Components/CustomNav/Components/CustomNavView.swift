@@ -24,7 +24,7 @@ struct CustomNavView<Content: View>: View {
             
             VStack {
                 if showNavBar {
-                    CustomeNavBarView(title: title)
+                    CustomeNavBarView(title: title, showBackButton: showBackButton)
                 }
                 
                 VStack {
