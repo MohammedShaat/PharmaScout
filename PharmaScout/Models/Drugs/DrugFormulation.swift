@@ -14,7 +14,7 @@ struct DrugFormulation: Codable, Hashable, Identifiable {
     let route: String
     let form: String
     
-    var title: String {
+    var title: String 	{
         "\(strength) \(route) \(form)"
     }
 }

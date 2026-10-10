@@ -43,6 +43,10 @@ extension MockInquiryService {
     static let sample = MockInquiryService()
 }
 
+extension MockAnalyticsService {
+    static let sample = MockAnalyticsService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,

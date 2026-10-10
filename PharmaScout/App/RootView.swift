@@ -18,6 +18,7 @@ struct RootView: View {
     private let pharmacySerivce: PharmacyService
     private let directionsService: DirectionsService
     private let inquiryService: InquiryService
+    private let analyticsService: AnalyticsService
     
     init(
         router: AppRouter,
@@ -29,7 +30,8 @@ struct RootView: View {
         locationService: LocationService,
         pharmacySerivce: PharmacyService,
         directionsService: DirectionsService,
-        inquiryService: InquiryService
+        inquiryService: InquiryService,
+        analyticsService: AnalyticsService
     ) {
         self.router = router
         self.authService = authService
@@ -41,6 +43,7 @@ struct RootView: View {
         self.pharmacySerivce = pharmacySerivce
         self.directionsService = directionsService
         self.inquiryService = inquiryService
+        self.analyticsService = analyticsService
     }
     
     var body: some View {
@@ -68,7 +71,7 @@ struct RootView: View {
                 PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService)
             
             case .pharmacist:
-                PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce)
+                PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService)
             }
             
         }
@@ -90,7 +93,8 @@ struct RootView: View {
         locationService: MockLocationService.sample,
         pharmacySerivce: MockPharmacyService.sample,
         directionsService: MockDirectionsSrevice.sample,
-        inquiryService: MockInquiryService.sample
+        inquiryService: MockInquiryService.sample,
+        analyticsService: MockAnalyticsService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

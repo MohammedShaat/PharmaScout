@@ -317,6 +317,16 @@ extension SupabaseManager {
                     static let code = "p_code"
                 }
             }
+            
+            enum getRegionalDemandAnalytics {
+                static let name = "get_regional_demand_analytics"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                    static let days = "p_days"
+                    static let limit = "p_limit"
+                }
+            }
         }
     }
 }
