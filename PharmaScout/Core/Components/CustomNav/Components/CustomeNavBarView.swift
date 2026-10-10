@@ -9,21 +9,24 @@ import SwiftUI
 
 struct CustomeNavBarView: View {
     var title: String? = nil
+    var showBackButton: Bool = true
     
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
         HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .padding(.horizontal, DesignSystem.Spacing.xLarge)
-                    .font(.title2)
-                    .foregroundStyle(.theme.textPrimary)
-                    .background(.red.opacity(0.001))
+            if showBackButton {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+                        .font(.title2)
+                        .foregroundStyle(.theme.textPrimary)
+                        .background(.red.opacity(0.001))
+                }
+                .buttonStyle(.plain)
             }
-            .buttonStyle(.plain)
             
             Spacer()
             
