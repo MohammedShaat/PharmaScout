@@ -23,6 +23,7 @@ struct LoadingState {
         } else {
             status = pagination.page != 0 ? .loadingMore : .loading
         }
+        error = nil
     }
     
     mutating func stopLoading() {

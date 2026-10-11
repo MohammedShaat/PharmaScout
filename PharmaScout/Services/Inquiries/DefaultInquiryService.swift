@@ -99,4 +99,24 @@ struct DefaultInquiryService: InquiryService {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
     }
+    
+    func canEditInquiry(forId inquiryId: String) async throws -> Bool {
+        let canEditPharmacyInquiryFunc = SupabaseManager.Database.Functions.canEditPharmacyInquiry.self
+        let params = canEditPharmacyInquiryFunc.Params.self
+        
+        do {
+            let canEdit: Bool = try await supabase
+                .rpc(
+                    canEditPharmacyInquiryFunc.name,
+                    params: [params.inquiryId: inquiryId]
+                )
+                .execute()
+                .value
+            
+            return canEdit
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
 }
