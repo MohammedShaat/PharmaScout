@@ -327,6 +327,16 @@ extension SupabaseManager {
                     static let limit = "p_limit"
                 }
             }
+            
+            enum getPharmacySearchAnalytics {
+                static let name = "get_pharmacy_search_analytics"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                    static let days = "p_days"
+                    static let limit = "p_limit"
+                }
+            }
         }
     }
 }
