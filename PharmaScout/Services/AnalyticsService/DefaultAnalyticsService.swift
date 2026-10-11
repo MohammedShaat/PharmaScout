@@ -11,7 +11,7 @@ import Supabase
 struct DefaultAnalyticsService: AnalyticsService {
     private let supabase = SupabaseManager.shared.client
     
-    func getRegionalDemandAnalytics(request: RegionalAnalyticsRequest) async throws -> [DrugDemand] {
+    func getRegionalDemandAnalytics(request: AnalyticsRequest) async throws -> [DrugDemand] {
         let getRegionalDemandFunc = SupabaseManager.Database.Functions.getRegionalDemandAnalytics.self
         
         do {
@@ -21,6 +21,23 @@ struct DefaultAnalyticsService: AnalyticsService {
                 .value
             
             return drugDemands
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getPharmacySearchAnalytics(request: AnalyticsRequest) async throws -> PharmacySearchAnalytics {
+        let getPharmacySearchAnalyticsFunc = SupabaseManager.Database.Functions.getPharmacySearchAnalytics.self
+        
+        do {
+            let analytics: PharmacySearchAnalytics = try await supabase
+                .rpc(getPharmacySearchAnalyticsFunc.name, params: request)
+//                .single()
+                .execute()
+                .value
+            
+            return analytics
             
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)

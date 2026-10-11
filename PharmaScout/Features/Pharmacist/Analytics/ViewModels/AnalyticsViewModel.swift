@@ -16,10 +16,14 @@ class AnalyticsViewModel {
         authService.authSession?.pharmacyStaff?.pharmacyId
     }
     
+    var analyticsType: AnalyticsType = .pharmacySearch
     var period: AnalyticsPeriod = .thirtyDays
     
-    private(set) var drugDemands: [DrugDemand] = []
-    private(set) var loadingState: LoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
+    private(set) var pharmacySearchAnalytics: PharmacySearchAnalytics?
+    private(set) var regionalDrugDemands: [DrugDemand] = []
+    
+    private(set) var pharmacyAnalyticsLoadingState: LoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
+    private(set) var regionalAnalyticsLoadingState: LoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
@@ -38,34 +42,67 @@ class AnalyticsViewModel {
         hasStarted = true
         
         firstLoadTask = Task {
-            await loadRegionalDemandAnalytics()
+            await loadAnalytics()
         }
     }
     
     func refresh() async {
-        await loadRegionalDemandAnalytics(refresh: true)
+        await loadAnalytics(refresh: true)
     }
     
-    func loadRegionalDemandAnalytics(refresh: Bool = false) async {
+    func loadAnalytics(refresh: Bool = false) async {
+        switch analyticsType {
+        case .pharmacySearch:
+            await loadPharmacySearchAnalytics(refresh: refresh)
+        case .regional:
+            await loadRegionalDemandAnalytics(refresh: refresh)
+        }
+    }
+    
+    private func loadPharmacySearchAnalytics(refresh: Bool = false) async {
         guard let pharmacyId else {
-            loadingState.fail(PharmacyStaffError.notFound)
+            pharmacyAnalyticsLoadingState.fail(PharmacyStaffError.notFound)
+            print("Failed to load pharmacy search analytics. No pharmacy id")
+            return
+        }
+        
+        pharmacyAnalyticsLoadingState.startLoading(refresh: refresh)
+        defer { pharmacyAnalyticsLoadingState.stopLoading() }
+        
+        do {
+            let request = AnalyticsRequest(
+                pharmacyId: pharmacyId,
+                days: period.rawValue,
+                limit: pharmacyAnalyticsLoadingState.pagination.pageSize
+            )
+            pharmacySearchAnalytics = try await analyticsService.getPharmacySearchAnalytics(request: request)
+            
+        } catch {
+            pharmacyAnalyticsLoadingState.fail(error)
+            print("Failed to load pharmacy search analytics\n", error)
+        }
+    }
+    
+    private func loadRegionalDemandAnalytics(refresh: Bool = false) async {
+        guard let pharmacyId else {
+            regionalAnalyticsLoadingState.fail(PharmacyStaffError.notFound)
             print("Failed to load regional demand analytics. No pharmacy id")
             return
         }
         
-        loadingState.startLoading(refresh: refresh)
-        defer { loadingState.stopLoading() }
+        regionalAnalyticsLoadingState.startLoading(refresh: refresh)
+        defer { regionalAnalyticsLoadingState.stopLoading() }
         
         do {
-            let request = RegionalAnalyticsRequest(
+            let request = AnalyticsRequest(
                 pharmacyId: pharmacyId,
                 days: period.rawValue,
-                limit: loadingState.pagination.pageSize
+                limit: regionalAnalyticsLoadingState.pagination.pageSize
             )
-            drugDemands = try await analyticsService.getRegionalDemandAnalytics(request: request)
+            regionalDrugDemands = try await analyticsService.getRegionalDemandAnalytics(request: request)
             
         } catch {
-            loadingState.fail(error)
+            regionalAnalyticsLoadingState.fail(error)
             print("Failed to load regional demand analytics\n", error)
         }
     }

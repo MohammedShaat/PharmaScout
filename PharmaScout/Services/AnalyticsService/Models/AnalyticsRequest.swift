@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct RegionalAnalyticsRequest: Codable {
+struct AnalyticsRequest: Codable {
     let pharmacyId: String
     let days: Int
     let limit: Int

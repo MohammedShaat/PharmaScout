@@ -8,5 +8,7 @@
 import Foundation
 
 protocol AnalyticsService {
-    func getRegionalDemandAnalytics(request: RegionalAnalyticsRequest) async throws -> [DrugDemand]
+    func getRegionalDemandAnalytics(request: AnalyticsRequest) async throws -> [DrugDemand]
+    
+    func getPharmacySearchAnalytics(request: AnalyticsRequest) async throws -> PharmacySearchAnalytics
 }
