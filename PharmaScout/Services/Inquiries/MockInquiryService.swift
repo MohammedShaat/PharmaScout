@@ -52,4 +52,16 @@ struct MockInquiryService: InquiryService {
         }
         .count
     }
+    
+    func canEditInquiry(forId inquiryId: String) async throws -> Bool {
+        try? await Task.sleep(for: .seconds(2))
+        
+        let inquiry = Inquiry.samples.first { $0.id == inquiryId }!
+        
+        return !Inquiry.samples.contains { other in
+            other.pharmacyId == inquiry.pharmacyId &&
+            other.drugFormulation.id == inquiry.drugFormulation.id &&
+            (other.createdAt, other.id) > (inquiry.createdAt, inquiry.id)
+        }
+    }
 }

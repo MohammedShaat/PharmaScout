@@ -337,6 +337,14 @@ extension SupabaseManager {
                     static let limit = "p_limit"
                 }
             }
+            
+            enum canEditPharmacyInquiry {
+                static let name = "can_edit_pharmacy_inquiry"
+                
+                enum Params {
+                    static let inquiryId = "p_inquiry_id"
+                }
+            }
         }
     }
 }

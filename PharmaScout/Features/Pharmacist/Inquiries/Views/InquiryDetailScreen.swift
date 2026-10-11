@@ -31,9 +31,7 @@ struct InquiryDetailScreen: View {
             VStack(spacing: DesignSystem.Spacing.large) {
                 infoSection
                 
-                if vm.canRespond {
-                    responseSection
-                }
+                responseSection
             }
             .padding(DesignSystem.Spacing.xLarge)
         }
@@ -56,9 +54,7 @@ struct InquiryDetailScreen: View {
             
         }
         .refreshable(action: vm.refresh)
-        .task {
-            await vm.refresh()
-        }
+        .onAppear(perform: vm.loadDataIfNeeded)
         .onDisappear {
             responseTask?.cancel()
         }
@@ -66,7 +62,7 @@ struct InquiryDetailScreen: View {
     
     private var infoSection: some View {
         LoadingContentView(
-            LoadingState: vm.refreshLoadingState,
+            LoadingState: vm.refreshInquiryLoadingState,
             isEmpty: false,
             emptyMessage: "") {
                 VStack {
@@ -82,7 +78,7 @@ struct InquiryDetailScreen: View {
                     VStack(alignment: .leading) {
                         Text("Sent: \(vm.inquiry.createdAt.formattedDateTime)")
                         
-                        if let respondedAt = vm.inquiry.respondedAt{
+                        if let respondedAt = vm.inquiry.respondedAt {
                             Text("Responded: \(respondedAt.formattedDateTime)")
                         }
                     }
@@ -91,50 +87,62 @@ struct InquiryDetailScreen: View {
     }
     
     private var responseSection: some View {
-        VStack(spacing: DesignSystem.Spacing.xxLarge) {
-            // MARK: - Response options
-            Picker(selection: $vm.response) {
-                ForEach(InquiryResponse.allCases, id: \.self) { response in
-                    Text(response.rawValue)
-                        .tag(response)
-                }
-            } label: {
-                Text("Respond with")
-            }
-            .pickerStyle(.segmented)
-        
-        
-            // MARK: - Substitute search
-            if vm.response == .substitute {
-                if vm.substituteSelectedDrug == nil {
-                    CustomNavValueLink(value: SearchRoute.addDrug) {
-                        Text("Choose a substitute medicine")
-                            .foregroundStyle(.theme.textPrimary)
-                    }
-                }
-                
-                if let selectedDrug = vm.substituteSelectedDrug {
-                    CustomNavValueLink(value: SearchRoute.editDrug(selectedDrug)) {
-                        VStack {
-                            Text(selectedDrug.genericDrug.genericName)
-                            Text(selectedDrug.formulation.title)
+        LoadingContentView(
+            LoadingState: vm.editEligibilityLoadingState,
+            isEmpty: vm.editEligibilityLoadingState.error != nil,
+            emptyMessage: "") {
+                if vm.canCanResponse {
+                    VStack(spacing: DesignSystem.Spacing.xxLarge) {
+                        // MARK: - Response options
+                        Picker(selection: $vm.response) {
+                            ForEach(InquiryResponse.allCases, id: \.self) { response in
+                                Text(response.rawValue)
+                                    .tag(response)
+                            }
+                        } label: {
+                            Text("Respond with")
                         }
+                        .pickerStyle(.segmented)
+                        
+                        
+                        // MARK: - Substitute search
+                        if vm.response == .substitute {
+                            if vm.substituteSelectedDrug == nil {
+                                CustomNavValueLink(value: SearchRoute.addDrug) {
+                                    Text("Choose a substitute medicine")
+                                        .foregroundStyle(.theme.textPrimary)
+                                }
+                            }
+                            
+                            if let selectedDrug = vm.substituteSelectedDrug {
+                                CustomNavValueLink(value: SearchRoute.editDrug(selectedDrug)) {
+                                    VStack {
+                                        Text(selectedDrug.genericDrug.genericName)
+                                        Text(selectedDrug.formulation.title)
+                                    }
+                                }
+                            }
+                        }
+                        
+                        // MARK: - Response error
+                        if let responseError = vm.responseLoadingState.error {
+                            Text(responseError.errorDescription)
+                        }
+                        
+                        // MARK: - Response button
+                        PrimaryButtonView(
+                            title: vm.inquiry.status == .pending ? "Respond" : "Update",
+                            isDisabled: !vm.responseIsValid,
+                            isLoading: vm.responseLoadingState.status != .idle) {
+                                responseTask?.cancel()
+                                responseTask = Task {
+                                    await vm.sendResponse()
+                                }
+                            }
                     }
+                    .padding(.vertical, DesignSystem.Spacing.large)
                 }
             }
-            
-            // MARK: - Response button
-            PrimaryButtonView(
-                title: "Respond",
-                isDisabled: !vm.responseIsValid,
-                isLoading: vm.responseLoadingState.status != .idle) {
-                    responseTask?.cancel()
-                    responseTask = Task {
-                        await vm.sendResponse()
-                    }
-                }
-        }
-        .padding(.vertical, DesignSystem.Spacing.large)
     }
 }
 
@@ -143,7 +151,7 @@ struct InquiryDetailScreen: View {
         InquiryDetailScreen(
             inquiryService: MockInquiryService.sample,
             drugService: MockDrugService.sample,
-            inquiry: .samples[2]
+            inquiry: .samples[0]
         )
     }
 }
