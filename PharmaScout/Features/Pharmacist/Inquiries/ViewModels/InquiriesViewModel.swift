@@ -13,6 +13,8 @@ class InquiriesViewModel {
     private let inquiryService: InquiryService
     
     private(set) var inquiries: [Inquiry] = []
+    var filter: InquiryFilter = .all
+    
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private var hasStarted: Bool = false
@@ -44,6 +46,12 @@ class InquiriesViewModel {
         await loadInquiries()
     }
     
+    func onFilterChanged() async {
+        loadingState.pagination.reset()
+        inquiries.removeAll()
+        await loadInquiries()
+    }
+    
     private func loadInquiries(refresh: Bool = false) async {
         guard let pharmacyId = authService.authSession?.pharmacyStaff?.pharmacyId else {
             loadingState.fail(PharmacyStaffError.notFound)
@@ -59,7 +67,8 @@ class InquiriesViewModel {
             let params = GetInquiriesParams(
                 pharmacyId: pharmacyId,
                 limit: refresh ? max(inquiries.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
-                offset: refresh ? 0 : inquiries.count
+                offset: refresh ? 0 : inquiries.count,
+                filter: filter
             )
             let newInquiries = try await inquiryService.getInquiries(params)
             
