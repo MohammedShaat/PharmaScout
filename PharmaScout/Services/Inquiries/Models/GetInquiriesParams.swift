@@ -21,9 +21,24 @@ struct GetInquiriesParams: Codable {
     }
 }
 
-enum InquiryFilter: String, Codable {
+enum InquiryFilter: String, Codable, CaseIterable, Identifiable {
     case all
     case pending
     case answered
     case expired
+    
+    var id: String  { rawValue }
+    
+    var title: String {
+        switch self {
+        case .all:
+            "All"
+        case .pending:
+            "Pending"
+        case .answered:
+            "Answered"
+        case .expired:
+            "Expired"
+        }
+    }
 }

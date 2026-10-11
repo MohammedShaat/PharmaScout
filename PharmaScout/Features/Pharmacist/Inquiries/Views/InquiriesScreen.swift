@@ -13,7 +13,7 @@ struct InquiriesScreen: View {
     
     private var path: Binding<NavigationPath>
     @State private var vm: InquiriesViewModel
-    @State private var loadMoreTask: Task<Void, Never>?
+    @State private var inquiriesTask: Task<Void, Never>?
     
     init(
         path: Binding<NavigationPath>,
@@ -35,32 +35,9 @@ struct InquiriesScreen: View {
         CustomNavStack(path: path) {
             ScrollView {
                 VStack {
+                    filterSection
                     
-                    LoadingContentView(
-                        LoadingState: vm.loadingState,
-                        isEmpty: vm.inquiries.isEmpty,
-                        emptyMessage: "No inquiries yet") {
-                            LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                                ForEach(vm.inquiries) { inquiry in
-                                    CustomNavValueLink(value: inquiry) {
-                                        InquiryView(inquiry)
-                                    }
-                                    .onAppear {
-                                        if inquiry.id == vm.inquiries.last?.id {
-                                            loadMoreTask?.cancel()
-                                            loadMoreTask = Task {
-                                                await vm.loadMore()
-                                            }
-                                        }
-                                    }
-                                    
-                                    if inquiry.id == vm.inquiries.last?.id && vm.loadingState.status == .loadingMore {
-                                        RingProgressView()
-                                    }
-                                }
-                            }
-                        }
-                    
+                    inquiryListSection
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -77,9 +54,53 @@ struct InquiriesScreen: View {
                 vm.loadInquiriesIfNeeded()
             }
             .onDisappear {
-                loadMoreTask?.cancel()
+                inquiriesTask?.cancel()
+            }
+            .onChange(of: vm.filter) {
+                inquiriesTask?.cancel()
+                inquiriesTask = Task {
+                    await vm.onFilterChanged()
+                }
             }
         }
+    }
+    
+    private var filterSection: some View {
+        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
+            Picker("Analytics type", selection: $vm.filter) {
+                ForEach(InquiryFilter.allCases) { status in
+                    Text(status.title)
+                        .tag(status)
+                }
+            }
+        }
+    }
+    
+    private var inquiryListSection: some View {
+        LoadingContentView(
+            LoadingState: vm.loadingState,
+            isEmpty: vm.inquiries.isEmpty,
+            emptyMessage: "No inquiries yet") {
+                LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(vm.inquiries) { inquiry in
+                        CustomNavValueLink(value: inquiry) {
+                            InquiryView(inquiry)
+                        }
+                        .onAppear {
+                            if inquiry.id == vm.inquiries.last?.id {
+                                inquiriesTask?.cancel()
+                                inquiriesTask = Task {
+                                    await vm.loadMore()
+                                }
+                            }
+                        }
+                        
+                        if inquiry.id == vm.inquiries.last?.id && vm.loadingState.status == .loadingMore {
+                            RingProgressView()
+                        }
+                    }
+                }
+            }
     }
 }
 
