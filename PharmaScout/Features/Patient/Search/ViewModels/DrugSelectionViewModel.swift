@@ -159,41 +159,45 @@ class DrugSelectionViewModel {
 }
 
 extension DrugSelectionViewModel {
-    private func isSearchValid(allowEmpty: Bool = false) -> Bool {
-        (trimmedSearchText != lastSearchText && (trimmedSearchText.count >= 3 || allowEmpty))
-        || searchLoadingState.pagination.hasPreviousPage
-        || searchLoadingState.status == .refreshing
-    }
-    
     private func paginationHandler<T: Collection>(
         allowEmpty: Bool = false,
         asyncWork: () async throws -> T,
         onSuccess: (T) -> Void
     ) async {
-        guard isSearchValid(allowEmpty: allowEmpty) else { return }
+        let shouldPerform = SearchRequestPolicy.shouldPerform(
+            query: searchText,
+            lastQuery: lastSearchText,
+            allowsEmptyQuery: allowEmpty,
+            hasPreviousPage: searchLoadingState.pagination.hasPreviousPage,
+            isRefreshing: searchLoadingState.status == .refreshing
+        )
         
-        defer { searchLoadingState.stopLoading() }
-        
-        do {
-            if !searchLoadingState.pagination.hasPreviousPage && searchLoadingState.status != .refreshing {
-                try await Task.sleep(for: AppConstants.Timing.searchDebounceInterval)
-            }
-            if searchLoadingState.status != .refreshing {
-                searchLoadingState.startLoading()
-            }
-            
-            let result = try await asyncWork()
-            
-            lastSearchText = trimmedSearchText
-            if result.isNotEmpty {
+        await SearchRequestPolicy.perform(
+            shouldPerform: shouldPerform,
+            hasPreviousPage: searchLoadingState.pagination.hasPreviousPage,
+            isRefreshing: searchLoadingState.status == .refreshing,
+            stopLoading: {
+                searchLoadingState.stopLoading()
+            },
+            startLoading: {
+                if searchLoadingState.status != .refreshing {
+                    searchLoadingState.startLoading()
+                }
+            },
+            advancePage: {
                 searchLoadingState.pagination.nextPage()
-            }
-            
-            onSuccess(result)
-        } catch {
-            searchLoadingState.fail(error)
-            print(error)
-        }
+            },
+            handleError: { error in
+                searchLoadingState.fail(error)
+                print("Failed to search\n", error)
+            },
+            query: searchText,
+            updateLastQuery: {
+                lastSearchText = searchText
+            },
+            asyncWork: asyncWork,
+            onSuccess: onSuccess
+        )
     }
 }
 

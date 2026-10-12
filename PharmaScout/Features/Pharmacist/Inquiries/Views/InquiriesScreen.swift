@@ -37,6 +37,8 @@ struct InquiriesScreen: View {
                 VStack {
                     filterSection
                     
+                    searchSection
+                    
                     inquiryListSection
                 }
                 .padding(DesignSystem.Spacing.xLarge)
@@ -51,7 +53,10 @@ struct InquiriesScreen: View {
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
             .onAppear {
-                vm.loadInquiriesIfNeeded()
+//                vm.loadInquiriesIfNeeded()
+            }
+            .task(id: vm.searchText) {
+                await vm.loadInquiries()
             }
             .onDisappear {
                 inquiriesTask?.cancel()
@@ -74,6 +79,12 @@ struct InquiriesScreen: View {
                 }
             }
         }
+    }
+    
+    private var searchSection: some View {
+        TextField("type here", text: $vm.searchText)
+            .padding()
+            .background(.theme.disabledBackground)
     }
     
     private var inquiryListSection: some View {

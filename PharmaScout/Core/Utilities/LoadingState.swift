@@ -58,7 +58,7 @@ extension LoadingState {
         var from: Int { page * pageSize }
         var to: Int { from + pageSize - 1 }
         
-        var hasPreviousPage: Bool { page > 1 }
+        var hasPreviousPage: Bool { page > 0 }
         
         init(pageSize: Int) {
             self.pageSize = pageSize
