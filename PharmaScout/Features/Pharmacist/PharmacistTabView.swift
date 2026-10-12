@@ -13,6 +13,7 @@ struct PharmacistTabView: View {
     private let drugService: DrugService
     private let pharmacyService: PharmacyService
     private let analyticsService: AnalyticsService
+    private let pushTokenCoordinator: PushTokenCoordinator
     
     @State private var vm: PharmacistTabViewModel
     
@@ -21,13 +22,15 @@ struct PharmacistTabView: View {
         inquiryService: InquiryService,
         drugService: DrugService,
         pharmacyService: PharmacyService,
-        analyticsService: AnalyticsService
+        analyticsService: AnalyticsService,
+        pushTokenCoordinator: PushTokenCoordinator
     ) {
         self.authService = authService
         self.inquiryService = inquiryService
         self.drugService = drugService
         self.pharmacyService = pharmacyService
         self.analyticsService = analyticsService
+        self.pushTokenCoordinator = pushTokenCoordinator
         
         let viewModel = PharmacistTabViewModel(authService: authService)
         self._vm = State(wrappedValue: viewModel)
@@ -56,7 +59,7 @@ struct PharmacistTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                PharmacistProfileScreen(authService: authService)
+                PharmacistProfileScreen(authService: authService, pushTokenCoordinator: pushTokenCoordinator)
             }
         }
         .tint(.theme.primary)
@@ -88,6 +91,7 @@ struct PharmacistTabView: View {
         inquiryService: MockInquiryService.sample,
         drugService: MockDrugService.sample,
         pharmacyService: MockPharmacyService.sample,
-        analyticsService: MockAnalyticsService.sample
+        analyticsService: MockAnalyticsService.sample,
+        pushTokenCoordinator: .sample
     )
 }

@@ -17,6 +17,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "5D5D0123303F1BC900B95EFC"
                BuildableName = "PharmaScout.app"
+               BlueprintName = "PharmaScout"
                ReferencedContainer = "container:PharmaScout.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -69,6 +70,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5D5D0123303F1BC900B95EFC"
             BuildableName = "PharmaScout.app"
+            BlueprintName = "PharmaScout"
             ReferencedContainer = "container:PharmaScout.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -96,6 +98,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5D5D0123303F1BC900B95EFC"
             BuildableName = "PharmaScout.app"
+            BlueprintName = "PharmaScout"
             ReferencedContainer = "container:PharmaScout.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

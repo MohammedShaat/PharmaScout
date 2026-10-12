@@ -10,19 +10,29 @@ import Foundation
 @Observable
 class ProfileViewModel {
     private let authService: AuthService
+    private let pushTokenCoordinator: PushTokenCoordinator
     
     var canJoinPharmacy: Bool {
         authService.authSession?.role != .pharmacist
     }
     
-    init(authService: AuthService) {
+    private(set) var logoutLoadingState = LoadingState()
+    
+    init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator) {
         self.authService = authService
+        self.pushTokenCoordinator = pushTokenCoordinator
     }
     
     func logout() async {
+        logoutLoadingState.startLoading()
+        defer { logoutLoadingState.stopLoading() }
+        
         do {
+            await pushTokenCoordinator.willSignOut()
             try await authService.signOut()
+            
         } catch {
+            logoutLoadingState.fail(error)
             print("Failed to sign out: \(error)")
         }
     }

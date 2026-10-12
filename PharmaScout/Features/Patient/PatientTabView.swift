@@ -14,6 +14,7 @@ struct PatientTabView: View {
     private let locationService: LocationService
     private let pharmacySerivce: PharmacyService
     private let directionsService: DirectionsService
+    private let pushTokenCoordinator: PushTokenCoordinator
     
     @State private var vm = PatientTabViewModel()
     
@@ -23,7 +24,8 @@ struct PatientTabView: View {
         searchRequestService: SearchRequestService,
         locationService: LocationService,
         pharmacySerivce: PharmacyService,
-        directionsService: DirectionsService
+        directionsService: DirectionsService,
+        pushTokenCoordinator: PushTokenCoordinator
     ) {
         self.authService = authService
         self.drugService = drugService
@@ -31,6 +33,7 @@ struct PatientTabView: View {
         self.locationService = locationService
         self.pharmacySerivce = pharmacySerivce
         self.directionsService = directionsService
+        self.pushTokenCoordinator = pushTokenCoordinator
     }
     
     var body: some View {
@@ -52,7 +55,7 @@ struct PatientTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                ProfileScreen(authService: authService, pharmacyService: pharmacySerivce)
+                ProfileScreen(authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacySerivce)
             }
         }
         .tint(.theme.textPrimary)	
@@ -86,6 +89,7 @@ struct PatientTabView: View {
         searchRequestService: MockSearchRequestService.sample,
         locationService: MockLocationService.sample,
         pharmacySerivce: MockPharmacyService.sample,
-        directionsService: MockDirectionsSrevice.sample
+        directionsService: MockDirectionsSrevice.sample,
+        pushTokenCoordinator: .sample
     )
 }

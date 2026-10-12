@@ -10,9 +10,11 @@ import Supabase
 
 class DefaultAuthService: AuthService {
     let resendIntervalSec: Double = 60
-    lazy var authState: AsyncStream<AuthState> = {
-        authChangesStream()
-    }()
+    
+    var authState: AsyncStream<AuthState>  {
+        authStateStream()
+    }
+    
     private(set) var authSession: AuthSession?
 
     private let supabase = SupabaseManager.shared.client
@@ -132,9 +134,9 @@ class DefaultAuthService: AuthService {
 }
 
 extension DefaultAuthService {
-    func authChangesStream() -> AsyncStream<AuthState> {
+    func authStateStream() -> AsyncStream<AuthState> {
         AsyncStream { continuation in
-            Task {
+            let task = Task {
                 for await (event, session) in auth.authStateChanges {
                     switch event {
                         
@@ -175,6 +177,10 @@ extension DefaultAuthService {
                         continue
                     }
                 }
+            }
+            
+            continuation.onTermination = { _ in
+                task.cancel()
             }
         }
     }
