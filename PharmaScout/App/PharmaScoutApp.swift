@@ -19,11 +19,17 @@ struct PharmaScoutApp: App {
     private let directionsService: DirectionsService = DefaultDirectionsService()
     private let inquiryService: InquiryService = DefaultInquiryService()
     private let analyticsService: AnalyticsService = DefaultAnalyticsService()
+    private let deviceTokenService: DeviceTokenService = DefaultDeviceTokenService()
     
     @State private var router: AppRouter
+    private let pushTokenCooridnator: PushTokenCoordinator
+    
+    @UIApplicationDelegateAdaptor(AppDelegate.self)
+    private var appDelegate
     
     init() {
         self._router = State(wrappedValue: AppRouter(authService: authService))
+        self.pushTokenCooridnator = PushTokenCoordinator(deviceTokenService: deviceTokenService)
     }
     
     var body: some Scene {
@@ -39,7 +45,8 @@ struct PharmaScoutApp: App {
                 pharmacySerivce: pharmacySerivce,
                 directionsService: directionsService,
                 inquiryService: inquiryService,
-                analyticsService: analyticsService
+                analyticsService: analyticsService,
+                pushTokenCoordinator: pushTokenCooridnator
             )
             .onOpenURL { url in
                 Task {
@@ -48,6 +55,12 @@ struct PharmaScoutApp: App {
             }
             .task {
                 await router.subscribeToAuthStateChanges()
+            }
+            .task {
+                await pushTokenCooridnator.observeToken(appDelegate.tokenStream)
+            }
+            .task {
+                await pushTokenCooridnator.observeAuthState(authService.authState)
             }
         }
     }

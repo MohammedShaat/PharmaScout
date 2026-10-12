@@ -10,8 +10,8 @@ import Foundation
 
 
 protocol AuthService {
-    var authState: AsyncStream<AuthState> { get }
     var resendIntervalSec: Double { get }
+    var authState: AsyncStream<AuthState> { get }
     var authSession: AuthSession? { get }
 
     func signUp(email: String, password: String, redirectTo url: URL?) async throws

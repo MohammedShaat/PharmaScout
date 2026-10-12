@@ -155,6 +155,17 @@ extension SupabaseManager {
                     static let timezone = "timezone"
                 }
             }
+            
+            enum deviceTokens {
+                static let name = "device_tokens"
+                
+                enum Column {
+                    static let id = "id"
+                    static let user = "user"
+                    static let token = "token"
+                    static let platform = "platform"
+                }
+            }
         }
         
         
@@ -343,6 +354,15 @@ extension SupabaseManager {
                 
                 enum Params {
                     static let inquiryId = "p_inquiry_id"
+                }
+            }
+            
+            enum registerDeviceToken {
+                static let name = "register_device_token"
+                
+                enum Params {
+                    static let token = "p_token"
+                    static let platform = "p_platform"
                 }
             }
         }

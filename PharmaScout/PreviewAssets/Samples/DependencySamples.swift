@@ -47,6 +47,10 @@ extension MockAnalyticsService {
     static let sample = MockAnalyticsService()
 }
 
+extension MockDeviceTokenService {
+    static let sample = MockDeviceTokenService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,
@@ -65,4 +69,8 @@ extension PharmacistTabViewModel {
 
 extension AppRouter {
     static let sample = AppRouter(authService: MockAuthService.sample)
+}
+
+extension PushTokenCoordinator {
+    static let sample = PushTokenCoordinator(deviceTokenService: MockDeviceTokenService.sample)
 }
