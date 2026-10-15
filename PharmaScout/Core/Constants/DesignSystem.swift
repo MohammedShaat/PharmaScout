@@ -23,4 +23,8 @@ enum DesignSystem {
         static let xxLarge: CGFloat = 32
         static let xxxLarge: CGFloat = 48
     }
+    
+    enum Distance {
+        static let step: Double = 1_000
+    }
 }

@@ -101,17 +101,13 @@ struct SearchScreen: View {
                                     }
                                     
                                     // Distance
-                                    Text("Distance to search within \(vm.distanceMeters.meterToKilometer.formatted(.number))")
-                                    
-                                    
-                                    Slider(value: $vm.distanceMeters, in: vm.minDistanceMeters...vm.maxDistanceMeters, step: 1000) {
-                                        Text("Distance to search within \(vm.distanceMeters.meterToKilometer)")
-                                            .foregroundStyle(.theme.primary)
-                                    } minimumValueLabel: {
-                                        Text("\(vm.minDistanceMeters.meterToKilometer.formatted()) Km")
-                                    } maximumValueLabel: {
-                                        Text("\(vm.maxDistanceMeters.meterToKilometer.formatted()) Km")
-                                    }
+                                    DistanceSliderView(
+                                        distance: $vm.distanceMeters,
+                                        minDistanceMeters: vm.minDistanceMeters,
+                                        maxDistanceMeters: vm.maxDistanceMeters,
+                                        label: "Distance to search within",
+                                        step: 1000
+                                    )
                                 }
                                 .frame(maxWidth: .infinity, alignment: .leading)
                                 

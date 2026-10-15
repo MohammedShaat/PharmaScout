@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Search: Codable, Identifiable, Hashable {
+struct Search: nonisolated Codable, Identifiable, Hashable {
     let id: String
     let fulfilmentMode: FulfilmentMode
     let acceptSubstitute: Bool
@@ -15,10 +15,11 @@ struct Search: Codable, Identifiable, Hashable {
     let fulfilledDrugsCount: Int
     let status: SearchStatus
     let drugs: [SearchDrug]
+    let radiusMeters: Double
     let createdAt: Date
     
     enum CodingKeys: String, CodingKey {
-        case id, fulfilmentMode, acceptSubstitute, drugsCount, fulfilledDrugsCount, status, createdAt
+        case id, fulfilmentMode, acceptSubstitute, drugsCount, fulfilledDrugsCount, status, createdAt, radiusMeters
         case drugs = "items"
     }
 }
@@ -42,4 +43,5 @@ enum SearchStatus: String, Codable {
     case partiallyFulfilled = "partially_fulfilled"
     case fulfilled = "fulfilled"
     case unfulfilled = "unfulfilled"
+    case awaitingContinuation = "awaiting_continuation"
 }

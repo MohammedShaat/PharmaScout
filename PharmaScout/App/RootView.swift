@@ -20,6 +20,7 @@ struct RootView: View {
     private let inquiryService: InquiryService
     private let analyticsService: AnalyticsService
     private let pushTokenCoordinator: PushTokenCoordinator
+    private let appConfigService: AppConfigService
     
     init(
         router: AppRouter,
@@ -33,7 +34,8 @@ struct RootView: View {
         directionsService: DirectionsService,
         inquiryService: InquiryService,
         analyticsService: AnalyticsService,
-        pushTokenCoordinator: PushTokenCoordinator
+        pushTokenCoordinator: PushTokenCoordinator,
+        appConfigService: AppConfigService
     ) {
         self.router = router
         self.authService = authService
@@ -47,6 +49,7 @@ struct RootView: View {
         self.inquiryService = inquiryService
         self.analyticsService = analyticsService
         self.pushTokenCoordinator = pushTokenCoordinator
+        self.appConfigService = appConfigService
     }
     
     var body: some View {
@@ -71,7 +74,7 @@ struct RootView: View {
                 AuthenticationStateErrorScreen(error: error)
                 
             case .patient:
-                PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator)
+                PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService)
             
             case .pharmacist:
                 PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
@@ -98,7 +101,8 @@ struct RootView: View {
         directionsService: MockDirectionsSrevice.sample,
         inquiryService: MockInquiryService.sample,
         analyticsService: MockAnalyticsService.sample,
-        pushTokenCoordinator: .sample
+        pushTokenCoordinator: .sample,
+        appConfigService: MockAppConfigService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

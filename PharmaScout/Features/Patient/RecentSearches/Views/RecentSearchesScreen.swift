@@ -11,6 +11,7 @@ struct RecentSearchesScreen: View {
     private let searchRequestService: SearchRequestService
     private let locationService: LocationService
     private let patientTabViewModel: PatientTabViewModel
+    private let appConfigService: AppConfigService
     
     var path: Binding<NavigationPath>
     @State private var vm: RecentSearchesViewModel
@@ -20,11 +21,14 @@ struct RecentSearchesScreen: View {
         path: Binding<NavigationPath>,
         searchRequestService: SearchRequestService,
         locationService: LocationService,
-        patientTabViewModel: PatientTabViewModel
+        patientTabViewModel: PatientTabViewModel,
+        appConfigService: AppConfigService
     ) {
         self.path = path
         self.searchRequestService = searchRequestService
         self.locationService = locationService
+        self.appConfigService = appConfigService
+        
         self.patientTabViewModel = patientTabViewModel
         let viewModel = RecentSearchesViewModel(
             searchRequestService: searchRequestService
@@ -68,7 +72,9 @@ struct RecentSearchesScreen: View {
                 SearchDetailScreen(
                     searchRequestService: searchRequestService,
                     locationService: locationService,
+                    appConfigService: appConfigService,
                     patientTabViewModel: patientTabViewModel,
+                    searchId: search.id,
                     search: search
                 )
             }
@@ -106,6 +112,7 @@ struct RecentSearchesScreen: View {
         path: $path,
         searchRequestService: MockSearchRequestService.sample,
         locationService: MockLocationService.sample,
-        patientTabViewModel: PatientTabViewModel.sample
+        patientTabViewModel: PatientTabViewModel.sample,
+        appConfigService: MockAppConfigService.sample
     )
 }

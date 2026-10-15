@@ -69,6 +69,13 @@ extension SupabaseErrorMapper {
         case "P1003": JoinCodeError.expiredJoinCode
         
         case "P1004": JoinCodeError.alreadyPharmacyMember
+            
+        
+        // MARK: Expand search
+        case "P2001": ContinueSearchError.searchIsNotAwaitingContinuation
+        
+        case "P2002": ContinueSearchError.radiusExceedsMaximum
+        
         
         default: UnknownError.unKnown(error)
         }

@@ -34,6 +34,12 @@ struct MockSearchRequestService: SearchRequestService {
         return Array(filteredSearches)
     }
     
+    func getSearch(for searchId: String) async throws -> Search {
+        try? await Task.sleep(for: .seconds(2))
+
+        return Search.samples.first { $0.id == searchId }!
+    }
+    
     func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail] {
         try? await Task.sleep(for: .seconds(2))
         
@@ -45,5 +51,11 @@ struct MockSearchRequestService: SearchRequestService {
             .filter { drugIds.contains($0.id) }
         
         return Array(filteredSarchDrugDetails)
+    }
+    
+    func continueSearch(request: ContinueSearchRequest) async throws -> Int {
+        try? await Task.sleep(for: .seconds(2))
+        
+        return 2
     }
 }

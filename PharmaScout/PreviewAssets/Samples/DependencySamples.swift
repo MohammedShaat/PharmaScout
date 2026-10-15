@@ -51,6 +51,10 @@ extension MockDeviceTokenService {
     static let sample = MockDeviceTokenService()
 }
 
+extension MockAppConfigService {
+    static let sample = MockAppConfigService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,

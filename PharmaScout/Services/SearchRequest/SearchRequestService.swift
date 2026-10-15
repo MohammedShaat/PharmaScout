@@ -14,5 +14,9 @@ protocol SearchRequestService {
     
     func getSearches(_ params: GetSearchesParams) async throws -> [Search]
     
+    func getSearch(for searchId: String) async throws -> Search
+    
     func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail]
+    
+    func continueSearch(request: ContinueSearchRequest) async throws -> Int
 }

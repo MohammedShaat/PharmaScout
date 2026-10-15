@@ -115,6 +115,7 @@ class SearchViewModel {
         let request = SearchRequest(
             latitude: coordinate.latitude,
             longitude: coordinate.longitude,
+            radiusMeters: distanceMeters,
             fulfilmentMode: fulfilmentMode,
             acceptSubstitute: acceptSubstitutes,
             drugs: selectedDrugs.map { SearchItemRequest(from: $0) },

@@ -15,6 +15,7 @@ struct PatientTabView: View {
     private let pharmacySerivce: PharmacyService
     private let directionsService: DirectionsService
     private let pushTokenCoordinator: PushTokenCoordinator
+    private let appConfigService: AppConfigService
     
     @State private var vm = PatientTabViewModel()
     
@@ -25,7 +26,8 @@ struct PatientTabView: View {
         locationService: LocationService,
         pharmacySerivce: PharmacyService,
         directionsService: DirectionsService,
-        pushTokenCoordinator: PushTokenCoordinator
+        pushTokenCoordinator: PushTokenCoordinator,
+        appConfigService: AppConfigService
     ) {
         self.authService = authService
         self.drugService = drugService
@@ -34,6 +36,7 @@ struct PatientTabView: View {
         self.pharmacySerivce = pharmacySerivce
         self.directionsService = directionsService
         self.pushTokenCoordinator = pushTokenCoordinator
+        self.appConfigService = appConfigService
     }
     
     var body: some View {
@@ -47,7 +50,7 @@ struct PatientTabView: View {
             }
             
             Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {
-                RecentSearchesScreen(path: $vm.recentSearchsPath, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm)
+                RecentSearchesScreen(path: $vm.recentSearchsPath, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm, appConfigService: appConfigService)
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
@@ -90,6 +93,7 @@ struct PatientTabView: View {
         locationService: MockLocationService.sample,
         pharmacySerivce: MockPharmacyService.sample,
         directionsService: MockDirectionsSrevice.sample,
-        pushTokenCoordinator: .sample
+        pushTokenCoordinator: .sample,
+        appConfigService: MockAppConfigService.sample
     )
 }
