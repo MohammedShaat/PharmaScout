@@ -49,12 +49,33 @@ struct DefaultSearchRequestService: SearchRequestService {
         let getSearchesFunc = SupabaseManager.Database.Functions.getSearches.self
         
         do {
-            let searchs: [Search] = try await supabase
+            let searches: [Search] = try await supabase
                 .rpc(getSearchesFunc.name, params: params)
                 .execute()
                 .value
             
-            return searchs
+            return searches
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getSearch(for searchId: String) async throws -> Search {
+        let getSearchFunc = SupabaseManager.Database.Functions.getSearch.self
+        let params = getSearchFunc.Params.self
+        
+        do {
+            let search: Search = try await supabase
+                .rpc(
+                    getSearchFunc.name,
+                    params: [params.searchId: searchId]
+                )
+                .single()
+                .execute()
+                .value
+            
+            return search
             
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
@@ -71,6 +92,23 @@ struct DefaultSearchRequestService: SearchRequestService {
                 .value
             
             return searchs
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func continueSearch(request: ContinueSearchRequest) async throws -> Int {
+        let continueSearchFunc = SupabaseManager.Database.Functions.continueSearch.self
+        
+        do {
+            let pharmacyCount: Int = try await supabase
+                .rpc(continueSearchFunc.name, params: request)
+                .single()
+                .execute()
+                .value
+            
+            return pharmacyCount
             
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)

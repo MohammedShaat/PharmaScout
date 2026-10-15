@@ -166,6 +166,20 @@ extension SupabaseManager {
                     static let platform = "platform"
                 }
             }
+            
+            enum appConfig {
+                static let name = "app_config"
+                
+                enum Column {
+                    static let key = "key"
+                    static let value = "value"
+                }
+                
+                enum Key {
+                    static let maxSearchRadiusMeters = "max_search_radius_meters"
+                    static let minSearchExpansionStepMeters = "min_search_expansion_step_meters"
+                }
+            }
         }
         
         
@@ -229,6 +243,14 @@ extension SupabaseManager {
                     static let limit = "p_limit"
                     static let offset = "p_offset"
                     static let onlyPending = "p_only_pending"
+                }
+            }
+            
+            enum getSearch {
+                static let name = "get_search"
+                
+                enum Params {
+                    static let searchId = "p_search_id"
                 }
             }
             
@@ -363,6 +385,15 @@ extension SupabaseManager {
                 enum Params {
                     static let token = "p_token"
                     static let platform = "p_platform"
+                }
+            }
+            
+            enum continueSearch {
+                static let name = "continue_search"
+                
+                enum Params {
+                    static let searchId = "p_search_id"
+                    static let radiusMeters = "p_radius_meters"
                 }
             }
         }

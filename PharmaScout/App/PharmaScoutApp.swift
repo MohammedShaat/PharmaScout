@@ -20,6 +20,7 @@ struct PharmaScoutApp: App {
     private let inquiryService: InquiryService = DefaultInquiryService()
     private let analyticsService: AnalyticsService = DefaultAnalyticsService()
     private let deviceTokenService: DeviceTokenService = DefaultDeviceTokenService()
+    private let appConfigService: AppConfigService = DefaultAppConfigService()
     
     @State private var router: AppRouter
     private let pushTokenCooridnator: PushTokenCoordinator
@@ -46,7 +47,8 @@ struct PharmaScoutApp: App {
                 directionsService: directionsService,
                 inquiryService: inquiryService,
                 analyticsService: analyticsService,
-                pushTokenCoordinator: pushTokenCooridnator
+                pushTokenCoordinator: pushTokenCooridnator,
+                appConfigService: appConfigService,
             )
             .onOpenURL { url in
                 Task {
