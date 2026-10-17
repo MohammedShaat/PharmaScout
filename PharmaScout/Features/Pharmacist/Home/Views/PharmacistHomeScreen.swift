@@ -98,7 +98,7 @@ struct PharmacistHomeScreen: View {
                         ForEach(vm.latestPendingInquiries) { inquiry in
                             InquiryView(inquiry)
                                 .clickable {
-                                    pharmacistTabViewModel.navigateToInquiryDetailScreen(inquiry)
+                                    pharmacistTabViewModel.navigateToInquiryDetailScreenBy(inquiry)
                                 }
                         }
                     }

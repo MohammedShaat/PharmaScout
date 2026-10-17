@@ -10,7 +10,8 @@ import Foundation
 @Observable
 class InquiryDetailViewModel {
     private let inquiryService: InquiryService
-    private(set) var inquiry: Inquiry
+    private(set) var inquiryId: String
+    private(set) var inquiry: Inquiry?
 
     private(set) var canCanResponse: Bool = false
     var responseIsValid: Bool {
@@ -20,15 +21,16 @@ class InquiryDetailViewModel {
     var response: InquiryResponse?
     private(set) var substituteSelectedDrug: SelectedDrug?
 
-    private(set) var refreshInquiryLoadingState = LoadingState()
+    private(set) var inquiryLoadingState = LoadingState()
     private(set) var responseLoadingState = LoadingState()
     private(set) var editEligibilityLoadingState = LoadingState()
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(inquiryService: InquiryService, inquiry: Inquiry) {
+    init(inquiryService: InquiryService, inquiryId: String, inquiry: Inquiry?) {
         self.inquiryService = inquiryService
+        self.inquiryId = inquiryId
         self.inquiry = inquiry
     }
     
@@ -41,29 +43,30 @@ class InquiryDetailViewModel {
         hasStarted = true
         
         firstLoadTask = Task {
-            async let refreshInquiry = refreshInquiry()
+            let refreshing = inquiry != nil
+            async let getInquiry = getInquiry(refresh: refreshing)
             async let checkEditEligibility = checkEditEligibility()
             
-            _ = await (refreshInquiry, checkEditEligibility)
+            _ = await (getInquiry, checkEditEligibility)
         }
     }
     
     func refresh() async {
-        async let refreshInquiry = refreshInquiry()
+        async let refreshInquiry = getInquiry(refresh: true)
         async let checkEditEligibility = checkEditEligibility(refresh: true)
         
         _ = await (refreshInquiry, checkEditEligibility)
     }
     
-    private func refreshInquiry() async {
-        refreshInquiryLoadingState.startLoading(refresh: true)
-        defer { refreshInquiryLoadingState.stopLoading() }
+    private func getInquiry(refresh: Bool = false) async {
+        inquiryLoadingState.startLoading(refresh: refresh)
+        defer { inquiryLoadingState.stopLoading() }
         
         do {
-            inquiry = try await inquiryService.getInquiry(forId: inquiry.id)
+            inquiry = try await inquiryService.getInquiry(forId: inquiryId)
             
         } catch {
-            refreshInquiryLoadingState.fail(error)
+            inquiryLoadingState.fail(error)
             print("Failed to refresh inquiry: ", error)
         }
     }
@@ -73,7 +76,7 @@ class InquiryDetailViewModel {
         defer { editEligibilityLoadingState.stopLoading() }
         
         do {
-            canCanResponse = try await inquiryService.canEditInquiry(forId: inquiry.id)
+            canCanResponse = try await inquiryService.canEditInquiry(forId: inquiryId)
             
         } catch {
             editEligibilityLoadingState.fail(error)
@@ -98,7 +101,7 @@ class InquiryDetailViewModel {
         
         do {
             let params = RespondToInquiryParams(
-                inquiryId: inquiry.id,
+                inquiryId: inquiryId,
                 response: response,
                 substituteDrugFormulationId: substituteSelectedDrug?.formulation.id
             )

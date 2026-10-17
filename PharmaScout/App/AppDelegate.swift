@@ -11,18 +11,24 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     let tokenStream: AsyncStream<String>
     private let tokenContinuation: AsyncStream<String>.Continuation
     
+    let notificationStream: AsyncStream<NotificationRoute>
+    private let notificationContinuation: AsyncStream<NotificationRoute>.Continuation
+    
     override init() {
         (tokenStream, tokenContinuation) = AsyncStream.makeStream(
+            bufferingPolicy: .bufferingNewest(1)
+        )
+        
+        (notificationStream, notificationContinuation) = AsyncStream.makeStream(
             bufferingPolicy: .bufferingNewest(1)
         )
         
         super.init()
     }
     
-    func application(
-        _ application: UIApplication,
-        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil
-    ) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        
+        UNUserNotificationCenter.current().delegate = self
         
         Task {
             do {
@@ -52,10 +58,24 @@ class AppDelegate: NSObject, UIApplicationDelegate {
         tokenContinuation.yield(token)
     }
     
-    func application(
-            _ application: UIApplication,
-            didFailToRegisterForRemoteNotificationsWithError error: Error
-    ) {
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("APNs registration failed:", error)
+    }
+}
+
+
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        guard let route = NotificationRoute(userInfo: userInfo) else {
+            print("Couldn't recognize notification route")
+            return
+        }
+        notificationContinuation.yield(route)
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
+        return [.banner, .sound]
     }
 }

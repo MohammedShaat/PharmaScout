@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PatientTabView: View {
+    private let router: AppRouter
     private let authService: AuthService
     private let drugService: DrugService
     private let searchRequestService: SearchRequestService
@@ -20,6 +21,7 @@ struct PatientTabView: View {
     @State private var vm = PatientTabViewModel()
     
     init(
+        router: AppRouter,
         authService: AuthService,
         drugService: DrugService,
         searchRequestService: SearchRequestService,
@@ -29,6 +31,7 @@ struct PatientTabView: View {
         pushTokenCoordinator: PushTokenCoordinator,
         appConfigService: AppConfigService
     ) {
+        self.router = router
         self.authService = authService
         self.drugService = drugService
         self.searchRequestService = searchRequestService
@@ -62,7 +65,10 @@ struct PatientTabView: View {
             }
         }
         .tint(.theme.textPrimary)	
-        
+        .onChange(of: router.pendingNotificationRoute, initial: true) { oldValue, newValue in
+            guard let route = router.consumePendingPatientNotificationRoute() else { return }
+            vm.handle(route)
+        }
     }
     
     private func tabImage(_ tab: PatientTab) -> String {
@@ -87,6 +93,7 @@ struct PatientTabView: View {
 
 #Preview {
     PatientTabView(
+        router: .sample,
         authService: MockAuthService.sample,
         drugService: MockDrugService.sample,
         searchRequestService: MockSearchRequestService.sample,

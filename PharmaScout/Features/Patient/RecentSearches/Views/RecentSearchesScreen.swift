@@ -68,15 +68,16 @@ struct RecentSearchesScreen: View {
                 .padding(DesignSystem.Spacing.xLarge)
             }
             .customNavBarVisibility(false)
-            .customNavigationDestination(for: Search.self) { search in
+            .customNavigationDestination(for: SearchDetailRoute.self) { route in
                 SearchDetailScreen(
                     searchRequestService: searchRequestService,
                     locationService: locationService,
                     appConfigService: appConfigService,
                     patientTabViewModel: patientTabViewModel,
-                    searchId: search.id,
-                    search: search
+                    searchId: route.searchId,
+                    search: route.search
                 )
+                .id(route.searchId)
             }
             .onDisappear {
                 searchesTask?.cancel()
@@ -87,7 +88,7 @@ struct RecentSearchesScreen: View {
     }
     
     private func searchItemView(_ search: Search) -> some View {
-        CustomNavValueLink(value: search) {
+        CustomNavValueLink(value: SearchDetailRoute(searchId: search.id, search: search)) {
             VStack(alignment: .leading) {
                 VStack(alignment: .leading) {
                     ForEach(search.drugs) { searchDrug in

@@ -72,7 +72,7 @@ struct HomeScreen: View {
             activeSearches: vm.activeSearches,
             loadingState: vm.activeSearchesloadingState
         ) { search in
-            patientTabViewModel.navigateToSearchDetailScreen(for: search)
+            patientTabViewModel.navigateToSearchDetailScreenBy(search)
         }
         .frame(minHeight: 100, alignment: .top)
     }
@@ -84,7 +84,7 @@ struct HomeScreen: View {
         ) {
             patientTabViewModel.navigateToRecentSearchesTab()
         } onSearchTapped: { search in
-            patientTabViewModel.navigateToSearchDetailScreen(for: search)
+            patientTabViewModel.navigateToSearchDetailScreenBy(search)
         }
         .frame(minHeight: 250, alignment: .top)
     }

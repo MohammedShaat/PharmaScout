@@ -32,9 +32,24 @@ class PharmacistTabViewModel {
         selectedTab = .inquiries
     }
     
-    func navigateToInquiryDetailScreen(_ inquiry: Inquiry) {
-        inquiriesPath.append(inquiry)
+    func navigateToInquiryDetailScreenBy(_ inquiry: Inquiry) {
         navigateToInquiriesTab()
+        inquiriesPath = NavigationPath([InquiryDetailRoute(inquiryId: inquiry.id, inquiry: inquiry)])
+    }
+    
+    func navigateToInquiryDetailScreenBy(_ inquiryId: String) {
+        navigateToInquiriesTab()
+        inquiriesPath = NavigationPath([InquiryDetailRoute(inquiryId: inquiryId)])
+    }
+    
+    func handle(_ route: PharmacistNotificationRoute) {
+        switch route {
+        case .inquiries:
+            navigateToInquiriesTab()
+            
+        case .inquiryDetail(let inquiryId):
+            navigateToInquiryDetailScreenBy(inquiryId)
+        }
     }
 }
 

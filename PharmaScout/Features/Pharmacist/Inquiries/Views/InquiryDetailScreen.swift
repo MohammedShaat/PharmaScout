@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+struct InquiryDetailRoute: Hashable {
+    let inquiryId: String
+    var inquiry: Inquiry? = nil
+}
+
 struct InquiryDetailScreen: View {
     private let drugService: DrugService
     
@@ -16,11 +21,13 @@ struct InquiryDetailScreen: View {
     init(
         inquiryService: InquiryService,
         drugService: DrugService,
-        inquiry: Inquiry
+        inquiryId: String,
+        inquiry: Inquiry?
     ) {
         self.drugService = drugService
         let viewModel = InquiryDetailViewModel(
             inquiryService: inquiryService,
+            inquiryId: inquiryId,
             inquiry: inquiry
         )
         self._vm = State(wrappedValue: viewModel)
@@ -36,22 +43,23 @@ struct InquiryDetailScreen: View {
             .padding(DesignSystem.Spacing.xLarge)
         }
         .customNavigationDestination(for: SearchRoute.self) { route in
-            switch route {
-            case .addDrug:
-                DrugSelectionScreen(
-                    drugService: drugService,
-                    selectedFormulationIds: [vm.inquiry.drugFormulation.id]) { selectedDrug in
-                        vm.onSubstituteSelected(selectedDrug)
-                    }
-                
-            case .editDrug(let selectedDrug):
-                DrugSelectionScreen(
-                    drugService: drugService,
-                    editingSelectedDrug: selectedDrug,
-                    selectedFormulationIds: [vm.inquiry.drugFormulation.id]
-                )
+            if let inquiry = vm.inquiry {
+                switch route {
+                case .addDrug:
+                    DrugSelectionScreen(
+                        drugService: drugService,
+                        selectedFormulationIds: [inquiry.drugFormulation.id]) { selectedDrug in
+                            vm.onSubstituteSelected(selectedDrug)
+                        }
+                    
+                case .editDrug(let selectedDrug):
+                    DrugSelectionScreen(
+                        drugService: drugService,
+                        editingSelectedDrug: selectedDrug,
+                        selectedFormulationIds: [inquiry.drugFormulation.id]
+                    )
+                }
             }
-            
         }
         .refreshable(action: vm.refresh)
         .onAppear(perform: vm.loadDataIfNeeded)
@@ -62,24 +70,26 @@ struct InquiryDetailScreen: View {
     
     private var infoSection: some View {
         LoadingContentView(
-            LoadingState: vm.refreshInquiryLoadingState,
-            isEmpty: false,
+            LoadingState: vm.inquiryLoadingState,
+            isEmpty: vm.inquiry == nil,
             emptyMessage: "") {
-                VStack {
-                    Text("\(vm.inquiry.genericName) \(vm.inquiry.drugFormulation.title)")
-                    
-                    HStack {
-                        Text("Status: \(vm.inquiry.status.rawValue)")
-                            .foregroundStyle(vm.inquiry.status == .answered ? .theme.success : .theme.textTertiary)
-                        Spacer()
-                        Text("Response: \(vm.inquiry.response?.rawValue ?? "no response")")
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text("Sent: \(vm.inquiry.createdAt.formattedDateTime)")
+                if let inquiry = vm.inquiry {
+                    VStack {
+                        Text("\(inquiry.genericName) \(inquiry.drugFormulation.title)")
                         
-                        if let respondedAt = vm.inquiry.respondedAt {
-                            Text("Responded: \(respondedAt.formattedDateTime)")
+                        HStack {
+                            Text("Status: \(inquiry.status.rawValue)")
+                                .foregroundStyle(inquiry.status == .answered ? .theme.success : .theme.textTertiary)
+                            Spacer()
+                            Text("Response: \(inquiry.response?.rawValue ?? "no response")")
+                        }
+                        
+                        VStack(alignment: .leading) {
+                            Text("Sent: \(inquiry.createdAt.formattedDateTime)")
+                            
+                            if let respondedAt = inquiry.respondedAt {
+                                Text("Responded: \(respondedAt.formattedDateTime)")
+                            }
                         }
                     }
                 }
@@ -130,15 +140,17 @@ struct InquiryDetailScreen: View {
                         }
                         
                         // MARK: - Response button
-                        PrimaryButtonView(
-                            title: vm.inquiry.status == .pending ? "Respond" : "Update",
-                            isDisabled: !vm.responseIsValid,
-                            isLoading: vm.responseLoadingState.status != .idle) {
-                                responseTask?.cancel()
-                                responseTask = Task {
-                                    await vm.sendResponse()
+                        if let inquiry = vm.inquiry{
+                            PrimaryButtonView(
+                                title: inquiry.status == .pending ? "Respond" : "Update",
+                                isDisabled: !vm.responseIsValid,
+                                isLoading: vm.responseLoadingState.status != .idle) {
+                                    responseTask?.cancel()
+                                    responseTask = Task {
+                                        await vm.sendResponse()
+                                    }
                                 }
-                            }
+                        }
                     }
                     .padding(.vertical, DesignSystem.Spacing.large)
                 }
@@ -147,11 +159,14 @@ struct InquiryDetailScreen: View {
 }
 
 #Preview {
+    let inquiry = Inquiry.samples[0]
+    
     CustomNavStack {
         InquiryDetailScreen(
             inquiryService: MockInquiryService.sample,
             drugService: MockDrugService.sample,
-            inquiry: .samples[0]
+            inquiryId: inquiry.id,
+            inquiry: inquiry
         )
     }
 }

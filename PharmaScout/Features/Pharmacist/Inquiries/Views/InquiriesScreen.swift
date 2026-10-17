@@ -43,12 +43,14 @@ struct InquiriesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavigationDestination(for: Inquiry.self) { inquiry in
+            .customNavigationDestination(for: InquiryDetailRoute.self) { route in
                 InquiryDetailScreen(
                     inquiryService: inquiryService,
                     drugService: drugService,
-                    inquiry: inquiry
+                    inquiryId: route.inquiryId,
+                    inquiry: route.inquiry
                 )
+                .id(route.inquiryId)
             }
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
@@ -94,7 +96,7 @@ struct InquiriesScreen: View {
             emptyMessage: "No inquiries yet") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.inquiries) { inquiry in
-                        CustomNavValueLink(value: inquiry) {
+                        CustomNavValueLink(value: InquiryDetailRoute(inquiryId: inquiry.id, inquiry: inquiry)) {
                             InquiryView(inquiry)
                         }
                         .onAppear {

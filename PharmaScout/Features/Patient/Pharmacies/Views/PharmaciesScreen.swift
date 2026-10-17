@@ -77,6 +77,7 @@ struct PharmaciesScreen: View {
                 switch destination {
                 case .details(let pharmacy):
                     PharmacyDetailScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
+                        .id(pharmacy.id)
                     
                 case .map(let pharmacy):
                     if let userCoordinate = vm.userCoordinate {
