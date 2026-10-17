@@ -7,6 +7,11 @@
 
 import SwiftUI
 
+struct SearchDetailRoute: Hashable {
+    let searchId: String
+    var search: Search? = nil
+}
+
 struct SearchDetailScreen: View {
     private let patientTabViewModel: PatientTabViewModel
     @State private var vm: SearchDetailViewModel
@@ -18,7 +23,7 @@ struct SearchDetailScreen: View {
         appConfigService: AppConfigService,
         patientTabViewModel: PatientTabViewModel,
         searchId: String,
-        search: Search
+        search: Search?
     ) {
         self.patientTabViewModel = patientTabViewModel
         let viewModel = SearchDetailViewModel(

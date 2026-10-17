@@ -64,6 +64,9 @@ struct PharmaScoutApp: App {
             .task {
                 await pushTokenCooridnator.observeAuthState(authService.authState)
             }
+            .task {
+                await router.observeNotificationRoute(appDelegate.notificationStream)
+            }
         }
     }
 }

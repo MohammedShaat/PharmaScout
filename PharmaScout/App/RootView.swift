@@ -74,10 +74,10 @@ struct RootView: View {
                 AuthenticationStateErrorScreen(error: error)
                 
             case .patient:
-                PatientTabView(authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService)
+                PatientTabView(router: router, authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService)
             
             case .pharmacist:
-                PharmacistTabView(authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
+                PharmacistTabView(router: router, authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
             }
             
         }

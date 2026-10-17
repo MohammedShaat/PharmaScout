@@ -23,17 +23,29 @@ class PatientTabViewModel {
     }
     
     func navigateToPharmacyDetailScreen(for pharmacy: Pharmacy) {
-        pharmacyPath.append(PharmacyDestination.details(pharmacy))
         navigateToPharmaciesTab()
+        pharmacyPath = NavigationPath([PharmacyDestination.details(pharmacy)])
     }
     
     func navigateToRecentSearchesTab() {
         selectedTab = .recentSearches
     }
     
-    func navigateToSearchDetailScreen(for search: Search) {
-        recentSearchsPath.append(search)
+    func navigateToSearchDetailScreenBy(_ search: Search) {
         navigateToRecentSearchesTab()
+        recentSearchsPath = NavigationPath([SearchDetailRoute(searchId: search.id, search: search)])
+    }
+    
+    func navigateToSearchDetailScreenBy(_ searchId: String) {
+        navigateToRecentSearchesTab()
+        recentSearchsPath = NavigationPath([SearchDetailRoute(searchId: searchId)])
+    }
+    
+    func handle(_ route: PatientNotificationRoute) {
+        switch route {
+        case .searchDetail(let searchId):
+            navigateToSearchDetailScreenBy(searchId)
+        }
     }
 }
 

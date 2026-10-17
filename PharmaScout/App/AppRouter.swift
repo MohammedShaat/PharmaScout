@@ -15,6 +15,8 @@ class AppRouter {
     private(set) var destination: Destination = .loading
     private(set) var authSession: AuthSession?
     
+    private(set) var pendingNotificationRoute: NotificationRoute?
+    
     init(authService: AuthService) {
         self.authService = authService
     }
@@ -47,26 +49,51 @@ class AppRouter {
             authSession = authService.authSession
 
             switch state {
+            // MARK: Authenticated
             case .authenticated:
                 switch authSession?.role {
                 case .patient:
                     destination = .patient
+                    
                 case .pharmacist:
                     destination = .pharmacist
+                    
                 case nil:
                     destination = .authStateError(AppAuthError.sessionMissing)
                 }
                 
+            // MARK: Unauthenticated
             case .non:
                 destination = .authentication
+                pendingNotificationRoute = nil
                 
+            // MARK: Passwrod reset
             case .passwordReset:
                 destination = .resetPassword
                 
+            // MARK: Error
             case .failed(let error):
                 destination = .authStateError(error)
             }
         }
+    }
+    
+    func observeNotificationRoute(_ notificationRouteStream: AsyncStream<NotificationRoute>) async {
+        for await route in notificationRouteStream {
+            pendingNotificationRoute = route
+        }
+    }
+    
+    func consumePendingPatientNotificationRoute() -> PatientNotificationRoute? {
+        defer { pendingNotificationRoute = nil }
+        guard case .patient(let route) = pendingNotificationRoute else { return nil }
+        return route
+    }
+    
+    func consumePendingPharmacistNotificationRoute() -> PharmacistNotificationRoute? {
+        defer { pendingNotificationRoute = nil }
+        guard case .pahrmacist(let route) = pendingNotificationRoute else { return nil }
+        return route
     }
     
     func onPasswordResetSucceeed() {
@@ -87,3 +114,5 @@ enum Destination {
     case patient
     case pharmacist
 }
+
+
