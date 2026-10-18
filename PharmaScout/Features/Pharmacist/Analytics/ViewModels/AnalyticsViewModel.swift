@@ -9,12 +9,10 @@ import Foundation
 
 @Observable
 class AnalyticsViewModel {
-    private let authService: AuthService
+    private let staffMembership: StaffMembership
     private let analyticsService: AnalyticsService
     
-    private var pharmacyId: String? {
-        authService.authSession?.pharmacyStaff?.pharmacyId
-    }
+    private var pharmacyId: String { staffMembership.pharmacyId }
     
     var analyticsType: AnalyticsType = .pharmacySearch
     var period: AnalyticsPeriod = .thirtyDays
@@ -28,8 +26,8 @@ class AnalyticsViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(authService: AuthService, analyticsService: AnalyticsService) {
-        self.authService = authService
+    init(staffMembership: StaffMembership, analyticsService: AnalyticsService) {
+        self.staffMembership = staffMembership
         self.analyticsService = analyticsService
     }
 
@@ -60,12 +58,6 @@ class AnalyticsViewModel {
     }
     
     private func loadPharmacySearchAnalytics(refresh: Bool = false) async {
-        guard let pharmacyId else {
-            pharmacyAnalyticsLoadingState.fail(PharmacyStaffError.notFound)
-            print("Failed to load pharmacy search analytics. No pharmacy id")
-            return
-        }
-        
         pharmacyAnalyticsLoadingState.startLoading(refresh: refresh)
         defer { pharmacyAnalyticsLoadingState.stopLoading() }
         
@@ -84,12 +76,6 @@ class AnalyticsViewModel {
     }
     
     private func loadRegionalDemandAnalytics(refresh: Bool = false) async {
-        guard let pharmacyId else {
-            regionalAnalyticsLoadingState.fail(PharmacyStaffError.notFound)
-            print("Failed to load regional demand analytics. No pharmacy id")
-            return
-        }
-        
         regionalAnalyticsLoadingState.startLoading(refresh: refresh)
         defer { regionalAnalyticsLoadingState.stopLoading() }
         

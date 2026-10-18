@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PharmacyScreen: View {
+    private let staffMembership: StaffMembership
     private let authService: AuthService
     private let pharmacyService: PharmacyService
     
@@ -15,14 +16,16 @@ struct PharmacyScreen: View {
     @State private var path = NavigationPath()
     
     init(
+        staffMembership: StaffMembership,
         authService: AuthService,
         pharmacyService: PharmacyService
     ) {
+        self.staffMembership = staffMembership
         self.authService = authService
         self.pharmacyService = pharmacyService
         
         let viewModel = PharmacyViewModel(
-            authService: authService,
+            staffMembership: staffMembership,
             pharmacyService: pharmacyService
         )
         self._vm = State(wrappedValue: viewModel)
@@ -148,6 +151,7 @@ enum PharmacyRoute {
 
 #Preview {
     PharmacyScreen(
+        staffMembership: .samples[0],
         authService: MockAuthService.sample,
         pharmacyService: MockPharmacyService.sample
     )

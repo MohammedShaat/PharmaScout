@@ -177,7 +177,23 @@ extension SupabaseManager {
                 
                 enum Key {
                     static let maxSearchRadiusMeters = "max_search_radius_meters"
-                    static let minSearchExpansionStepMeters = "min_search_expansion_step_meters"
+                }
+            }
+            
+            enum ownerApplication {
+                static let name = "owner_application"
+                
+                enum Column {
+                    static let id = "id"
+                    static let code = "code"
+                    static let createdBy = "created_by"
+                    static let applicantId = "applicant_id"
+                    static let status = "status"
+                    static let expiresAt = "expires_at"
+                    static let redeemedAt = "redeemed_at"
+                    static let reviewedBy = "reviewed_by"
+                    static let reviewedAt = "reviewed_at"
+                    static let createdAt = "created_at"
                 }
             }
         }
@@ -303,12 +319,16 @@ extension SupabaseManager {
                 }
             }
             
-            enum getPharmacyStaffMemberByUserId {
-                static let name = "get_pharmacy_staff_member_by_user_id"
+            enum getPharmacyStaffMemberIfAvailable {
+                static let name = "get_pharmacy_staff_member_if_available"
                 
                 enum Params {
                     static let userId = "p_user_id"
                 }
+            }
+            
+            enum getMyAccountState {
+                static let name = "get_my_account_state"
             }
             
             enum getPharmacyStaff {
@@ -401,8 +421,51 @@ extension SupabaseManager {
                 static let name = "create_owner_code"
             }
             
+            enum applyForPharmacyOwnership {
+                static let name = "redeem_owner_code"
+                
+                enum Params {
+                    static let code = "p_code"
+                }
+            }
+            
             enum isAdmin {
                 static let name = "is_admin"
+            }
+            
+            enum getOwnerApplications {
+                static let name = "get_owner_applications"
+                
+                enum Params {
+                    static let limit = "p_limit"
+                    static let offset = "p_offset"
+                    static let filter = "p_filter"
+                }
+            }
+            
+            enum getOwnerApplication {
+                static let name = "get_owner_application"
+                
+                enum Params {
+                    static let id = "p_id"
+                }
+            }
+            
+            enum revokeOwnerApplication {
+                static let name = "revoke_owner_code"
+                
+                enum Params {
+                    static let applicationId = "p_application_id"
+                }
+            }
+            
+            enum reviewOwnerApplication {
+                static let name = "review_owner_application"
+                
+                enum Params {
+                    static let applicationId = "p_application_id"
+                    static let approve = "p_approve"
+                }
             }
         }
     }

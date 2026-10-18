@@ -9,13 +9,16 @@ import Foundation
 
 @Observable
 class PharmacistHomeViewModel {
+    let staffMembership: StaffMembership
     private let authService: AuthService
     private let inquiryService: InquiryService
     
     var authSession: AuthSession? { authService.authSession }
     var isAuthorized: Bool {
-        authSession?.pharmacyStaff?.status == .approved
+        staffMembership.staffStatus == .approved
     }
+    var pharmacyId: String { staffMembership.pharmacyId }
+    
     var hasUnreadNotifications: Bool = true
     
     private(set) var latestPendingInquiries: [Inquiry] = []
@@ -30,7 +33,8 @@ class PharmacistHomeViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(authService: AuthService, inquiryService: InquiryService) {
+    init(staffMembership: StaffMembership, authService: AuthService, inquiryService: InquiryService) {
+        self.staffMembership = staffMembership
         self.authService = authService
         self.inquiryService = inquiryService
     }
@@ -80,13 +84,6 @@ class PharmacistHomeViewModel {
     }
     
     private func loadPendingInquiries(refresh: Bool = false) async {
-        guard let pharmacyId = authSession?.pharmacyStaff?.pharmacyId
-        else {
-            latestPendingInquiriesLoadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         latestPendingInquiriesLoadingState.startLoading(refresh: refresh)
         defer { latestPendingInquiriesLoadingState.stopLoading() }
         
@@ -106,13 +103,6 @@ class PharmacistHomeViewModel {
     }
     
     private func getNumberOfTodaysInquiries(refresh: Bool = false) async {
-        guard let pharmacyId = authSession?.pharmacyStaff?.pharmacyId
-        else {
-            todaysInquiriesCountLoadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         todaysInquiriesCountLoadingState.startLoading(refresh: refresh)
         defer { todaysInquiriesCountLoadingState.stopLoading() }
         

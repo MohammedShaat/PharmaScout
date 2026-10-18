@@ -29,11 +29,11 @@ struct AdminTabView: View {
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
-            Tab("Home", image: tabImage(.home), value: .home) {
-                
+            Tab("Applications", image: tabImage(.applications), value: .applications) {
+                OwnerApplicationsScreen(ownerApplicationService: ownerApplicationService)
             }
             
-            Tab("Invite", image: tabImage(.invitation), value: .invitation) {
+            Tab("Invite", image: tabImage(.invite), value: .invite) {
                 OwnerInvitationScreen(ownerApplicationService: ownerApplicationService)
             }
             
@@ -46,9 +46,9 @@ struct AdminTabView: View {
     
     private func tabImage(_ tab: AdminTab) -> String {
         switch tab {
-        case .home:
-            isSelected(tab) ? "home-fill" : "home"
-        case .invitation:
+        case .applications:
+            isSelected(tab) ? "clipboard-fill" : "clipboard"
+        case .invite:
             isSelected(tab) ? "person-plus-fill" : "person-plus"
         case .profile:
             isSelected(tab) ? "profile-fill" : "profile"

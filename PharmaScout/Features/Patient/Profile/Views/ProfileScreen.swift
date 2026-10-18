@@ -10,6 +10,7 @@ import SwiftUI
 struct ProfileScreen: View {
     private let authService: AuthService
     private let pharmacyService: PharmacyService
+    private let ownerApplicationService: OwnerApplicationService
     
     @State private var vm: ProfileViewModel
     @State private var task: Task<Void, Never>?
@@ -17,10 +18,12 @@ struct ProfileScreen: View {
     init(
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
-        pharmacyService: PharmacyService
+        pharmacyService: PharmacyService,
+        ownerApplicationService: OwnerApplicationService
     ) {
         self.authService = authService
         self.pharmacyService = pharmacyService
+        self.ownerApplicationService = ownerApplicationService
         
         let viewModel = ProfileViewModel(
             authService: authService,
@@ -34,6 +37,8 @@ struct ProfileScreen: View {
             Form {
                 joinPharmacy
                 
+                becomePharmacyOwner
+                
                 logout
             }
             .customBackButtonVisibility(false)
@@ -41,6 +46,9 @@ struct ProfileScreen: View {
                 switch route {
                 case .joinPharmacy:
                     JoinPharmacyScreen(authService: authService, pharmacyService: pharmacyService)
+                    
+                case .becomePharmacyOwner:
+                    BecomePharmacyOwnerScreen(ownerApplicationService: ownerApplicationService)
                 }
             }
             .onDisappear {
@@ -54,6 +62,15 @@ struct ProfileScreen: View {
         if vm.canJoinPharmacy {
             CustomNavValueLink(value: ProfileRoute.joinPharmacy) {
                 Text("Join a pharmacy")
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var becomePharmacyOwner: some View {
+        if vm.canJoinPharmacy {
+            CustomNavValueLink(value: ProfileRoute.becomePharmacyOwner) {
+                Text("Become a pharmacy owner")
             }
         }
     }
@@ -79,12 +96,14 @@ struct ProfileScreen: View {
 
 enum ProfileRoute {
     case joinPharmacy
+    case becomePharmacyOwner
 }
 
 #Preview {
     ProfileScreen(
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,
-        pharmacyService: MockPharmacyService.sample
+        pharmacyService: MockPharmacyService.sample,
+        ownerApplicationService: MockOwnerApplicationService.sample
     )
 }

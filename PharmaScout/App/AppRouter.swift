@@ -51,15 +51,18 @@ class AppRouter {
             switch state {
             // MARK: Authenticated
             case .authenticated:
-                switch authSession?.role {
+                switch authSession?.accountState {
                 case .patient:
                     destination = .patient
                     
-                case .pharmacist:
-                    destination = .pharmacist
+                case .pharmacist(let staffMembership):
+                    destination = .pharmacist(staffMembership)
                     
                 case .admin:
                     destination = .admin
+                    
+                case .approvedOwner:
+                    destination = .approvedOwner
                     
                 case nil:
                     destination = .authStateError(AppAuthError.sessionMissing)
@@ -115,6 +118,7 @@ enum Destination {
     case resetPassword
     case authStateError(Error)
     case patient
-    case pharmacist
+    case pharmacist(StaffMembership)
     case admin
+    case approvedOwner
 }

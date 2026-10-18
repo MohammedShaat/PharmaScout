@@ -13,7 +13,11 @@ class ProfileViewModel {
     private let pushTokenCoordinator: PushTokenCoordinator
     
     var canJoinPharmacy: Bool {
-        authService.authSession?.role != .pharmacist
+        if case .pharmacist = authService.authSession?.accountState {
+            return false
+        } else {
+            return true
+        }
     }
     
     private(set) var logoutLoadingState = LoadingState()

@@ -103,17 +103,12 @@ class DefaultAuthService: AuthService {
         }
     }
     
-    private func getPharmacyStaffIfAvailable(userId: String) async throws -> PharmacyStaffMember? {
-        let getPharmacyStaffMemberByUserIdFunc = SupabaseManager.Database.Functions.getPharmacyStaffMemberByUserId.self
-        let params = getPharmacyStaffMemberByUserIdFunc.Params.self
+    private func getAccountState() async throws -> AccountState {
+        let getPharmacyStaffMemberByUserIdFunc = SupabaseManager.Database.Functions.getMyAccountState.self
         
         do {
-            let pharmacyStaff: PharmacyStaffMember? = try await supabase
-                .rpc(
-                    getPharmacyStaffMemberByUserIdFunc.name,
-                    params: [params.userId: userId]
-                )
-                .maybeSingle()
+            let pharmacyStaff: AccountState = try await supabase
+                .rpc(getPharmacyStaffMemberByUserIdFunc.name)
                 .execute()
                 .value
             
@@ -124,39 +119,12 @@ class DefaultAuthService: AuthService {
         }
     }
     
-    private func isAdmin() async throws -> Bool {
-        let isAdminFunc = SupabaseManager.Database.Functions.isAdmin.self
-        
-        do {
-            let isAdmin: Bool = try await supabase
-                .rpc(isAdminFunc.name)
-                .single()
-                .execute()
-                .value
-            
-            return isAdmin
-            
-        } catch {
-            throw SupabaseErrorMapper.mapDatabseError(error)
-        }
-    }
-    
     private func makeAuthSession(_ session: Session) async throws -> AuthSession {
         let user = AppUser(from: session.user)
         
-        let isAdmin = try await isAdmin()
-        let pharmacyStaff = try await getPharmacyStaffIfAvailable(userId: user.id)
+        let accountState = try await getAccountState()
         
-        let role: UserRole
-        if isAdmin {
-            role = .admin
-        } else if pharmacyStaff != nil {
-            role = .pharmacist
-        } else {
-            role = .patient
-        }
-        
-        return AuthSession(user: user, role: role, pharmacyStaff: pharmacyStaff)
+        return AuthSession(user: user, accountState: accountState)
     }
 }
 

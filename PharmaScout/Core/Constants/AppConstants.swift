@@ -39,6 +39,7 @@ enum AppConstants {
     }
 
     enum Pharmacy {
-        static let joinCodeLength = 8
+        static let joinPharmacyCodeLength = 8
+        static let ownerApplicationCodeLength = 8
     }
 }

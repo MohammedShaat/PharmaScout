@@ -55,18 +55,11 @@ struct JoinPharmacyScreen: View {
     }
     
     private var instructionAndInputSection: some View {
-        VStack(spacing: DesignSystem.Spacing.xxLarge) {
-            VStack(spacing: DesignSystem.Spacing.medium) {
-                Text("Enter the code to send membership request")
-                    .font(.title)
-                    .multilineTextAlignment(.center)
-                
-                Text("The code must be 6 characters long.")
-            }
-            
-            TextFieldView(title: $vm.code, placeholder: "Enter the code here")
-                .frame(maxWidth: 200)
-        }
+        InvitationCodeEntryView(
+            title: "Enter the code to send membership request",
+            code: $vm.code,
+            codeLength: vm.codeLength
+        )
         .padding(.vertical, DesignSystem.Spacing.xxLarge)
     }
     

@@ -9,11 +9,11 @@ import Foundation
 
 @Observable
 class AdminTabViewModel {
-    var selectedTab: AdminTab = .home
+    var selectedTab: AdminTab = .applications
 }
 
 enum AdminTab {
-    case home
-    case invitation
+    case applications
+    case invite
     case profile
 }

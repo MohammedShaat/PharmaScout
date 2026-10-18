@@ -10,22 +10,19 @@ import SwiftUI
 
 @Observable
 class PharmacistTabViewModel {
-    private let authService: AuthService
+    private let membership: StaffMembership
     var selectedTab: PharmacistTab = .home
     var inquiriesPath = NavigationPath()
     
-    var authSession: AuthSession? {
-        authService.authSession
-    }
     var isAuthorized: Bool {
-        authSession?.pharmacyStaff?.status == .approved
+        membership.staffStatus == .approved
     }
     var isOwner: Bool {
-        authSession?.pharmacyStaff?.role == .owner
+        membership.role == .owner
     }
     
-    init(authService: AuthService) {
-        self.authService = authService
+    init(staffMembership: StaffMembership) {
+        self.membership = staffMembership
     }
     
     func navigateToInquiriesTab() {
