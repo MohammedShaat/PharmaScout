@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct JoinCode: nonisolated Codable {
+struct InvitaionCode: nonisolated Codable {
     let code: String
     let expiresAt: Date
 }

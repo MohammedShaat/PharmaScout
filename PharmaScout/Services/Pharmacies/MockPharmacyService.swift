@@ -83,18 +83,17 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func getActiveJoinCode(for pharmacyId: String) async throws -> JoinCode? {
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitaionCode? {
         try? await Task.sleep(for: .seconds(2))
         
         let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
-        return JoinCode(code: "A7K2M9", expiresAt: expirationDate)
+        return InvitaionCode(code: "A7K2M9", expiresAt: expirationDate)
     }
     
-    func generateJoinCode(for pharmacyId: String) async throws -> JoinCode {
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitaionCode {
         try? await Task.sleep(for: .seconds(2))
         
-        let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
-        return JoinCode(code: "A7K2M9", expiresAt: expirationDate)
+        return .sample
     }
     
     func joinPharmacy(code: String) async throws -> String {

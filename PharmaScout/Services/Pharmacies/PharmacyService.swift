@@ -34,9 +34,9 @@ protocol PharmacyService {
     
     func deleteStaffMembers(ids: [String]) async throws
     
-    func getActiveJoinCode(for pharmacyId: String) async throws -> JoinCode?
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitaionCode?
     
-    func generateJoinCode(for pharmacyId: String) async throws -> JoinCode
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitaionCode
     
     func joinPharmacy(code: String) async throws -> String
 }

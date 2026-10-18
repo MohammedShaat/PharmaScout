@@ -55,6 +55,10 @@ extension MockAppConfigService {
     static let sample = MockAppConfigService()
 }
 
+extension MockOwnerApplicationService {
+    static let sample = MockOwnerApplicationService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,
