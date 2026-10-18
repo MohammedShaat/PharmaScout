@@ -45,33 +45,12 @@ struct JoinCodeScreen: View {
             isEmpty: vm.joinCode == nil,
             emptyMessage: "") {
                 if let joinCode = vm.joinCode {
-                    Text("Share this 6-character code with staff members who want to join your pharmacy.")
-                        .font(.title3)
-                        .multilineTextAlignment(.center)
-                    
-                    VStack(spacing: DesignSystem.Spacing.large) {
-                        Text(joinCode.code)
-                            .font(.title2)
-                        
-                        HStack(spacing: DesignSystem.Spacing.xLarge) {
-                            Button {
-                                UIPasteboard.general.string = joinCode.code
-                                
-                            } label: {
-                                Image(systemName: "doc.on.doc")
-                            }
-                         
-                            ShareLink(
-                                item: joinCode.code,
-                                subject: Text("Pharmacy Join Code"),
-                                message: Text("Use this code to join our pharmacy.")
-                            ) {
-                                Image(systemName: "square.and.arrow.up")
-                            }
-                        }
-                        .font(.headline)
-                    }
-                    .padding(.vertical, DesignSystem.Spacing.xxLarge)
+                    InvitationCodeView(
+                        title: "Share this 6-character code with staff members who want to join your pharmacy.",
+                        invitationCode: joinCode,
+                        shareLinkSubject: "Pharmacy Join Code",
+                        shareLinkMessage: "Use this code to join our pharmacy."
+                    )
                 }
             }
     }

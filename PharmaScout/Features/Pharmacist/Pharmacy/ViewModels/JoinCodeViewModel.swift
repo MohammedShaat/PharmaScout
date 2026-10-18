@@ -12,7 +12,7 @@ class JoinCodeViewModel {
     private let pharmacyService: PharmacyService
     private let pharmacy: Pharmacy
     
-    private(set) var joinCode: JoinCode?
+    private(set) var joinCode: InvitaionCode?
     
     private(set) var loadingState = LoadingState()
     

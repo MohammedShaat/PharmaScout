@@ -58,6 +58,9 @@ class AppRouter {
                 case .pharmacist:
                     destination = .pharmacist
                     
+                case .admin:
+                    destination = .admin
+                    
                 case nil:
                     destination = .authStateError(AppAuthError.sessionMissing)
                 }
@@ -113,6 +116,5 @@ enum Destination {
     case authStateError(Error)
     case patient
     case pharmacist
+    case admin
 }
-
-

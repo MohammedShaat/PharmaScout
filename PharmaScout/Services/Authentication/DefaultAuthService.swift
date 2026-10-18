@@ -124,10 +124,37 @@ class DefaultAuthService: AuthService {
         }
     }
     
+    private func isAdmin() async throws -> Bool {
+        let isAdminFunc = SupabaseManager.Database.Functions.isAdmin.self
+        
+        do {
+            let isAdmin: Bool = try await supabase
+                .rpc(isAdminFunc.name)
+                .single()
+                .execute()
+                .value
+            
+            return isAdmin
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
     private func makeAuthSession(_ session: Session) async throws -> AuthSession {
         let user = AppUser(from: session.user)
+        
+        let isAdmin = try await isAdmin()
         let pharmacyStaff = try await getPharmacyStaffIfAvailable(userId: user.id)
-        let role: UserRole = pharmacyStaff != nil ? .pharmacist : .patient
+        
+        let role: UserRole
+        if isAdmin {
+            role = .admin
+        } else if pharmacyStaff != nil {
+            role = .pharmacist
+        } else {
+            role = .patient
+        }
         
         return AuthSession(user: user, role: role, pharmacyStaff: pharmacyStaff)
     }

@@ -396,6 +396,14 @@ extension SupabaseManager {
                     static let radiusMeters = "p_radius_meters"
                 }
             }
+            
+            enum createOwnerCode {
+                static let name = "create_owner_code"
+            }
+            
+            enum isAdmin {
+                static let name = "is_admin"
+            }
         }
     }
 }

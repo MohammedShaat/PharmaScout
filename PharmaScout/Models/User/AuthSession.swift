@@ -16,4 +16,5 @@ struct AuthSession {
 enum UserRole {
     case patient
     case pharmacist
+    case admin
 }

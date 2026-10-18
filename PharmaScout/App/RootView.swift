@@ -21,6 +21,7 @@ struct RootView: View {
     private let analyticsService: AnalyticsService
     private let pushTokenCoordinator: PushTokenCoordinator
     private let appConfigService: AppConfigService
+    private let ownerApplicationService: OwnerApplicationService
     
     init(
         router: AppRouter,
@@ -35,7 +36,8 @@ struct RootView: View {
         inquiryService: InquiryService,
         analyticsService: AnalyticsService,
         pushTokenCoordinator: PushTokenCoordinator,
-        appConfigService: AppConfigService
+        appConfigService: AppConfigService,
+        ownerApplicationService: OwnerApplicationService
     ) {
         self.router = router
         self.authService = authService
@@ -50,6 +52,7 @@ struct RootView: View {
         self.analyticsService = analyticsService
         self.pushTokenCoordinator = pushTokenCoordinator
         self.appConfigService = appConfigService
+        self.ownerApplicationService = ownerApplicationService
     }
     
     var body: some View {
@@ -78,6 +81,9 @@ struct RootView: View {
             
             case .pharmacist:
                 PharmacistTabView(router: router, authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
+                
+            case .admin:
+                AdminTabView(authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService)
             }
             
         }
@@ -102,7 +108,8 @@ struct RootView: View {
         inquiryService: MockInquiryService.sample,
         analyticsService: MockAnalyticsService.sample,
         pushTokenCoordinator: .sample,
-        appConfigService: MockAppConfigService.sample
+        appConfigService: MockAppConfigService.sample,
+        ownerApplicationService: MockOwnerApplicationService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()
