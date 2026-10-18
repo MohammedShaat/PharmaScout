@@ -77,13 +77,17 @@ struct RootView: View {
                 AuthenticationStateErrorScreen(error: error)
                 
             case .patient:
-                PatientTabView(router: router, authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService)
+                PatientTabView(router: router, authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService, ownerApplicationService: ownerApplicationService)
             
-            case .pharmacist:
-                PharmacistTabView(router: router, authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
+            case .pharmacist(let staffMembership):
+                PharmacistTabView(router: router, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
                 
             case .admin:
                 AdminTabView(authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService)
+                
+            case .approvedOwner:
+                Text("Approved Owner")
+                    .font(.title)
             }
             
         }

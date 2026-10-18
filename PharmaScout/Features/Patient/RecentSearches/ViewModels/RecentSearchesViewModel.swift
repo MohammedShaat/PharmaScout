@@ -57,11 +57,12 @@ class RecentSearchesViewModel {
                 searches = newSearchs
             } else {
                 searches.append(contentsOf: newSearchs)
+    
+                if newSearchs.isNotEmpty {
+                    loadingState.pagination.nextPage()
+                }
             }
             
-            if newSearchs.isNotEmpty {
-                loadingState.pagination.nextPage()
-            }
             
         } catch {
             loadingState.fail(error)

@@ -9,18 +9,16 @@ import Foundation
 
 @Observable
 class PharmacyViewModel {
-    private let authService: AuthService
+    private let staffMembership: StaffMembership
     private let pharmacyService: PharmacyService
     
-    var authSession: AuthSession? { authService.authSession }
-    var pharmacyId: String? { authSession?.pharmacyStaff?.pharmacyId }
+    var pharmacyId: String { staffMembership.pharmacyId }
+    var isOwner: Bool { staffMembership.role == .owner }
     
     private(set) var pharmacy: Pharmacy?
     private(set) var contacts: [PharmacyContact] = []
     private(set) var workingHours: [WorkingHour] = []
     private(set) var pharmacyStaff: [PharmacyStaffMember] = []
-    
-    var isOwner: Bool { authSession?.pharmacyStaff?.role == .owner }
     
     private(set) var pharmacyLoadingState = LoadingState()
     private(set) var contactLoadingState = LoadingState()
@@ -30,8 +28,8 @@ class PharmacyViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(authService: AuthService, pharmacyService: PharmacyService) {
-        self.authService = authService
+    init(staffMembership: StaffMembership, pharmacyService: PharmacyService) {
+        self.staffMembership = staffMembership
         self.pharmacyService = pharmacyService
     }
     
@@ -65,12 +63,6 @@ class PharmacyViewModel {
     
  
     private func loadPharmacy(refresh: Bool = false) async {
-        guard let pharmacyId else {
-            pharmacyLoadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         pharmacyLoadingState.startLoading(refresh: refresh)
         defer { pharmacyLoadingState.stopLoading() }
         
@@ -85,12 +77,6 @@ class PharmacyViewModel {
     }
     
     private func loadContact(refresh: Bool = false) async {
-        guard let pharmacyId else {
-            contactLoadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         contactLoadingState.startLoading(refresh: refresh)
         defer { contactLoadingState.stopLoading() }
         
@@ -104,12 +90,6 @@ class PharmacyViewModel {
     }
     
     private func loadWorkingHours(refresh: Bool = false) async {
-        guard let pharmacyId else {
-            workingHoursLoadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         workingHoursLoadingState.startLoading(refresh: refresh)
         defer { workingHoursLoadingState.stopLoading() }
         
@@ -123,12 +103,6 @@ class PharmacyViewModel {
     }
     
     private func loadStaff(refresh: Bool = false) async {
-        guard let pharmacyId, isOwner else {
-            staffLoadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         staffLoadingState.startLoading(refresh: refresh)
         defer { staffLoadingState.stopLoading() }
         

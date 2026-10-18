@@ -9,6 +9,7 @@ import SwiftUI
 
 struct PharmacistTabView: View {
     private let router: AppRouter
+    private let staffMembership: StaffMembership
     private let authService: AuthService
     private let inquiryService: InquiryService
     private let drugService: DrugService
@@ -20,6 +21,7 @@ struct PharmacistTabView: View {
     
     init(
         router: AppRouter,
+        staffMembership: StaffMembership,
         authService: AuthService,
         inquiryService: InquiryService,
         drugService: DrugService,
@@ -28,6 +30,7 @@ struct PharmacistTabView: View {
         pushTokenCoordinator: PushTokenCoordinator
     ) {
         self.router = router
+        self.staffMembership = staffMembership
         self.authService = authService
         self.inquiryService = inquiryService
         self.drugService = drugService
@@ -35,28 +38,28 @@ struct PharmacistTabView: View {
         self.analyticsService = analyticsService
         self.pushTokenCoordinator = pushTokenCoordinator
         
-        let viewModel = PharmacistTabViewModel(authService: authService)
+        let viewModel = PharmacistTabViewModel(staffMembership: staffMembership)
         self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen(pharmacistTabViewModel: vm, authService: authService, inquiryService: inquiryService)
+                PharmacistHomeScreen(pharmacistTabViewModel: vm, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService)
             }
             
             if vm.isAuthorized {
                 Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
-                    InquiriesScreen(path: $vm.inquiriesPath, authService: authService, inquiryService: inquiryService, drugService: drugService)
+                    InquiriesScreen(path: $vm.inquiriesPath, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService, drugService: drugService)
                 }
                 
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                    PharmacyScreen(authService: authService, pharmacyService: pharmacyService)
+                    PharmacyScreen(staffMembership: staffMembership, authService: authService, pharmacyService: pharmacyService)
                 }
                 
                 if vm.isOwner {
                     Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
-                        AnalyticsScreen(authService: authService, analyticsService: analyticsService)
+                        AnalyticsScreen(staffMembership: staffMembership, analyticsService: analyticsService)
                     }
                 }
             }
@@ -95,6 +98,7 @@ struct PharmacistTabView: View {
 #Preview {
     PharmacistTabView(
         router: .sample,
+        staffMembership: .samples[0],
         authService: MockAuthService.sample,
         inquiryService: MockInquiryService.sample,
         drugService: MockDrugService.sample,

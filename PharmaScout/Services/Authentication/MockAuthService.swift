@@ -20,9 +20,12 @@ struct MockAuthService: AuthService {
 
 
         // {{ Pending }}
-        var pharmacyStaffMember = PharmacyStaffMember.samples[0]
-        pharmacyStaffMember.status = .pending
-        return AuthSession(user: user, role: .pharmacist, pharmacyStaff: pharmacyStaffMember)
+//        var pharmacyStaffMember = PharmacyStaffMember.samples[0]
+//        pharmacyStaffMember.status = .pending
+//        return AuthSession(user: user, role: .pharmacist, pharmacyStaff: pharmacyStaffMember)
+        let staffMemberShip = StaffMembership(staffId: "", pharmacyId: "", role: .owner, staffStatus: .approved, pharmacyStatus: .approved)
+        let accountState = AccountState.pharmacist(staffMemberShip)
+        return AuthSession(user: user, accountState: accountState)
         
         // {{ Rejected }}
 //        var pharmacyStaffMember = PharmacyStaffMember.samples[0]

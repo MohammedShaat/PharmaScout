@@ -17,6 +17,7 @@ struct InquiriesScreen: View {
     
     init(
         path: Binding<NavigationPath>,
+        staffMembership: StaffMembership,
         authService: AuthService,
         inquiryService: InquiryService,
         drugService: DrugService
@@ -25,7 +26,7 @@ struct InquiriesScreen: View {
         self.inquiryService = inquiryService
         self.drugService = drugService
         let viewModel = InquiriesViewModel(
-            authService: authService,
+            staffMembership: staffMembership,
             inquiryService: inquiryService
         )
         self._vm = State(wrappedValue: viewModel)
@@ -122,6 +123,7 @@ struct InquiriesScreen: View {
     
     InquiriesScreen(
         path: $path,
+        staffMembership: .samples[0],
         authService: MockAuthService.sample,
         inquiryService: MockInquiryService.sample,
         drugService: MockDrugService.sample

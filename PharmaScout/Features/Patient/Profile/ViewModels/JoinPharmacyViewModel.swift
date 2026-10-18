@@ -14,7 +14,7 @@ class JoinPharmacyViewModel {
     
     var code: String = ""
     
-    let codeLength: Int  = AppConstants.Pharmacy.joinCodeLength
+    let codeLength: Int  = AppConstants.Pharmacy.joinPharmacyCodeLength
     var canSend: Bool {
         code.trimmed.count == codeLength
     }

@@ -14,11 +14,13 @@ struct PharmacistHomeScreen: View {
     
     init(
         pharmacistTabViewModel: PharmacistTabViewModel,
+        staffMembership: StaffMembership,
         authService: AuthService,
         inquiryService: InquiryService
     ) {
         self.pharmacistTabViewModel = pharmacistTabViewModel
         let viewModel = PharmacistHomeViewModel(
+            staffMembership: staffMembership,
             authService: authService,
             inquiryService: inquiryService
         )
@@ -59,7 +61,7 @@ struct PharmacistHomeScreen: View {
             isEmpty: vm.authSession == nil,
             emptyMessage: "") {
                 VStack {
-                    switch vm.authSession?.pharmacyStaff?.status {
+                    switch vm.staffMembership.staffStatus {
                     case .pending:
                         Text("Your request is pending. Waiting for the pharmacy owner’s approval.")
                             .font(.title)
@@ -133,6 +135,7 @@ struct PharmacistHomeScreen: View {
 #Preview {
     PharmacistHomeScreen(
         pharmacistTabViewModel: .sample,
+        staffMembership: .samples[0],
         authService: MockAuthService.sample,
         inquiryService: MockInquiryService.sample
     )

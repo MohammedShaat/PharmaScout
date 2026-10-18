@@ -9,4 +9,14 @@ import Foundation
 
 protocol OwnerApplicationService {
     func generateCode() async throws -> InvitaionCode
+    
+    func applyForPharmacyOwnership(code: String) async throws -> String
+    
+    func getOwnerApplications(_ request: OwnerApplicationsRequest) async throws -> [OwnerApplication]
+    
+    func getOwnerApplication(for applicationId: String) async throws -> OwnerApplication
+    
+    func revokeOwnerApplication(for applicationId: String) async throws
+    
+    func reviewOwnerApplication(_ request: ReviewOwnerApplicationRequest) async throws
 }

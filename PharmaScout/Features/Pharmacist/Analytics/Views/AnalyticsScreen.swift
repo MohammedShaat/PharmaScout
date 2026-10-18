@@ -11,9 +11,9 @@ struct AnalyticsScreen: View {
     @State private var vm: AnalyticsViewModel
     @State private var analyticsTask: Task<Void, Never>?
     
-    init(authService: AuthService, analyticsService: AnalyticsService) {
+    init(staffMembership: StaffMembership, analyticsService: AnalyticsService) {
         let viewModel = AnalyticsViewModel(
-            authService: authService,
+            staffMembership: staffMembership,
             analyticsService: analyticsService
         )
         self._vm = State(wrappedValue: viewModel)
@@ -149,7 +149,7 @@ struct AnalyticsScreen: View {
 
 #Preview {
     AnalyticsScreen(
-        authService: MockAuthService.sample,
+        staffMembership: .samples[0],
         analyticsService: MockAnalyticsService.sample
     )
 }

@@ -9,12 +9,11 @@ import Foundation
 
 struct AuthSession {
     let user: AppUser
-    let role: UserRole
-    let pharmacyStaff: PharmacyStaffMember?
+    let accountState: AccountState
 }
 
-enum UserRole {
-    case patient
-    case pharmacist
-    case admin
-}
+//enum UserRole {
+//    case patient
+//    case pharmacist
+//    case admin
+//}

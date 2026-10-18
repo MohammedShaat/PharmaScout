@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 class InquiriesViewModel {
-    private let authService: AuthService
+    private let staffMembership: StaffMembership
     private let inquiryService: InquiryService
     
     private(set) var inquiries: [Inquiry] = []
@@ -25,9 +25,9 @@ class InquiriesViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(authService: AuthService, inquiryService: InquiryService) {
+    init(staffMembership: StaffMembership, inquiryService: InquiryService) {
         self.inquiryService = inquiryService
-        self.authService = authService
+        self.staffMembership = staffMembership
     }
     
     deinit {
@@ -57,12 +57,6 @@ class InquiriesViewModel {
     }
     
     func loadInquiries(refresh: Bool = false, filterHasChanged: Bool = false) async {
-        guard let pharmacyId = authService.authSession?.pharmacyStaff?.pharmacyId else {
-            loadingState.fail(PharmacyStaffError.notFound)
-            print("No pharmacy id")
-            return
-        }
-        
         var shouldPerform: Bool {
             SearchRequestPolicy.shouldPerform(
                 query: searchText,
@@ -95,7 +89,7 @@ class InquiriesViewModel {
                 lastSearchText = searchText
             }) {
                 let params = GetInquiriesParams(
-                    pharmacyId: pharmacyId,
+                    pharmacyId: staffMembership.pharmacyId,
                     limit: refresh ? max(inquiries.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
                     offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : inquiries.count,
                     filter: filter,
