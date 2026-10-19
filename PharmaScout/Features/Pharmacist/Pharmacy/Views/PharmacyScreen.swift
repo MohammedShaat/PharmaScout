@@ -101,7 +101,14 @@ struct PharmacyScreen: View {
                 path.append(PharmacyRoute.editContact)
             }
             
-            PharmacyContactView(contacts: vm.contacts, loadingState: vm.contactLoadingState)
+            LoadingContentView(
+                LoadingState: vm.contactLoadingState,
+                isEmpty: vm.contacts.isEmpty,
+                emptyMessage: "There is no contact info"
+            ) {
+                PharmacyContactView(contacts: vm.contacts)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
     
@@ -111,7 +118,14 @@ struct PharmacyScreen: View {
                 path.append(PharmacyRoute.editWorkingHours)
             }
             
-            PharmacyWorkingHoursView(workingHours: vm.workingHours, loadingState: vm.workingHoursLoadingState)
+            LoadingContentView(
+                LoadingState: vm.workingHoursLoadingState,
+                isEmpty: vm.workingHours.isEmpty,
+                emptyMessage: "There is no working hours info"
+            ) {
+                PharmacyWorkingHoursView(workingHours: vm.workingHours)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
     }
     

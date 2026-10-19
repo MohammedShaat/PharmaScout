@@ -59,6 +59,14 @@ extension MockOwnerApplicationService {
     static let sample = MockOwnerApplicationService()
 }
 
+extension MockGeocodingService {
+    static let sample = MockGeocodingService()
+}
+
+extension MockPlaceSearchService {
+    static let sample = MockPlaceSearchService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,
@@ -73,6 +81,10 @@ extension PatientTabViewModel {
 
 extension PharmacistTabViewModel {
     static let sample = PharmacistTabViewModel(staffMembership: .samples[0])
+}
+
+extension OwnerApplicantTabViewModel {
+    static let sample = OwnerApplicantTabViewModel(ownerApplicationSummary: .samples[0])
 }
 
 extension AppRouter {

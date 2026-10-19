@@ -15,7 +15,6 @@ extension WorkingHour {
             
             return WorkingHour(
                 id: UUID().uuidString,
-                pharmacyId: pharmacy.id,
                 day: .from(index),
                 opensAt: opensAt,
                 closesAt: closesAt

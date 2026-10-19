@@ -45,55 +45,24 @@ struct PharmacyEditContactScreen: View {
     private var contactListSection: some View {
         VStack(spacing: DesignSystem.Spacing.xxLarge) {
             ForEach($vm.contacts) { $contact in
-                Swipy(
-                    isSwipingAnItem: $isSwipingAnItem,
-                    swipeActionsMargin: SwipyHorizontalMargin(
-                        leading: DesignSystem.Spacing.xSmall,
-                        trailing: DesignSystem.Spacing.xSmall
-                    ),
-                    swipeBehavior: .straight
-                ) { model in
-                    contactItemView($contact)
-                    
-                } actions: {
-                    SwipyAction { model in
-                        Button(role: .destructive) {
-                            vm.deleteContact(contact)
-                            model.unswipe()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
+                SwipyView(
+                    isSwipingAnItem: $isSwipingAnItem) {
+                        contactItemView($contact)
+                    } onDeleteTapped: {
+                        vm.deleteContact(contact)
                     }
-                }
             }
         }
     }
     
     private var addNewContactSection: some View {
-        Text("Add new Contact")
-            .foregroundStyle(.theme.textPrimary)
-            .padding(.vertical, DesignSystem.Spacing.small)
-            .clickable(action: vm.addContact)
+        ActionPromptView(actionTitle: "Add new Contact", action: vm.addContact)
             .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private func contactItemView(_ contact: Binding<PharmacyContact>) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text("Contact")
-                
-                Picker("Type", selection: contact.type) {
-                    ForEach(ContactType.allCases, id: \.self) { type in
-                        Text(type.rawValue)
-                    }
-                }
-            }
-            
-            TextFieldView(title: contact.title, placeholder: "Title")
-            
-            TextFieldView(title: contact.value, placeholder: "Detail")
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+        ContactView(contact: contact)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private var buttonSection: some View {

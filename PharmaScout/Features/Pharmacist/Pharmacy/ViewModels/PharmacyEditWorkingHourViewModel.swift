@@ -23,7 +23,6 @@ class PharmacyEditWorkingHourViewModel {
     }
     
     var canAddWorkingHour: Bool { workingHours.count < 7 }
-    var canUpdate: Bool { areHoursValid() }
     
     private(set) var loadingState = LoadingState()
     
@@ -34,16 +33,14 @@ class PharmacyEditWorkingHourViewModel {
     }
     
     func updateworkingHours(onSuccess: () -> Void) async {
-        guard canUpdate else {
-            print("Pharmacy working hours are invalid")
-            return
-        }
-        
         loadingState.startLoading()
         defer { loadingState.stopLoading() }
         
         do {
-            async let createOrUpdateWokringHours = pharmacyService.createOrUpdateWokringHours(workingHours: workingHours)
+            let request = UpdateOrCreatePharmacyHoursRequest(
+                hours: workingHours.map { UpdatePharmacyHour($0, pharmacyId: pharmacy.id)  }
+            )
+            async let createOrUpdateWokringHours = pharmacyService.createOrUpdateWokringHours(request)
             async let deleteWokringHours = pharmacyService.deleteWokringHours(ids: deletedworkingHourIds)
             
             _ = try await (createOrUpdateWokringHours, deleteWokringHours)
@@ -64,7 +61,6 @@ class PharmacyEditWorkingHourViewModel {
         
         let newWorkingHour = WorkingHour(
             id: UUID().uuidString,
-            pharmacyId: pharmacy.id,
             day: day,
             opensAt: .startOfToday,
             closesAt: .startOfToday
@@ -75,13 +71,5 @@ class PharmacyEditWorkingHourViewModel {
     func deleteWorkingHour(_ workingHour: WorkingHour) {
         workingHours.removeAll { $0.id == workingHour.id }
         deletedworkingHourIds.append(workingHour.id)
-    }
-}
-
-extension PharmacyEditWorkingHourViewModel {
-    private func areHoursValid() -> Bool {
-        workingHours.allSatisfy { workingHour in
-            workingHour.opensAt < workingHour.closesAt
-        }
     }
 }

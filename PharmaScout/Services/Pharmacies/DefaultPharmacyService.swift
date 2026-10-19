@@ -82,7 +82,7 @@ struct DefaultPharmacyService: PharmacyService {
         do {
             let hours: [WorkingHour] = try await supabase
                 .from(pharmacyHoursTable.name)
-                .select("\(columns.id), \(columns.pharmacyId), \(columns.day), \(columns.opensAt), \(columns.closesAt)")
+                .select("\(columns.id), \(columns.day), \(columns.opensAt), \(columns.closesAt)")
                 .eq(columns.pharmacyId, value: pharmacyId)
                 .execute()
                 .value
@@ -177,15 +177,14 @@ struct DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func createOrUpdateWokringHours(workingHours: [WorkingHour]) async throws {
-        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
-        
+    func createOrUpdateWokringHours(_ request: UpdateOrCreatePharmacyHoursRequest) async throws {
+        let table = SupabaseManager.Database.Table.PharmacyHours.self
+
         do {
             try await supabase
-                .from(pharmacyHoursTable.name)
-                .upsert(workingHours)
+                .from(table.name)
+                .upsert(request.hours)
                 .execute()
-            
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
@@ -287,6 +286,22 @@ struct DefaultPharmacyService: PharmacyService {
                     joinPharmacyFunc.name,
                     params: [params.code: code]
                 )
+                .execute()
+                .value
+            
+            return pharmacyId
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func createPharmacy(_ request: CreatePharmacyRequest) async throws -> String {
+        let createPharmacyFunc = SupabaseManager.Database.Functions.createPharmacy.self
+        
+        do {
+            let pharmacyId: String = try await supabase
+                .rpc(createPharmacyFunc.name, params: request)
                 .execute()
                 .value
             

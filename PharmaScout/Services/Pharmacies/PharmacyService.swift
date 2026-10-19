@@ -26,7 +26,7 @@ protocol PharmacyService {
     
     func deleteContacts(ids: [String]) async throws
     
-    func createOrUpdateWokringHours(workingHours: [WorkingHour]) async throws
+    func createOrUpdateWokringHours(_ request: UpdateOrCreatePharmacyHoursRequest) async throws
     
     func deleteWokringHours(ids: [String]) async throws
     
@@ -39,4 +39,6 @@ protocol PharmacyService {
     func generateJoinCode(for pharmacyId: String) async throws -> InvitaionCode
     
     func joinPharmacy(code: String) async throws -> String
+    
+    func createPharmacy(_ request: CreatePharmacyRequest) async throws -> String
 }

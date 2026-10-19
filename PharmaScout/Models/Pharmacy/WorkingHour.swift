@@ -9,7 +9,6 @@ import Foundation
 
 struct WorkingHour: Codable, Identifiable {
     let id: String
-    let pharmacyId: String
     var day: DayOfWeek
     var opensAt: Date
     var closesAt: Date
@@ -60,7 +59,6 @@ extension DayOfWeek {
 extension WorkingHour {
     enum CodingKeys: String, CodingKey {
         case id
-        case pharmacyId
         case day
         case opensAt
         case closesAt
@@ -69,7 +67,6 @@ extension WorkingHour {
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.id = try container.decode(String.self, forKey: .id)
-        self.pharmacyId = try container.decode(String.self, forKey: .pharmacyId)
 
         let dayInt = try container.decode(Int.self, forKey: .day)
         self.day = .from(dayInt)
@@ -84,7 +81,6 @@ extension WorkingHour {
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(self.id, forKey: .id)
-        try container.encode(self.pharmacyId, forKey: .pharmacyId)
         
         let dayIndex = self.day.toIndex()
         try container.encode(dayIndex, forKey: .day)
