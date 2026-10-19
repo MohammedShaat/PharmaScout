@@ -61,11 +61,13 @@ extension SupabaseErrorMapper {
     
     static private func mapPostgrestErrorToAppError(_ error: PostgrestError) -> AppError {
         switch error.code {
+        // MARK: Input error
+        case "P0001": InvalidInputError.missingRequiredInput
+        case "P0002": InvalidInputError.invalidValue
+            
         // MARK: Invitation code error
         case "P1001": JoinCodeError.invalidJoinCode
-        
         case "P1002": JoinCodeError.revokedJoinCode
-        
         case "P1003": JoinCodeError.expiredJoinCode
         
             
@@ -75,15 +77,16 @@ extension SupabaseErrorMapper {
         
         // MARK: Expand search
         case "P5001": ContinueSearchError.searchIsNotAwaitingContinuation
-        
         case "P5002": ContinueSearchError.radiusExceedsMaximum
             
-            
         
-        // MARK: Pharmacy Ownership error
+        // MARK: Ownership application error
         case "P3001": OwnerApplicationError.codeAlreadyUsed
-            
         case "P3002": OwnerApplicationError.alreadyPendingOrApproved
+            
+            
+        // MARK: Pharmacy creation error
+        case "P4001": PharmacyCreationError.alreadyHasPharmacy
         
         
         default: UnknownError.unKnown(error)

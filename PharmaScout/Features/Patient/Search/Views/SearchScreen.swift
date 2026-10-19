@@ -125,19 +125,11 @@ struct SearchScreen: View {
                 .padding(DesignSystem.Spacing.xLarge)
             }
             .errorAlert(title: "Search Failed", error: vm.requestLoadingState.error)
-            .sheet(isPresented: $vm.showSuccessMessage, content: {
-                VStack {
-                    Text("Your request has been submitted successfully")
-                        .foregroundStyle(.theme.success)
-                        .font(.title2)
-                    
-                    PrimaryButtonView(title: "Ok") {
-                        vm.showSuccessMessage.toggle()
-                    }
+            .sheet(isPresented: $vm.showSuccessMessage) {
+                MidSheetView(title: "Your request has been submitted successfully") {
+                    vm.showSuccessMessage.toggle()
                 }
-                .presentationDetents([.medium])
-                .padding(DesignSystem.Spacing.xLarge)
-            })
+            }
             .alert("No pharmacies", isPresented: $vm.showNoPharmaciesMessage) {
             } message: {
                 VStack {

@@ -67,7 +67,7 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func createOrUpdateWokringHours(workingHours: [WorkingHour]) async throws {
+    func createOrUpdateWokringHours(_ request: UpdateOrCreatePharmacyHoursRequest) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
     
@@ -100,5 +100,11 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
         
         return Pharmacy.samples[0].id
+    }
+    
+    func createPharmacy(_ request: CreatePharmacyRequest) async throws -> String {
+        try? await Task.sleep(for: .seconds(2))
+        
+        return UUID().uuidString
     }
 }

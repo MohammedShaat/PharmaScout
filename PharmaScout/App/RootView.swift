@@ -22,6 +22,8 @@ struct RootView: View {
     private let pushTokenCoordinator: PushTokenCoordinator
     private let appConfigService: AppConfigService
     private let ownerApplicationService: OwnerApplicationService
+    private let geocodingService: GeocodingService
+    private let placeSearchService: PlaceSearchService
     
     init(
         router: AppRouter,
@@ -37,7 +39,9 @@ struct RootView: View {
         analyticsService: AnalyticsService,
         pushTokenCoordinator: PushTokenCoordinator,
         appConfigService: AppConfigService,
-        ownerApplicationService: OwnerApplicationService
+        ownerApplicationService: OwnerApplicationService,
+        geocodingService: GeocodingService,
+        placeSearchService: PlaceSearchService
     ) {
         self.router = router
         self.authService = authService
@@ -53,6 +57,8 @@ struct RootView: View {
         self.pushTokenCoordinator = pushTokenCoordinator
         self.appConfigService = appConfigService
         self.ownerApplicationService = ownerApplicationService
+        self.geocodingService = geocodingService
+        self.placeSearchService = placeSearchService
     }
     
     var body: some View {
@@ -61,7 +67,7 @@ struct RootView: View {
             case .loading:
                 SessionLoadingScreen()
                 
-            case .authentication:
+            case .authenticationFlow:
                 WelcomeScreen(authSerivce: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
                 
             case .signIn:
@@ -73,7 +79,7 @@ struct RootView: View {
             case .resetPassword:
                 ResetPasswordScreen(authSerivce: authService, router: router)
                 
-            case .authStateError(let error):
+            case .authenticationFailure(let error):
                 AuthenticationStateErrorScreen(error: error)
                 
             case .patient:
@@ -85,9 +91,8 @@ struct RootView: View {
             case .admin:
                 AdminTabView(authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService)
                 
-            case .approvedOwner:
-                Text("Approved Owner")
-                    .font(.title)
+            case .ownerApplicant(let ownerApplicationSummary):
+                OwnerApplicantTabView(ownerApplicationSummary: ownerApplicationSummary, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce, geocodingService: geocodingService, placeSearchService: placeSearchService, locationService: locationService)
             }
             
         }
@@ -113,7 +118,9 @@ struct RootView: View {
         analyticsService: MockAnalyticsService.sample,
         pushTokenCoordinator: .sample,
         appConfigService: MockAppConfigService.sample,
-        ownerApplicationService: MockOwnerApplicationService.sample
+        ownerApplicationService: MockOwnerApplicationService.sample,
+        geocodingService: MockGeocodingService.sample,
+        placeSearchService: MockPlaceSearchService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

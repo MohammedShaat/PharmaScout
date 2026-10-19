@@ -26,9 +26,23 @@ struct PharmacyDetailScreen: View {
 
                 PharmacyAddressAndDistanceView(pharmacy: vm.pharmacy)
                 
-                PharmacyContactView(contacts: vm.contacts, loadingState: vm.contactLoadingState)
+                LoadingContentView(
+                    LoadingState: vm.contactLoadingState,
+                    isEmpty: vm.contacts.isEmpty,
+                    emptyMessage: "There is no contact info"
+                ) {
+                    PharmacyContactView(contacts: vm.contacts)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
                 
-                PharmacyWorkingHoursView(workingHours: vm.workingHours, loadingState: vm.workingHoursLoadingState)
+                LoadingContentView(
+                    LoadingState: vm.workingHoursLoadingState,
+                    isEmpty: vm.workingHours.isEmpty,
+                    emptyMessage: "There is no working hours info"
+                ) {
+                    PharmacyWorkingHoursView(workingHours: vm.workingHours)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
             }
             .padding(DesignSystem.Spacing.xLarge)
         }

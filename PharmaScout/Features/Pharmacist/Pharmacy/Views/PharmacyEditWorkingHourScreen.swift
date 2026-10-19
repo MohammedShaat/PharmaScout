@@ -43,26 +43,12 @@ struct PharmacyEditWorkingHourScreen: View {
     private var workingHourListSection: some View {
         VStack(spacing: DesignSystem.Spacing.xxLarge) {
             ForEach($vm.workingHours) { $workingHour in
-                Swipy(
-                    isSwipingAnItem: $isSwipingAnItem,
-                    swipeActionsMargin: SwipyHorizontalMargin(
-                        leading: DesignSystem.Spacing.xSmall,
-                        trailing: DesignSystem.Spacing.xSmall
-                    ),
-                    swipeBehavior: .straight
-                ) { model in
-                    contactItemView($workingHour)
-                    
-                } actions: {
-                    SwipyAction { model in
-                        Button(role: .destructive) {
-                            vm.deleteWorkingHour(workingHour)
-                            model.unswipe()
-                        } label: {
-                            Label("Delete", systemImage: "trash")
-                        }
+                SwipyView(
+                    isSwipingAnItem: $isSwipingAnItem) {
+                        workingHourItemView($workingHour)
+                    } onDeleteTapped: {
+                        vm.deleteWorkingHour(workingHour)
                     }
-                }
             }
         }
     }
@@ -70,10 +56,7 @@ struct PharmacyEditWorkingHourScreen: View {
     @ViewBuilder
     private var addNewWorkingHourSection: some View {
         if vm.canAddWorkingHour {
-            Text("Add day")
-                .foregroundStyle(.theme.textPrimary)
-                .padding(.vertical, DesignSystem.Spacing.small)
-                .clickable(action: vm.addWorkingHour)
+            ActionPromptView(actionTitle: "Add day", action: vm.addWorkingHour)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
     }
@@ -85,32 +68,14 @@ struct PharmacyEditWorkingHourScreen: View {
         }
     }
     
-    private func contactItemView(_ workingHour: Binding<WorkingHour>) -> some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text("Day")
-                
-                
-                Picker("Day", selection: workingHour.day) {
-                    ForEach(daysToDisplay(workingHour.day.wrappedValue), id: \.self) { day in
-                        Text(day.rawValue.capitalized)
-                    }
-                }
-            }
-            
-            HStack {
-                DatePicker("Opens", selection: workingHour.opensAt, displayedComponents: .hourAndMinute)
-                
-                DatePicker("Closes", selection: workingHour.closesAt, displayedComponents: .hourAndMinute)
-            }
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
+    private func workingHourItemView(_ workingHour: Binding<WorkingHour>) -> some View {
+        WorkingHourView(workingHour: workingHour, availableDays: vm.availableDays)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private var buttonSection: some View {
         PrimaryButtonView(
             title: "Save",
-            isDisabled: !vm.canUpdate,
             isLoading: vm.loadingState.status != .idle) {
                 updateTask?.cancel()
                 updateTask = Task {
@@ -120,16 +85,11 @@ struct PharmacyEditWorkingHourScreen: View {
                 }
             }
     }
-    
-    private func daysToDisplay(_ currentDay: DayOfWeek) -> [DayOfWeek] {
-        let days = vm.availableDays.union([currentDay])
-        return Array(days)
-    }
 }
 
 #Preview {
     let pharmacy = Pharmacy.samples[0]
-    let workingHours = WorkingHour.samples.filter { $0.pharmacyId == pharmacy.id }
+    let workingHours = Array(WorkingHour.samples.prefix(7))
     
     PharmacyEditWorkingHourScreen(
         pharmacyService: MockPharmacyService.sample,

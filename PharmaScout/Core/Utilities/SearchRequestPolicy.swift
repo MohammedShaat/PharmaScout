@@ -51,20 +51,47 @@ enum SearchRequestPolicy {
                 try await Task.sleep(for: AppConstants.Timing.searchDebounceInterval)
             }
             
-            startLoading()
-            
-            let result = try await asyncWork()
-            
-            updateLastQuery()
-            
-            onSuccess(result)
+            if !Task.isCancelled {
+                startLoading()
+                
+                let result = try await asyncWork()
+                
+                updateLastQuery()
+                
+                onSuccess(result)
 
-            if result.isNotEmpty {
-                advancePage()
+                if result.isNotEmpty {
+                    advancePage()
+                }
             }
             
         } catch {
             handleError(error)
         }
+    }
+    
+    static func perform(
+        shouldPerform: Bool,
+        hasPreviousPage: Bool,
+        isRefreshing: Bool,
+        startLoading: () -> Void,
+        query: String,
+        updateLastQuery: () -> Void,
+        work: () -> Void,
+    ) async {
+        guard shouldPerform else { return }
+        
+        if !hasPreviousPage && !isRefreshing {
+            try? await Task.sleep(for: AppConstants.Timing.searchDebounceInterval)
+        }
+        
+        if !Task.isCancelled {
+            startLoading()
+            
+            work()
+            
+            updateLastQuery()
+        }
+        
     }
 }

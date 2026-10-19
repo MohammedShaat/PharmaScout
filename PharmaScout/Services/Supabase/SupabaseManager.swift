@@ -467,6 +467,10 @@ extension SupabaseManager {
                     static let approve = "p_approve"
                 }
             }
+            
+            enum createPharmacy {
+                static let name = "create_pharmacy"
+            }
         }
     }
 }

@@ -67,21 +67,6 @@ class PharmacyEditContactViewModel {
 
 extension PharmacyEditContactViewModel {
     private func areContactsValid() -> Bool {
-        contacts.allSatisfy { contact in
-            contact.title.count >= 3
-            && contact.value.count >= 3
-            && typeMatchValue(type: contact.type, value: contact.value)
-        }
-    }
-    
-    private func typeMatchValue(type: ContactType, value: String) -> Bool {
-        switch type {
-        case .number:
-            Validation.isPhoneNumberValid(value)
-        case .link:
-            Validation.isURLValid(value)
-        case .email:
-            Validation.isEmailValid(value)
-        }
+        contacts.allSatisfy { $0.isValid }
     }
 }

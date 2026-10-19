@@ -39,7 +39,11 @@ enum AppConstants {
     }
 
     enum Pharmacy {
+        // Invitaion code
         static let joinPharmacyCodeLength = 8
         static let ownerApplicationCodeLength = 8
+        
+        // Map
+        static let maxPinLatitudeSpan: Double = 0.03 // 0.002
     }
 }

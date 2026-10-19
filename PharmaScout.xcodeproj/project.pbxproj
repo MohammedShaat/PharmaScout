@@ -41,7 +41,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				PreviewAssets/GazaLocation.gpx,
 			);
 			target = 5D5D0123303F1BC900B95EFC /* PharmaScout */;
 		};

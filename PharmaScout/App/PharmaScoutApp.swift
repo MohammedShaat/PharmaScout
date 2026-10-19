@@ -22,6 +22,8 @@ struct PharmaScoutApp: App {
     private let deviceTokenService: DeviceTokenService = DefaultDeviceTokenService()
     private let appConfigService: AppConfigService = DefaultAppConfigService()
     private let ownerApplicationService: OwnerApplicationService = DefaultOwnerApplicationService()
+    private let geocodingService: GeocodingService = DefaultGeocodingService()
+    private let placeSearchService: PlaceSearchService = DefaultPlaceSearchService(region: nil)
     
     @State private var router: AppRouter
     private let pushTokenCooridnator: PushTokenCoordinator
@@ -50,7 +52,9 @@ struct PharmaScoutApp: App {
                 analyticsService: analyticsService,
                 pushTokenCoordinator: pushTokenCooridnator,
                 appConfigService: appConfigService,
-                ownerApplicationService: ownerApplicationService
+                ownerApplicationService: ownerApplicationService,
+                geocodingService: geocodingService,
+                placeSearchService: placeSearchService
             )
             .onOpenURL { url in
                 Task {

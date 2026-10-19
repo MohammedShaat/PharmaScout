@@ -61,16 +61,16 @@ class AppRouter {
                 case .admin:
                     destination = .admin
                     
-                case .approvedOwner:
-                    destination = .approvedOwner
+                case .ownerApplicant(let ownerApplicationSummary):
+                    destination = .ownerApplicant(ownerApplicationSummary)
                     
                 case nil:
-                    destination = .authStateError(AppAuthError.sessionMissing)
+                    destination = .authenticationFailure(AppAuthError.sessionMissing)
                 }
                 
             // MARK: Unauthenticated
             case .non:
-                destination = .authentication
+                destination = .authenticationFlow
                 pendingNotificationRoute = nil
                 
             // MARK: Passwrod reset
@@ -79,7 +79,7 @@ class AppRouter {
                 
             // MARK: Error
             case .failed(let error):
-                destination = .authStateError(error)
+                destination = .authenticationFailure(error)
             }
         }
     }
@@ -113,12 +113,12 @@ class AppRouter {
 
 enum Destination {
     case loading
-    case authentication
+    case authenticationFlow
     case signIn
     case resetPassword
-    case authStateError(Error)
+    case authenticationFailure(Error)
     case patient
     case pharmacist(StaffMembership)
     case admin
-    case approvedOwner
+    case ownerApplicant(OwnerApplicationSummary)
 }
