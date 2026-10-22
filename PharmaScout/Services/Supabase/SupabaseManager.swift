@@ -471,6 +471,32 @@ extension SupabaseManager {
             enum createPharmacy {
                 static let name = "create_pharmacy"
             }
+            
+            enum getPharmacyApplications {
+                static let name = "get_pharmacy_applications"
+                
+                enum Params {
+                    static let status = "p_status"
+                }
+            }
+            
+            enum getPharmacyApplication {
+                static let name = "get_pharmacy_application"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                }
+            }
+            
+            enum reviewPharmacy {
+                static let name = "review_pharmacy"
+                
+                enum Params {
+                    static let pharmacyId = "p_pharmacy_id"
+                    static let approve = "p_approve"
+                    static let rejectionReason = "p_rejection_reason"
+                }
+            }
         }
     }
 }

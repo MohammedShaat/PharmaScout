@@ -107,4 +107,25 @@ struct MockPharmacyService: PharmacyService {
         
         return UUID().uuidString
     }
+    
+    func getPharmacyApplications(_ request: PharmacyApplicationsRequest) async throws -> [PharmacyApplication] {
+        try? await Task.sleep(for: .seconds(2))
+        
+        let filteredPharmacyApplications = PharmacyApplication.samples
+            .filter { request.filter == .all || $0.status.rawValue == request.filter.rawValue  }
+            .dropFirst(request.offset)
+            .prefix(request.limit)
+        
+        return Array(filteredPharmacyApplications)
+    }
+    
+    func getPharmacyApplication(for pharmacyId: String) async throws -> PharmacyApplication {
+        try? await Task.sleep(for: .seconds(2))
+        
+        return .samples.first { $0.id == pharmacyId }!
+    }
+    
+    func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
 }

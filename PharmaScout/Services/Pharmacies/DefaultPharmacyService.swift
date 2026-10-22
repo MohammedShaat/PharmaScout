@@ -1,4 +1,5 @@
 //
+
 //  DefaultPharmacyService.swift
 //  PharmaScout
 //
@@ -306,6 +307,57 @@ struct DefaultPharmacyService: PharmacyService {
                 .value
             
             return pharmacyId
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getPharmacyApplications(_ request: PharmacyApplicationsRequest) async throws -> [PharmacyApplication] {
+        let getPharmacyApplicationsFunc = SupabaseManager.Database.Functions.getPharmacyApplications.self
+        
+        do {
+            let pharmacyApplications: [PharmacyApplication] = try await supabase
+                .rpc(getPharmacyApplicationsFunc.name, params: request)
+                .execute()
+                .value
+            
+            return pharmacyApplications
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getPharmacyApplication(for pharmacyId: String) async throws -> PharmacyApplication {
+        let getPharmacyApplicationFunc = SupabaseManager.Database.Functions.getPharmacyApplication.self
+        let params = getPharmacyApplicationFunc.Params.self
+        
+        do {
+            let pharmacyApplication: PharmacyApplication = try await supabase
+                .rpc(
+                    getPharmacyApplicationFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .single()
+                .execute()
+                .value
+            
+            return pharmacyApplication
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws {
+        let reviewPharmacyFunc = SupabaseManager.Database.Functions.reviewPharmacy.self
+        
+        do {
+            try await supabase
+                .rpc(reviewPharmacyFunc.name, params: request)
+                .execute()
+                .value
             
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)

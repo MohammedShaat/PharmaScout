@@ -41,4 +41,10 @@ protocol PharmacyService {
     func joinPharmacy(code: String) async throws -> String
     
     func createPharmacy(_ request: CreatePharmacyRequest) async throws -> String
+    
+    func getPharmacyApplications(_ request: PharmacyApplicationsRequest) async throws -> [PharmacyApplication]
+    
+    func getPharmacyApplication(for pharmacyId: String) async throws -> PharmacyApplication
+    
+    func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws
 }
