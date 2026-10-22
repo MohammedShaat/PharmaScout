@@ -46,4 +46,8 @@ enum AppConstants {
         // Map
         static let maxPinLatitudeSpan: Double = 0.03 // 0.002
     }
+    
+    enum Validation {
+        static let minRejectionReasonLength = 10
+    }
 }
