@@ -98,6 +98,7 @@ struct DefaultPharmacyService: PharmacyService {
     func getPharmacy(_ params: GetPharmacyDetailsParams) async throws -> Pharmacy {
         let getPharmacyDetailsFunc = SupabaseManager.Database.Functions.getPharmacyDetails.self
         
+        print(params.pharmacyId)
         do {
             let pharmacy: Pharmacy = try await supabase
                 .rpc(getPharmacyDetailsFunc.name, params: params)

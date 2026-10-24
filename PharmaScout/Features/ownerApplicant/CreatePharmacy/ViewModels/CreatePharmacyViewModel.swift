@@ -79,7 +79,7 @@ class CreatePharmacyViewModel {
             )
             _ = try await pharmacyService.createPharmacy(request)
             
-            showSuccessMessage = false
+            showSuccessMessage = true
             
         } catch {
             loadingState.fail(error)

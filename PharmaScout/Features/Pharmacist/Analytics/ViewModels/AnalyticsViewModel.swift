@@ -9,10 +9,8 @@ import Foundation
 
 @Observable
 class AnalyticsViewModel {
-    private let staffMembership: StaffMembership
+    private let pharmacyId: String
     private let analyticsService: AnalyticsService
-    
-    private var pharmacyId: String { staffMembership.pharmacyId }
     
     var analyticsType: AnalyticsType = .pharmacySearch
     var period: AnalyticsPeriod = .thirtyDays
@@ -26,8 +24,8 @@ class AnalyticsViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(staffMembership: StaffMembership, analyticsService: AnalyticsService) {
-        self.staffMembership = staffMembership
+    init(pharmacyId: String, analyticsService: AnalyticsService) {
+        self.pharmacyId = pharmacyId
         self.analyticsService = analyticsService
     }
 

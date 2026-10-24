@@ -11,10 +11,10 @@ struct JoinCodeScreen: View {
     @State private var vm: JoinCodeViewModel
     @State private var generateCodeTask: Task<Void, Never>?
     
-    init(pharmacyService: PharmacyService, pharmacy: Pharmacy) {
+    init(pharmacyService: PharmacyService, pharmacyId: String) {
         let viewModel = JoinCodeViewModel(
             pharmacyService: pharmacyService,
-            pharmacy: pharmacy
+            pharmacyId: pharmacyId
         )
         self._vm = State(wrappedValue: viewModel)
     }
@@ -70,6 +70,6 @@ struct JoinCodeScreen: View {
 #Preview {
     JoinCodeScreen(
         pharmacyService: MockPharmacyService.sample,
-        pharmacy: .samples[0]
+        pharmacyId: Pharmacy.samples[0].id
     )
 }

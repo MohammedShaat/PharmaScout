@@ -9,11 +9,8 @@ import Foundation
 
 @Observable
 class PharmacyViewModel {
-    private let staffMembership: StaffMembership
+    private let pharmacyId: String
     private let pharmacyService: PharmacyService
-    
-    var pharmacyId: String { staffMembership.pharmacyId }
-    var isOwner: Bool { staffMembership.role == .owner }
     
     private(set) var pharmacy: Pharmacy?
     private(set) var contacts: [PharmacyContact] = []
@@ -28,8 +25,8 @@ class PharmacyViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(staffMembership: StaffMembership, pharmacyService: PharmacyService) {
-        self.staffMembership = staffMembership
+    init(pharmacyId: String, pharmacyService: PharmacyService) {
+        self.pharmacyId = pharmacyId
         self.pharmacyService = pharmacyService
     }
     

@@ -21,7 +21,8 @@ enum PharmacyStaffRole: String, Codable, CaseIterable, Hashable {
 }
 
 enum PharmacyStaffStatus: String, Codable, CaseIterable, Hashable {
-    case pending = "pending"
-    case approved = "approved"
-    case rejected = "rejected"
+    case pending
+    case approved
+    case rejected
+    case suspended
 }

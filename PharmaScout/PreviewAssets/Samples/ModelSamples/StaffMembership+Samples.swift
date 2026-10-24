@@ -14,7 +14,9 @@ extension StaffMembership {
             pharmacyId: Pharmacy.samples[0].id,
             role: .owner,
             staffStatus: .approved,
-            pharmacyStatus: .approved
+            pharmacyStatus: .approved,
+            pharmacyRejectionReason: "",
+            staffRejectionReason: ""
         ),
         
         StaffMembership(
@@ -22,7 +24,9 @@ extension StaffMembership {
             pharmacyId: Pharmacy.samples[0].id,
             role: .employee,
             staffStatus: .approved,
-            pharmacyStatus: .approved
+            pharmacyStatus: .approved,
+            pharmacyRejectionReason: "",
+            staffRejectionReason: ""
         )
     ]
 }

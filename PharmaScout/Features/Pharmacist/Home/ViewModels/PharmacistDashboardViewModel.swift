@@ -8,15 +8,13 @@
 import Foundation
 
 @Observable
-class PharmacistHomeViewModel {
+class PharmacistDashboardViewModel {
     let staffMembership: StaffMembership
-    private let authService: AuthService
     private let inquiryService: InquiryService
+    private let authService: AuthService
     
-    var authSession: AuthSession? { authService.authSession }
-    var isAuthorized: Bool {
-        staffMembership.staffStatus == .approved
-    }
+    var user: AppUser? { authService.authSession?.user }
+    
     var pharmacyId: String { staffMembership.pharmacyId }
     
     var hasUnreadNotifications: Bool = true
@@ -28,15 +26,13 @@ class PharmacistHomeViewModel {
     private(set) var answeredTodaysInquiriesCount: Int = 0
     private(set) var todaysInquiriesCountLoadingState = LoadingState()
     
-    private(set) var authSessionLoadingState = LoadingState()
-    
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(staffMembership: StaffMembership, authService: AuthService, inquiryService: InquiryService) {
+    init(staffMembership: StaffMembership, inquiryService: InquiryService, authService: AuthService) {
         self.staffMembership = staffMembership
-        self.authService = authService
         self.inquiryService = inquiryService
+        self.authService = authService
     }
     
     deinit {
@@ -55,32 +51,11 @@ class PharmacistHomeViewModel {
         }
     }
     
-    func refresh() async {
-        if !isAuthorized {
-            await refreshAuthSession()
-        } else {
-            await refreshData()
-        }
-    }
-    
-    private func refreshData() async {
+    func refreshData() async {
         async let pendingInquiries = loadPendingInquiries()
         async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
         
         _ = await (pendingInquiries, numberOfTodaysInquiries)
-    }
-    
-    private func refreshAuthSession() async {
-        authSessionLoadingState.startLoading(refresh: true)
-        defer { authSessionLoadingState.stopLoading() }
-        
-        do {
-            try await authService.refreshAuthSession()
-            
-        } catch {
-            authSessionLoadingState.fail(error)
-            print("Failed to refresh auth session\n", error)
-        }
     }
     
     private func loadPendingInquiries(refresh: Bool = false) async {
