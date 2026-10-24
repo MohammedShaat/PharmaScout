@@ -10,22 +10,22 @@ import SwiftUI
 
 @Observable
 class PharmacistTabViewModel {
-    private let membership: StaffMembership
+    let membership: StaffMembership
     var selectedTab: PharmacistTab = .home
     var inquiriesPath = NavigationPath()
     
-    var isAuthorized: Bool {
-        membership.staffStatus == .approved
-    }
-    var isOwner: Bool {
-        membership.role == .owner
-    }
+    var access: PharmacistAccess
     
     init(staffMembership: StaffMembership) {
         self.membership = staffMembership
+        self.access = PharmacistAccess(membership: membership)
     }
     
     func navigateToInquiriesTab() {
+        guard access.canAccess(.inquiries) else {
+            print("Denied access to inquiries")
+            return
+        }
         selectedTab = .inquiries
     }
     
@@ -48,12 +48,5 @@ class PharmacistTabViewModel {
             navigateToInquiryDetailScreenBy(inquiryId)
         }
     }
-}
-
-enum PharmacistTab {
-    case home
-    case inquiries
-    case pharmacy
-    case analytics
-    case profile
+    
 }

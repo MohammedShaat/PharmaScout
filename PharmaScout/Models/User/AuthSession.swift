@@ -53,6 +53,12 @@ struct StaffMembership: Decodable, Equatable {
     let role: PharmacyStaffRole
     let staffStatus: PharmacyStaffStatus
     let pharmacyStatus: PharmacyStatus
+    let pharmacyRejectionReason: String?
+    let staffRejectionReason: String?
+    
+    var isPharmacyApproved: Bool { pharmacyStatus == .approved }
+    var isStaffApproved: Bool { staffStatus == .approved }
+    var isOwner: Bool { role == .owner }
 }
 
 struct OwnerApplicationSummary: Codable {

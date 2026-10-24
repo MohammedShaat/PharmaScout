@@ -30,6 +30,8 @@ class PharmacyApplicationDetailViewModel {
         }
     }
     
+    private(set) var activeReviewAction: ReviewAction?
+    
     private(set) var pharmacyApplicationLoadingState = LoadingState()
     private(set) var contactLoadingState = LoadingState()
     private(set) var workingHoursLoadingState = LoadingState()
@@ -70,7 +72,7 @@ class PharmacyApplicationDetailViewModel {
     }
     
     func approvePharmacy() async {
-        await reviewPharmacy(approve: true)
+        await reviewPharmacy(action: .approve)
     }
     
     func rejectPharmacy() async {
@@ -79,23 +81,27 @@ class PharmacyApplicationDetailViewModel {
         default: rejectionReason?.title
         }
         
-        await reviewPharmacy(approve: false, rejectionReason: reason)
+        await reviewPharmacy(action: .reject, rejectionReason: reason)
     }
     
-    private func reviewPharmacy(approve: Bool, rejectionReason: String? = nil) async {
-        guard approve || isRejectionReasonValid(rejectionReason) else {
+    private func reviewPharmacy(action: ReviewAction, rejectionReason: String? = nil) async {
+        guard action == .approve || isRejectionReasonValid(rejectionReason) else {
             print("Rejection reason is not valid")
             return
         }
         
+        activeReviewAction = action
         reviewLoadingState.startLoading()
-        defer { reviewLoadingState.stopLoading() }
+        defer {
+            reviewLoadingState.stopLoading()
+            activeReviewAction = nil
+        }
         
         do {
             let request = ReviewPharmacyRequest(
                 pharmacyId: pharmacyId,
-                approve: approve,
-                rejectionReason: approve ? nil : rejectionReason
+                approve: action == .approve,
+                rejectionReason: action == .approve ? nil : rejectionReason
             )
             try await pharmacyService.reviewPharmacy(request)
             

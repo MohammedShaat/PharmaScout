@@ -121,7 +121,8 @@ struct PharmacyApplicationDetailScreen: View {
             HStack {
                 PrimaryButtonView(
                     title: "Approve",
-                    isLoading: vm.reviewLoadingState.status != .idle) {
+                    isDisabled: vm.reviewLoadingState.status != .idle && vm.activeReviewAction != .approve,
+                    isLoading: vm.reviewLoadingState.status != .idle &&  vm.activeReviewAction == .approve) {
                         reviewTask?.cancel()
                         reviewTask = Task {
                             await vm.approvePharmacy()
@@ -130,7 +131,8 @@ struct PharmacyApplicationDetailScreen: View {
                 
                 PrimaryButtonView(
                     title: "Reject",
-                    isLoading: vm.reviewLoadingState.status != .idle) {
+                    isDisabled: vm.reviewLoadingState.status != .idle && vm.activeReviewAction != .reject,
+                    isLoading: vm.reviewLoadingState.status != .idle &&  vm.activeReviewAction == .reject) {
                         isShowingRejectionShee.toggle()
                     }
             }

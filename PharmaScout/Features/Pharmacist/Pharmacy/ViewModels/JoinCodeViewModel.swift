@@ -10,7 +10,7 @@ import Foundation
 @Observable
 class JoinCodeViewModel {
     private let pharmacyService: PharmacyService
-    private let pharmacy: Pharmacy
+    private let pharmacyId: String
     
     private(set) var joinCode: InvitaionCode?
     
@@ -19,9 +19,9 @@ class JoinCodeViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(pharmacyService: PharmacyService, pharmacy: Pharmacy) {
+    init(pharmacyService: PharmacyService, pharmacyId: String) {
         self.pharmacyService = pharmacyService
-        self.pharmacy = pharmacy
+        self.pharmacyId = pharmacyId
     }
     
     deinit {
@@ -53,7 +53,7 @@ class JoinCodeViewModel {
         defer { loadingState.stopLoading() }
         
         do {
-            joinCode = try await pharmacyService.getActiveJoinCode(for: pharmacy.id)
+            joinCode = try await pharmacyService.getActiveJoinCode(for: pharmacyId)
             
         } catch {
             loadingState.fail(error)
@@ -66,7 +66,7 @@ class JoinCodeViewModel {
         defer { loadingState.stopLoading() }
         
         do {
-            joinCode = try await pharmacyService.generateJoinCode(for: pharmacy.id)
+            joinCode = try await pharmacyService.generateJoinCode(for: pharmacyId)
             
         } catch {
             loadingState.fail(error)

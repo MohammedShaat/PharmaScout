@@ -9,125 +9,38 @@ import SwiftUI
 
 struct PharmacistHomeScreen: View {
     private let pharmacistTabViewModel: PharmacistTabViewModel
-    @State private var vm: PharmacistHomeViewModel
-    @State private var refreshAuthSessionTask: Task<Void, Never>?
+    private let staffMembership: StaffMembership
+    private let inquiryService: InquiryService
+    private let authService: AuthService
     
     init(
         pharmacistTabViewModel: PharmacistTabViewModel,
         staffMembership: StaffMembership,
-        authService: AuthService,
-        inquiryService: InquiryService
+        inquiryService: InquiryService,
+        authService: AuthService
     ) {
         self.pharmacistTabViewModel = pharmacistTabViewModel
-        let viewModel = PharmacistHomeViewModel(
-            staffMembership: staffMembership,
-            authService: authService,
-            inquiryService: inquiryService
-        )
-        self._vm = State(wrappedValue: viewModel)
+        self.staffMembership = staffMembership
+        self.inquiryService = inquiryService
+        self.authService = authService
     }
     
     var body: some View {
-        CustomNavStack {
-            ScrollView {
-                VStack(spacing: DesignSystem.Spacing.xxLarge) {
-                    
-                    if !vm.isAuthorized {
-                        notAuthorizedSection
-                        
-                    } else {
-                        headerSection
-                        
-                        recentPendingInquiries
-                        
-                        todayActivitySection
-                    }
-                }
-                .padding(DesignSystem.Spacing.xLarge)
-            }
-            .customNavBarVisibility(false)
-            .refreshable(action: vm.refresh)
-            .onAppear(perform: vm.loadDataIfNeeded)
-            .onDisappear {
-                refreshAuthSessionTask?.cancel()
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private var notAuthorizedSection: some View {
-        LoadingContentView(
-            LoadingState: vm.authSessionLoadingState,
-            isEmpty: vm.authSession == nil,
-            emptyMessage: "") {
-                VStack {
-                    switch vm.staffMembership.staffStatus {
-                    case .pending:
-                        Text("Your request is pending. Waiting for the pharmacy owner’s approval.")
-                            .font(.title)
-                            .multilineTextAlignment(.center)
-                        
-                    case .rejected:
-                        VStack {
-                            Text("Your request was rejected.")
-                                .font(.title)
-                            Text("Contact the pharmacy owner for more information.")
-                        }
-                        .multilineTextAlignment(.center)
-                        
-                    default:
-                        EmptyView()
-                    }
-                }
-            }
-    }
-    
-    private var headerSection: some View {
-        GreetingHeaderView(user: vm.authSession?.user, hasUnreadNotifications: vm.hasUnreadNotifications)
-    }
-    
-    private var recentPendingInquiries: some View {
-        VStack {
-            MoreSectionHeaderView(title: "Pending inquiries") {
-                pharmacistTabViewModel.navigateToInquiriesTab()
-            }
+        switch pharmacistTabViewModel.access {
+        case .full:
+            PharmacistDashboardScreen(
+                pharmacistTabViewModel: pharmacistTabViewModel,
+                staffMembership: staffMembership,
+                inquiryService: inquiryService,
+                authService: authService
+            )
             
-            LoadingContentView(
-                LoadingState: vm.latestPendingInquiriesLoadingState,
-                isEmpty: vm.latestPendingInquiries.isEmpty,
-                emptyMessage: "No pending Inquiries") {
-                    VStack(spacing: DesignSystem.Spacing.large) {
-                        ForEach(vm.latestPendingInquiries) { inquiry in
-                            InquiryView(inquiry)
-                                .clickable {
-                                    pharmacistTabViewModel.navigateToInquiryDetailScreenBy(inquiry)
-                                }
-                        }
-                    }
-                }
-        }
-    }
-    
-    private var todayActivitySection: some View {
-        VStack {
-            HStack {
-                Text("Today's activity")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.theme.textPrimary)
-                Spacer()
-            }
-            
-            LoadingContentView(
-                LoadingState: vm.todaysInquiriesCountLoadingState,
-                isEmpty: vm.allTodaysInquiriesCount == 0,
-                emptyMessage: "No inquiries today") {
-                    VStack(alignment: .leading) {
-                        Text("^[\(vm.allTodaysInquiriesCount) inquiry](inflect: true)")
-                        Text("\(vm.answeredTodaysInquiriesCount) answered")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+        case .restricted(let role, let restriction):
+            PharmacistRestrictedHomeScreen(
+                authService: authService,
+                role: role,
+                pharmacistRestriction: restriction
+            )
         }
     }
 }
@@ -136,7 +49,7 @@ struct PharmacistHomeScreen: View {
     PharmacistHomeScreen(
         pharmacistTabViewModel: .sample,
         staffMembership: .samples[0],
+        inquiryService: MockInquiryService.sample,
         authService: MockAuthService.sample,
-        inquiryService: MockInquiryService.sample
     )
 }

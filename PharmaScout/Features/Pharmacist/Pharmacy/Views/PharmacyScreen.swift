@@ -8,24 +8,28 @@
 import SwiftUI
 
 struct PharmacyScreen: View {
-    private let staffMembership: StaffMembership
+    private let pharmacistAccess: PharmacistAccess
     private let authService: AuthService
     private let pharmacyService: PharmacyService
     
     @State private var vm: PharmacyViewModel
     @State private var path = NavigationPath()
     
+    private var canEditPharmacy: Bool { pharmacistAccess.can(.editPharmacy) }
+    private var canEditStaff: Bool { pharmacistAccess.can(.manageStaff) }
+    
     init(
-        staffMembership: StaffMembership,
+        pharmacyId: String,
+        pharmacistAccess: PharmacistAccess,
         authService: AuthService,
         pharmacyService: PharmacyService
     ) {
-        self.staffMembership = staffMembership
+        self.pharmacistAccess = pharmacistAccess
         self.authService = authService
         self.pharmacyService = pharmacyService
         
         let viewModel = PharmacyViewModel(
-            staffMembership: staffMembership,
+            pharmacyId: pharmacyId,
             pharmacyService: pharmacyService
         )
         self._vm = State(wrappedValue: viewModel)
@@ -41,11 +45,7 @@ struct PharmacyScreen: View {
                     
                     workingHoursSection
                     
-                    if vm.isOwner {
-                        staffSection
-                        
-                        inviteSection
-                    }
+                    staffSection
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -65,9 +65,6 @@ struct PharmacyScreen: View {
                         
                     case .editStaff:
                         PharmacyEditStaffScreen(authService: authService, pharmacyService: pharmacyService, pharmacy: pharmacy, staffMembers: vm.pharmacyStaff)
-                    
-                    case .joinCode:
-                        JoinCodeScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
                     }
                 }
             }
@@ -80,7 +77,7 @@ struct PharmacyScreen: View {
     
     private var pharmacySection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Pharmacy Info", isActionDisabled: !vm.isOwner) {
+            EditSectionHeaderView(title: "Pharmacy Info", isActionDisabled: !canEditPharmacy) {
                 path.append(PharmacyRoute.editAddress)
             }
             
@@ -97,7 +94,7 @@ struct PharmacyScreen: View {
     
     private var contactSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Contact", isActionDisabled: !vm.isOwner) {
+            EditSectionHeaderView(title: "Contact", isActionDisabled: !canEditPharmacy) {
                 path.append(PharmacyRoute.editContact)
             }
             
@@ -114,7 +111,7 @@ struct PharmacyScreen: View {
     
     private var workingHoursSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !vm.isOwner) {
+            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !canEditPharmacy) {
                 path.append(PharmacyRoute.editWorkingHours)
             }
             
@@ -131,7 +128,7 @@ struct PharmacyScreen: View {
     
     private var staffSection: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Staff", isActionDisabled: !vm.isOwner) {
+            EditSectionHeaderView(title: "Staff", isActionDisabled: !canEditStaff) {
                 path.append(PharmacyRoute.editStaff)
             }
             
@@ -147,12 +144,6 @@ struct PharmacyScreen: View {
                 }
         }
     }
-    
-    private var inviteSection: some View {
-        CustomNavValueLink(value: PharmacyRoute.joinCode) {
-            Text("Invite a pharmacist?")
-        }
-    }
 }
 
 enum PharmacyRoute {
@@ -160,12 +151,12 @@ enum PharmacyRoute {
     case editContact
     case editWorkingHours
     case editStaff
-    case joinCode
 }
 
 #Preview {
     PharmacyScreen(
-        staffMembership: .samples[0],
+        pharmacyId: Pharmacy.samples[0].id,
+        pharmacistAccess: .full(role: .owner),
         authService: MockAuthService.sample,
         pharmacyService: MockPharmacyService.sample
     )

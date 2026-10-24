@@ -24,7 +24,7 @@ struct PharmacistTabView: View {
         staffMembership: StaffMembership,
         authService: AuthService,
         inquiryService: InquiryService,
-        drugService: DrugService,
+    drugService: DrugService,
         pharmacyService: PharmacyService,
         analyticsService: AnalyticsService,
         pushTokenCoordinator: PushTokenCoordinator
@@ -45,27 +45,31 @@ struct PharmacistTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen(pharmacistTabViewModel: vm, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService)
+                PharmacistHomeScreen(pharmacistTabViewModel: vm, staffMembership: staffMembership, inquiryService: inquiryService, authService: authService)
             }
             
-            if vm.isAuthorized {
+            if vm.access.canAccess(.inquiries) {
                 Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
                     InquiriesScreen(path: $vm.inquiriesPath, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService, drugService: drugService)
                 }
-                
+            }
+            
+            if vm.access.canAccess(.pharmacy) {
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                    PharmacyScreen(staffMembership: staffMembership, authService: authService, pharmacyService: pharmacyService)
-                }
-                
-                if vm.isOwner {
-                    Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
-                        AnalyticsScreen(staffMembership: staffMembership, analyticsService: analyticsService)
-                    }
+                    PharmacyScreen(pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, authService: authService, pharmacyService: pharmacyService)
                 }
             }
             
-            Tab("Profile", image: tabImage(.profile), value: .profile) {
-                PharmacistProfileScreen(authService: authService, pushTokenCoordinator: pushTokenCoordinator)
+            if vm.access.canAccess(.analytics) {
+                Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
+                    AnalyticsScreen(pharmacyId: staffMembership.pharmacyId, analyticsService: analyticsService)
+                }
+            }
+            
+            if vm.access.canAccess(.profile) {
+                Tab("Profile", image: tabImage(.profile), value: .profile) {
+                    PharmacistProfileScreen(pharmacistAccess: vm.access, authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacyService, pharmacyId: staffMembership.pharmacyId)
+                }
             }
         }
         .tint(.theme.primary)
