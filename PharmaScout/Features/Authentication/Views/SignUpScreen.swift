@@ -8,9 +8,19 @@
 import SwiftUI
 
 struct SignUpScreen: View {
-    @State private var vm: SignUpViewModel
+    private let onSignInTapped: () -> Void
     
-    init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
+    @State private var vm: SignUpViewModel
+    @State private var signUpTask: Task<Void, Never>?
+    
+    init(
+        authService: AuthService,
+        googleAuthService: OAuthService,
+        appleAuthService: OAuthService,
+        onSignInTapped: @escaping () -> Void
+    ) {
+        self.onSignInTapped = onSignInTapped
+        
         let viewModel = SignUpViewModel(
             authService: authService,
             googleAuthService: googleAuthService,
@@ -33,10 +43,17 @@ struct SignUpScreen: View {
                 alreadyHaveAnAccountSection
             }
             .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-            .errorAlert(title: "Sign Up Failed", loadingState: $vm.emailSignUpLoadingState)
-            .errorAlert(title: "Sign Up Failed", loadingState: $vm.providerSignInLoadingState)
+            .errorAlert(
+                title: "Sign Up Failed",
+                loadingState: vm.emailSignUpLoadingState.error != nil
+                ? $vm.emailSignUpLoadingState
+                : $vm.providerSignInLoadingState
+            )
             .navigationDestination(isPresented: $vm.confirmationSent) {
                 destination
+            }
+            .onDisappear {
+                signUpTask?.cancel()
             }
         }
     }
@@ -76,7 +93,8 @@ struct SignUpScreen: View {
                 isDisabled: !vm.areFieldsFilled || vm.providerSignInLoadingState.status != .idle,
                 isLoading: vm.emailSignUpLoadingState.status != .idle
             ) {
-                Task {
+                signUpTask?.cancel()
+                signUpTask = Task {
                     await vm.signUp()
                 }
             }
@@ -87,13 +105,15 @@ struct SignUpScreen: View {
     
     private var providersSection: some View {
         SignInWithProvidersView(isDisabled: vm.emailSignUpLoadingState.status != .idle || vm.providerSignInLoadingState.status != .idle) {
-            Task {
+            signUpTask?.cancel()
+            signUpTask = Task {
                 if let vc = UIApplication.shared.viewController {
                     await vm.signInWithApple(viewController: vc)
                 }
             }
         } onGoogleButtonTapped: {
-            Task {
+            signUpTask?.cancel()
+            signUpTask = Task {
                 if let vc = UIApplication.shared.viewController {
                     await vm.signInWithGoogle(viewController: vc)
                 }
@@ -102,7 +122,9 @@ struct SignUpScreen: View {
     }
     
     private var alreadyHaveAnAccountSection: some View {
-        NavigationPromptView(value: AuthenticationRoute.signIn,text: "Already have an account?", actionTitle: "Sign In")
+        ActionPromptView(text: "Already have an account?", actionTitle: "Sign In") {
+            onSignInTapped()
+        }
         .padding(.top, DesignSystem.Spacing.xLarge)
     }
     
@@ -113,7 +135,8 @@ struct SignUpScreen: View {
             email: vm.email,
             resendAvailableAfter: vm.resendAvailableAfter ?? .now,
             canResend: { vm.canResend }) {
-                Task {
+                signUpTask?.cancel()
+                signUpTask = Task {
                     await vm.resend()
                 }
             }
@@ -126,8 +149,10 @@ struct SignUpScreen: View {
         SignUpScreen(
             authService: MockAuthService.sample,
             googleAuthService: MockGoogleAuthService.sample,
-            appleAuthService: MockAppleAuthService.sample
+            appleAuthService: MockAppleAuthService.sample,
+            onSignInTapped: {}
         )
         .customNavBarVisibility(true)
     }
 }
+	

@@ -24,6 +24,7 @@ struct RootView: View {
     private let ownerApplicationService: OwnerApplicationService
     private let geocodingService: GeocodingService
     private let placeSearchService: PlaceSearchService
+    private let onboardingService: OnboardingService
     
     init(
         router: AppRouter,
@@ -41,7 +42,8 @@ struct RootView: View {
         appConfigService: AppConfigService,
         ownerApplicationService: OwnerApplicationService,
         geocodingService: GeocodingService,
-        placeSearchService: PlaceSearchService
+        placeSearchService: PlaceSearchService,
+        onboardingService: OnboardingService
     ) {
         self.router = router
         self.authService = authService
@@ -59,6 +61,7 @@ struct RootView: View {
         self.ownerApplicationService = ownerApplicationService
         self.geocodingService = geocodingService
         self.placeSearchService = placeSearchService
+        self.onboardingService = onboardingService
     }
     
     var body: some View {
@@ -67,20 +70,14 @@ struct RootView: View {
             case .loading:
                 SessionLoadingScreen()
                 
-            case .authenticationFlow:
-                WelcomeScreen(authSerivce: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
-                
-            case .signIn:
-                CustomNavStack {
-                    SignInScreen(authService: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
-                        .customNavBarVisibility(false)
-                }
+            case .authenticationFlow, .signIn:
+                AuthenticationFlowView(authSerivce: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService, onboardingService: onboardingService, initialRoute: router.destination == .signIn ? .signIn : nil)
                 
             case .resetPassword:
-                ResetPasswordScreen(authSerivce: authService, router: router)
+                ResetPasswordScreen(authSerivce: authService, onPasswordResetSucceeded: router.onPasswordResetSucceeed, onBackToSignInTapped: router.navigateToSignIn)
                 
-            case .authenticationFailure(let error):
-                AuthenticationStateErrorScreen(error: error)
+            case .authenticationFailure(let message):
+                AuthenticationStateErrorScreen(errorMessage: message)
                 
             case .patient:
                 PatientTabView(router: router, authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService, ownerApplicationService: ownerApplicationService)
@@ -120,7 +117,8 @@ struct RootView: View {
         appConfigService: MockAppConfigService.sample,
         ownerApplicationService: MockOwnerApplicationService.sample,
         geocodingService: MockGeocodingService.sample,
-        placeSearchService: MockPlaceSearchService.sample
+        placeSearchService: MockPlaceSearchService.sample,
+        onboardingService: MockOnboardingService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

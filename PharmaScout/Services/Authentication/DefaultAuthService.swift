@@ -171,7 +171,7 @@ extension DefaultAuthService {
                     // Sign out
                     case .signedOut:
                         authSession = nil
-                        continuation.yield(.non)
+                        continuation.yield(.signedOut)
                         
                     default:
                         continue

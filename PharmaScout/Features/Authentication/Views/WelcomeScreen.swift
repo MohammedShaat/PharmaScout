@@ -8,58 +8,28 @@
 import SwiftUI
 
 struct WelcomeScreen: View {
-    let authService: AuthService
-    let googleAuthService: OAuthService
-    let appleAuthService: OAuthService
+    let onGetStartedTapped: () -> Void
+    let onHaveAccountTapped: () -> Void
 
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
     
-    init(authSerivce: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
-        self.authService = authSerivce
-        self.googleAuthService = googleAuthService
-        self.appleAuthService = appleAuthService
-    }
-    
     var body: some View {
-        CustomNavStack {
-            VStack {
-                headerSection
-                
-                Spacer()
-                
-                logoSection
-                
-                Spacer()
-                
-                descriptionSection
-                
-                Spacer()
-                
-                buttonsSection
-            }
-            .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-            .customNavBarVisibility(false)
-            .customNavigationDestination(for: AuthenticationRoute.self) { route in
-                switch route {
-                case .signUp:
-                    SignUpScreen(
-                        authService: authService,
-                        googleAuthService: googleAuthService,
-                        appleAuthService: appleAuthService
-                    )
-                    
-                case .signIn:
-                    SignInScreen(
-                        authService: authService,
-                        googleAuthService: googleAuthService,
-                        appleAuthService: appleAuthService
-                    )
-                    
-                case .forgotPassword:
-                    ForgotPasswordScreen(authSerivce: authService)
-                }
-            }
+        VStack {
+            headerSection
+            
+            Spacer()
+            
+            logoSection
+            
+            Spacer()
+            
+            descriptionSection
+            
+            Spacer()
+            
+            buttonsSection
         }
+        .padding(.horizontal, DesignSystem.Spacing.xxLarge)
     }
     
     private var headerSection: some View {
@@ -99,27 +69,22 @@ struct WelcomeScreen: View {
     
     private var buttonsSection: some View {
         VStack(spacing: DesignSystem.Spacing.xLarge) {
-            CustomNavValueLink(value: AuthenticationRoute.signUp) {
-                PrimaryButtonLabelView(title: "Get Started")
-                    .frame(maxWidth: 400)
-                    .frame(maxWidth: .infinity)
+            PrimaryButtonView(title: "Get Started") {
+                onGetStartedTapped()
             }
+            .frame(maxWidth: 400)
+            .frame(maxWidth: .infinity)
             
-            NavigationPromptView(value: AuthenticationRoute.signIn, actionTitle: "I already have an account")
+            ActionPromptView(actionTitle: "I already have an account") {
+                onHaveAccountTapped()
+            }
         }
     }
 }
 
-enum AuthenticationRoute {
-    case signUp
-    case signIn
-    case forgotPassword
-}
-
 #Preview {
     WelcomeScreen(
-        authSerivce: MockAuthService.sample,
-        googleAuthService: MockGoogleAuthService.sample,
-        appleAuthService: MockAppleAuthService.sample
+        onGetStartedTapped: {},
+        onHaveAccountTapped: {}
     )
 }
