@@ -10,6 +10,6 @@ import UIKit
 
 struct MockAppleAuthService: OAuthService {
     func signIn(viewController vc: UIViewController) async throws -> OAuthCredential {
-        OAuthCredential(provider: .apple, idToken: "", nonce: "")
+        OAuthCredential(provider: .apple, idToken: "", nonce: "", fullName: "")
     }
 }

@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct OwnerApplicantTabView: View {
+    private let user: AppUser
     private let ownerApplicationSummary: OwnerApplicationSummary
     private let authService: AuthService
     private let pushTokenCoordinator: PushTokenCoordinator
@@ -20,6 +21,7 @@ struct OwnerApplicantTabView: View {
     @State private var vm: OwnerApplicantTabViewModel
     
     init(
+        user: AppUser,
         ownerApplicationSummary: OwnerApplicationSummary,
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
@@ -29,6 +31,7 @@ struct OwnerApplicantTabView: View {
         placeSearchService: PlaceSearchService,
         locationService: LocationService
     ) {
+        self.user = user
         self.ownerApplicationSummary = ownerApplicationSummary
         self.authService = authService
         self.pushTokenCoordinator = pushTokenCoordinator
@@ -55,7 +58,7 @@ struct OwnerApplicantTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                OwnerApplicantProfileScreen(authService: authService, pushTokenCoordinator: pushTokenCoordinator)
+                OwnerApplicantProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator)
             }
         }
         .tint(.theme.primary)
@@ -79,6 +82,7 @@ struct OwnerApplicantTabView: View {
 
 #Preview {
     OwnerApplicantTabView(
+        user: .samples[0],
         ownerApplicationSummary: .samples[0],
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,

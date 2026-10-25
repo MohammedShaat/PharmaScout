@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PharmacistProfileScreen: View {
+    private let user: AppUser
     private let pharmacistAccess: PharmacistAccess
     private let authService: AuthService
     private let pharmacyService: PharmacyService
@@ -19,12 +20,14 @@ struct PharmacistProfileScreen: View {
     private var canManageStaff: Bool { pharmacistAccess.can(.manageStaff) }
     
     init(
+        user: AppUser,
         pharmacistAccess: PharmacistAccess,
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
         pharmacyService: PharmacyService,
         pharmacyId: String
     ) {
+        self.user = user
         self.pharmacistAccess = pharmacistAccess
         self.authService = authService
         self.pharmacyService = pharmacyService
@@ -46,6 +49,7 @@ struct PharmacistProfileScreen: View {
                 
                 logout
             }
+            .customNavTitle(user.fullName ?? "")
             .customBackButtonVisibility(false)
             .onDisappear {
                 task?.cancel()
@@ -60,21 +64,12 @@ struct PharmacistProfileScreen: View {
     }
     
     private var logout: some View {
-        Button {
+        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
             task?.cancel()
             task = Task {
                 await vm.logout()
             }
-        } label: {
-            HStack {
-                Text("Log out")
-                
-                if vm.logoutLoadingState.status != .idle {
-                    RingProgressView()
-                }
-            }
         }
-        .disabled(vm.logoutLoadingState.status != .idle)
     }
     
     private var invite: some View {
@@ -90,6 +85,7 @@ enum PharmacistProfileRoute {
 
 #Preview {
     PharmacistProfileScreen(
+        user: .samples[0],
         pharmacistAccess: .full(role: .owner),
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,

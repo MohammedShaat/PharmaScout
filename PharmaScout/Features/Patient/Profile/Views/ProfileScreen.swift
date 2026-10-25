@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ProfileScreen: View {
+    private let user: AppUser
     private let authService: AuthService
     private let pharmacyService: PharmacyService
     private let ownerApplicationService: OwnerApplicationService
@@ -16,11 +17,13 @@ struct ProfileScreen: View {
     @State private var task: Task<Void, Never>?
     
     init(
+        user: AppUser,
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
         pharmacyService: PharmacyService,
         ownerApplicationService: OwnerApplicationService
     ) {
+        self.user = user
         self.authService = authService
         self.pharmacyService = pharmacyService
         self.ownerApplicationService = ownerApplicationService
@@ -41,6 +44,7 @@ struct ProfileScreen: View {
                 
                 logout
             }
+            .customNavTitle(user.fullName ?? "")
             .customBackButtonVisibility(false)
             .customNavigationDestination(for: ProfileRoute.self) { route in
                 switch route {
@@ -76,21 +80,12 @@ struct ProfileScreen: View {
     }
     
     private var logout: some View {
-        Button {
+        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
             task?.cancel()
             task = Task {
                 await vm.logout()
             }
-        } label: {
-            HStack {
-                Text("Log out")
-                
-                if vm.logoutLoadingState.status != .idle {
-                    RingProgressView()
-                }
-            }
         }
-        .disabled(vm.logoutLoadingState.status != .idle)
     }
 }
 
@@ -101,6 +96,7 @@ enum ProfileRoute {
 
 #Preview {
     ProfileScreen(
+        user: .samples[0],
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,
         pharmacyService: MockPharmacyService.sample,

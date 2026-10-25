@@ -89,18 +89,20 @@ class AppRouter {
     private func destination(for state: AuthState) -> Destination {
         switch state {
         case .authenticated:
-            switch authSession?.accountState {
-            case .patient: .patient
-            case .pharmacist(let staffMembership): .pharmacist(staffMembership)
-            case .admin: .admin
-            case .ownerApplicant(let ownerApplicationSummary): .ownerApplicant(ownerApplicationSummary)
-            case nil: .authenticationFailure(AppAuthError.sessionMissing.errorDescription)
+            guard let authSession = authSession else {
+                return .authenticationFailure(AppAuthError.sessionMissing.errorDescription)
+            }
+            switch authSession.accountState {
+            case .patient: return .patient(authSession.user)
+            case .pharmacist(let staffMembership): return .pharmacist(authSession.user, staffMembership)
+            case .admin: return .admin(authSession.user)
+            case .ownerApplicant(let ownerApplicationSummary): return .ownerApplicant(authSession.user, ownerApplicationSummary)
             }
             
-        case .non: .authenticationFlow
-        case .signedOut: .signIn
-        case .passwordReset: .resetPassword
-        case .failed(let error): .authenticationFailure(error.localizedDescription)
+        case .non: return .authenticationFlow
+        case .signedOut: return .signIn
+        case .passwordReset: return .resetPassword
+        case .failed(let error): return .authenticationFailure(error.localizedDescription)
         }
     }
 }
@@ -111,10 +113,10 @@ enum Destination: Equatable {
     case signIn
     case resetPassword
     case authenticationFailure(String?)
-    case patient
-    case pharmacist(StaffMembership)
-    case admin
-    case ownerApplicant(OwnerApplicationSummary)
+    case patient(AppUser)
+    case pharmacist(AppUser, StaffMembership)
+    case admin(AppUser)
+    case ownerApplicant(AppUser, OwnerApplicationSummary)
 }
 
 extension AuthState {
