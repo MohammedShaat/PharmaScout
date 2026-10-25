@@ -23,17 +23,9 @@ struct CustomNavStack<Content: View>: View {
     }
     
     var body: some View {
-        if let path {
-            NavigationStack(path: path) {
-                CustomNavView {
-                    content
-                }
-            }
-        } else {
-            NavigationStack(path: $defaultPath) {
-                CustomNavView {
-                    content
-                }
+        NavigationStack(path: path ?? $defaultPath) {
+            CustomNavView {
+                content
             }
         }
     }

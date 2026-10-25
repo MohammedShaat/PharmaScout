@@ -8,9 +8,22 @@
 import SwiftUI
 
 struct SignInScreen: View {
-    @State private var vm: SignInViewModel
+    private let onSignUpTapped: () -> Void
+    private let onForgotPasswordTapped: () -> Void
     
-    init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
+    @State private var vm: SignInViewModel
+    @State private var signInTask: Task<Void, Never>?
+    
+    init(
+        authService: AuthService,
+        googleAuthService: OAuthService,
+        appleAuthService: OAuthService,
+        onSignUpTapped: @escaping () -> Void,
+        onForgotPasswordTapped: @escaping () -> Void
+    ) {
+        self.onSignUpTapped = onSignUpTapped
+        self.onForgotPasswordTapped = onForgotPasswordTapped
+        
         let viewModel = SignInViewModel(authService: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService)
         self._vm = State(wrappedValue: viewModel)
     }
@@ -35,6 +48,9 @@ struct SignInScreen: View {
                 ? $vm.emailSignInLoadingState
                 : $vm.providerSignInLoadingState
             )
+            .onDisappear {
+                signInTask?.cancel()
+            }
         }
     }
     
@@ -64,19 +80,18 @@ struct SignInScreen: View {
             
             LabeledSecureFieldView(title: $vm.password, label: "Password", isInputHidden: $vm.isPasswordHidden)
             
-            CustomNavValueLink(value: AuthenticationRoute.forgotPassword) {
-                Text("Forgot password?")
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                    .foregroundStyle(.theme.primary)
-                    .font(.headline)
+            ActionPromptView(actionTitle: "Forgot password?") {
+                onForgotPasswordTapped()
             }
+            .frame(maxWidth: .infinity, alignment: .trailing)
             
             PrimaryButtonView(
                 title: "Sign In",
                 isDisabled: !vm.areFieldsFilled || vm.providerSignInLoadingState.status != .idle,
                 isLoading: vm.emailSignInLoadingState.status != .idle
             ) {
-                Task {
+                signInTask?.cancel()
+                signInTask = Task {
                     await vm.signIn()
                 }
             }
@@ -87,13 +102,15 @@ struct SignInScreen: View {
     
     private var providersSection: some View {
         SignInWithProvidersView(isDisabled: vm.emailSignInLoadingState.status != .idle || vm.providerSignInLoadingState.status != .idle) {
-            Task {
+            signInTask?.cancel()
+            signInTask = Task {
                 if let vc = UIApplication.shared.viewController {
                     await vm.signInWithApple(viewController: vc)
                 }
             }
         } onGoogleButtonTapped: {
-            Task {
+            signInTask?.cancel()
+            signInTask = Task {
                 if let vc = UIApplication.shared.viewController {
                     await vm.signInWithGoogle(viewController: vc)
                 }
@@ -102,11 +119,9 @@ struct SignInScreen: View {
     }
     
     private var doNotHaveAnAccountSection: some View {
-        NavigationPromptView(
-            value: AuthenticationRoute.signUp,
-            text: "Don't have an account?",
-            actionTitle: "Sign Up"
-        )
+        ActionPromptView(text: "Don't have an account?", actionTitle: "Sign Up") {
+            onSignUpTapped()
+        }
         .padding(.top, DesignSystem.Spacing.xLarge)
     }
 }
@@ -116,8 +131,10 @@ struct SignInScreen: View {
         SignInScreen(
             authService: MockAuthService.sample,
             googleAuthService: MockGoogleAuthService.sample,
-            appleAuthService: MockAppleAuthService.sample
+            appleAuthService: MockAppleAuthService.sample,
+            onSignUpTapped: {},
+            onForgotPasswordTapped: {}
         )
-            .customNavBarVisibility(true)
+        .customNavBarVisibility(true)
     }
 }

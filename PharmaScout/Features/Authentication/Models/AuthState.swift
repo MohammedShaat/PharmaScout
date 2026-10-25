@@ -12,6 +12,7 @@ import Supabase
 enum AuthState {
     case authenticated
     case non
+    case signedOut
     case passwordReset
     case failed(Error)
 }

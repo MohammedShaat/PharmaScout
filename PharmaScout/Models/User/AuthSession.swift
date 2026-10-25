@@ -61,7 +61,7 @@ struct StaffMembership: Decodable, Equatable {
     var isOwner: Bool { role == .owner }
 }
 
-struct OwnerApplicationSummary: Codable {
+struct OwnerApplicationSummary: Codable, Equatable {
     let id: String
     let status: OwnerApplicationStatus
 }

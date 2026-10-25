@@ -67,6 +67,10 @@ extension MockPlaceSearchService {
     static let sample = MockPlaceSearchService()
 }
 
+extension MockOnboardingService {
+    static let sample = MockOnboardingService()
+}
+
 extension SignUpViewModel {
     static let sample = SignUpViewModel(
         authService: MockAuthService.sample,

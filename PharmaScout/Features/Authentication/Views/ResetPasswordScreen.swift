@@ -8,11 +8,20 @@
 import SwiftUI
 
 struct ResetPasswordScreen: View {
-    let router: AppRouter
-    @State private var vm: ResetPasswordViewModel
+    private let onPasswordResetSucceeded: (() -> Void)?
+    private let onBackToSignInTapped: (() -> Void)?
     
-    init(authSerivce: AuthService, router: AppRouter) {
-        self.router = router
+    @State private var vm: ResetPasswordViewModel
+    @State private var resetPassTask: Task<Void, Never>?
+    
+    init(
+        authSerivce: AuthService,
+        onPasswordResetSucceeded: (() -> Void)? = nil,
+        onBackToSignInTapped: (() -> Void)? = nil
+    ) {
+        self.onPasswordResetSucceeded = onPasswordResetSucceeded
+        self.onBackToSignInTapped = onBackToSignInTapped
+        
         self._vm = State(wrappedValue: ResetPasswordViewModel(authService: authSerivce))
     }
     
@@ -24,13 +33,17 @@ struct ResetPasswordScreen: View {
             
             Spacer()
             
-            doNotHaveAnAccountSection
+            signInSection
         }
+        .customNavBarVisibility(false)
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
         .errorAlert(title: "Password Reset Failed", loadingState: $vm.passwordResetLoadingState)
-        .sheet(isPresented: $vm.showPasswordUpdated, onDismiss: router.onPasswordResetSucceeed) {
-            PasswordUpdatedView(onContinueClicked: router.onPasswordResetSucceeed)
+        .sheet(isPresented: $vm.showPasswordUpdated, onDismiss: onPasswordResetSucceeded) {
+            PasswordUpdatedView(onContinueClicked: onPasswordResetSucceeded)
                 .presentationDetents([.medium])
+        }
+        .onDisappear {
+            resetPassTask?.cancel()
         }
     }
     
@@ -62,7 +75,8 @@ struct ResetPasswordScreen: View {
                 isDisabled: !vm.areNewPasswordFieldsFilled,
                 isLoading: vm.passwordResetLoadingState.status != .idle
             ) {
-                Task {
+                resetPassTask?.cancel()
+                resetPassTask = Task {
                     await vm.updatePassword()
                 }
             }
@@ -71,9 +85,9 @@ struct ResetPasswordScreen: View {
         .padding(.vertical, DesignSystem.Spacing.medium)
     }
     
-    private var doNotHaveAnAccountSection: some View {
+    private var signInSection: some View {
         ActionPromptView(actionTitle: "Back to Sign In") {
-            router.navigateToSignIn()
+            onBackToSignInTapped?()
         }
         .padding(.top, DesignSystem.Spacing.xLarge)
     }
@@ -81,6 +95,6 @@ struct ResetPasswordScreen: View {
 
 #Preview {
     CustomNavStack {
-        ResetPasswordScreen(authSerivce: MockAuthService.sample, router: .sample)
+        ResetPasswordScreen(authSerivce: MockAuthService.sample)
     }
 }

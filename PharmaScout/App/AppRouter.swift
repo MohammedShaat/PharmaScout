@@ -13,6 +13,8 @@ import GoogleSignIn
 class AppRouter {
     private let authService: AuthService
     private(set) var destination: Destination = .loading
+    
+    private(set) var authState: AuthState?
     private(set) var authSession: AuthSession?
     
     private(set) var pendingNotificationRoute: NotificationRoute?
@@ -40,47 +42,19 @@ class AppRouter {
         case .passwordReset:
             try? await authService.handle(url: url, passwordReset: true)
         }
-        print("DeepLink-", deepLink)
     }
     
     func subscribeToAuthStateChanges() async {
         for await state in authService.authState {
             
+            authState = state
             authSession = authService.authSession
-
-            switch state {
-            // MARK: Authenticated
-            case .authenticated:
-                switch authSession?.accountState {
-                case .patient:
-                    destination = .patient
-                    
-                case .pharmacist(let staffMembership):
-                    destination = .pharmacist(staffMembership)
-                    
-                case .admin:
-                    destination = .admin
-                    
-                case .ownerApplicant(let ownerApplicationSummary):
-                    destination = .ownerApplicant(ownerApplicationSummary)
-                    
-                case nil:
-                    destination = .authenticationFailure(AppAuthError.sessionMissing)
-                }
-                
-            // MARK: Unauthenticated
-            case .non:
-                destination = .authenticationFlow
+            
+            if state.invalidatesPendingNotificationRoute {
                 pendingNotificationRoute = nil
-                
-            // MARK: Passwrod reset
-            case .passwordReset:
-                destination = .resetPassword
-                
-            // MARK: Error
-            case .failed(let error):
-                destination = .authenticationFailure(error)
             }
+
+            destination = destination(for: state)
         }
     }
     
@@ -103,22 +77,51 @@ class AppRouter {
     }
     
     func onPasswordResetSucceeed() {
-        destination = .patient
+        if let authState {
+            destination = destination(for: authState)
+        }
     }
     
     func navigateToSignIn() {
         destination = .signIn
     }
+    
+    private func destination(for state: AuthState) -> Destination {
+        switch state {
+        case .authenticated:
+            switch authSession?.accountState {
+            case .patient: .patient
+            case .pharmacist(let staffMembership): .pharmacist(staffMembership)
+            case .admin: .admin
+            case .ownerApplicant(let ownerApplicationSummary): .ownerApplicant(ownerApplicationSummary)
+            case nil: .authenticationFailure(AppAuthError.sessionMissing.errorDescription)
+            }
+            
+        case .non: .authenticationFlow
+        case .signedOut: .signIn
+        case .passwordReset: .resetPassword
+        case .failed(let error): .authenticationFailure(error.localizedDescription)
+        }
+    }
 }
 
-enum Destination {
+enum Destination: Equatable {
     case loading
     case authenticationFlow
     case signIn
     case resetPassword
-    case authenticationFailure(Error)
+    case authenticationFailure(String?)
     case patient
     case pharmacist(StaffMembership)
     case admin
     case ownerApplicant(OwnerApplicationSummary)
+}
+
+extension AuthState {
+    var invalidatesPendingNotificationRoute: Bool {
+        switch self {
+        case .non, .signedOut: true
+        case .authenticated, .passwordReset, .failed: false
+        }
+    }
 }
