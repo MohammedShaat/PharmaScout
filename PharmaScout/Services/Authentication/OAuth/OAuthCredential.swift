@@ -12,19 +12,22 @@ struct OAuthCredential {
     let idToken: String
     let accessToken: String?
     let nonce: String?
+    let fullName: String?
     
-    init(provider: OAuthProvider, idToken: String, accessToken: String?) {
+    init(provider: OAuthProvider, idToken: String, accessToken: String?, fullName: String? = nil) {
         self.provider = provider
         self.idToken = idToken
         self.accessToken = accessToken
         self.nonce = nil
+        self.fullName = fullName
     }
     
-    init(provider: OAuthProvider, idToken: String, nonce: String) {
+    init(provider: OAuthProvider, idToken: String, nonce: String, fullName: String?) {
         self.provider = provider
         self.idToken = idToken
         self.accessToken = nil
         self.nonce = nonce
+        self.fullName = fullName
     }
 }
 

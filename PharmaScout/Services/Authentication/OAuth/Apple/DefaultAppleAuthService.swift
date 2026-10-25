@@ -34,7 +34,19 @@ class DefaultAppleAuthService: NSObject, OAuthService {
                 throw OAuthError.failed(.apple)
             }
             
-            return OAuthCredential(provider: .apple, idToken: idToken, nonce: nonce)
+            let fullNameString = [
+                appleIDCredential.fullName?.givenName,
+                appleIDCredential.fullName?.familyName
+            ]
+            .compactMap { $0 }
+            .joined(separator: " ")
+            
+            return OAuthCredential(
+                provider: .apple,
+                idToken: idToken,
+                nonce: nonce,
+                fullName: fullNameString.isEmpty ? nil : fullNameString
+            )
             
         }
         catch let error as ASAuthorizationError {

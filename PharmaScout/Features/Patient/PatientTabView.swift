@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct PatientTabView: View {
+    private let user: AppUser
     private let router: AppRouter
     private let authService: AuthService
     private let drugService: DrugService
@@ -22,6 +23,7 @@ struct PatientTabView: View {
     @State private var vm = PatientTabViewModel()
     
     init(
+        user: AppUser,
         router: AppRouter,
         authService: AuthService,
         drugService: DrugService,
@@ -33,6 +35,7 @@ struct PatientTabView: View {
         appConfigService: AppConfigService,
         ownerApplicationService: OwnerApplicationService
     ) {
+        self.user = user
         self.router = router
         self.authService = authService
         self.drugService = drugService
@@ -64,7 +67,7 @@ struct PatientTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                ProfileScreen(authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacySerivce, ownerApplicationService: ownerApplicationService)
+                ProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacySerivce, ownerApplicationService: ownerApplicationService)
             }
         }
         .tint(.theme.textPrimary)	
@@ -96,6 +99,7 @@ struct PatientTabView: View {
 
 #Preview {
     PatientTabView(
+        user: .samples[0],
         router: .sample,
         authService: MockAuthService.sample,
         drugService: MockDrugService.sample,

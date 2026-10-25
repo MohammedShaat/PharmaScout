@@ -83,6 +83,25 @@ class DefaultAuthService: AuthService {
                 )
             )
             
+            if let fullName = credential.fullName {
+                try await updateUserData(fullName: fullName)
+            }
+            
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
+        }
+    }
+    
+    private func updateUserData(fullName: String) async throws {
+        let fullNameKey = SupabaseManager.Authentication.User.name
+        
+        do {
+            try await auth.update(
+                user: UserAttributes(
+                    data: [fullNameKey: .string(fullName)]
+                )
+            )
+            
         } catch {
             throw SupabaseErrorMapper.mapAuthError(error)
         }

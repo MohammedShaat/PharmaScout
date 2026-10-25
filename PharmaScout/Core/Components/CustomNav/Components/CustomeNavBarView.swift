@@ -15,23 +15,23 @@ struct CustomeNavBarView: View {
     
     var body: some View {
         HStack {
-            if showBackButton {
-                Button {
-                    dismiss()
-                } label: {
-                    Image(systemName: "chevron.left")
-                        .padding(.horizontal, DesignSystem.Spacing.xLarge)
-                        .font(.title2)
-                        .foregroundStyle(.theme.textPrimary)
-                        .background(.red.opacity(0.001))
-                }
-                .buttonStyle(.plain)
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .padding(.horizontal, DesignSystem.Spacing.xLarge)
+                    .font(.title2)
+                    .foregroundStyle(.theme.textPrimary)
+                    .background(.red.opacity(0.001))
             }
+            .buttonStyle(.plain)
+            .opacity(showBackButton ? 1 : 0)
             
             Spacer()
             
             if let title{
                 Text(title)
+                    .multilineTextAlignment(.center)
                     .padding()
             }
             
@@ -48,7 +48,7 @@ struct CustomeNavBarView: View {
 
 #Preview {
     VStack {
-        CustomeNavBarView()
+        CustomeNavBarView(title: "Nav Title", showBackButton: false)
         
         Spacer()
     }

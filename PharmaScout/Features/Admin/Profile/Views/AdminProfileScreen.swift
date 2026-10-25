@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct AdminProfileScreen: View {
+    let user: AppUser
     let authService: AuthService
     
     @State private var vm: AdminProfileViewModel
     @State private var task: Task<Void, Never>?
     
-    init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator) {
+    init(
+        user: AppUser,
+        authService: AuthService,
+        pushTokenCoordinator: PushTokenCoordinator
+    ) {
+        self.user = user
         self.authService = authService
         
         let viewModel = AdminProfileViewModel(
@@ -28,6 +34,7 @@ struct AdminProfileScreen: View {
             Form {
                 logout
             }
+            .customNavTitle(user.fullName ?? "")
             .customBackButtonVisibility(false)
             .onDisappear {
                 task?.cancel()
@@ -36,26 +43,18 @@ struct AdminProfileScreen: View {
     }
     
     private var logout: some View {
-        Button {
+        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
             task?.cancel()
             task = Task {
                 await vm.logout()
             }
-        } label: {
-            HStack {
-                Text("Log out")
-                
-                if vm.logoutLoadingState.status != .idle {
-                    RingProgressView()
-                }
-            }
         }
-        .disabled(vm.logoutLoadingState.status != .idle)
     }
 }
 
 #Preview {
     AdminProfileScreen(
+        user: .samples[0],
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample
     )

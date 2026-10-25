@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct OwnerApplicantProfileScreen: View {
-    let authService: AuthService
+    private let user: AppUser
+    private let authService: AuthService
     
     @State private var vm: OwnerApplicantProfileViewModel
     @State private var task: Task<Void, Never>?
     
-    init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator) {
+    init(
+        user: AppUser,
+        authService: AuthService,
+        pushTokenCoordinator: PushTokenCoordinator
+    ) {
+        self.user = user
         self.authService = authService
         
         let viewModel = OwnerApplicantProfileViewModel(
@@ -28,6 +34,7 @@ struct OwnerApplicantProfileScreen: View {
             Form {
                 logout
             }
+            .customNavTitle(user.fullName ?? "")
             .customBackButtonVisibility(false)
             .onDisappear {
                 task?.cancel()
@@ -36,26 +43,18 @@ struct OwnerApplicantProfileScreen: View {
     }
     
     private var logout: some View {
-        Button {
+        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
             task?.cancel()
             task = Task {
                 await vm.logout()
             }
-        } label: {
-            HStack {
-                Text("Log out")
-                
-                if vm.logoutLoadingState.status != .idle {
-                    RingProgressView()
-                }
-            }
         }
-        .disabled(vm.logoutLoadingState.status != .idle)
     }
 }
 
 #Preview {
     OwnerApplicantProfileScreen(
+        user: .samples[0],
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample
     )

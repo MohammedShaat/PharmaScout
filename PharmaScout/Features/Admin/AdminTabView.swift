@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct AdminTabView: View {
+    private let user: AppUser
     private let authService: AuthService
     private let pushTokenCoordinator: PushTokenCoordinator
     private let ownerApplicationService: OwnerApplicationService
@@ -16,11 +17,13 @@ struct AdminTabView: View {
     @State private var vm: AdminTabViewModel
     
     init(
+        user: AppUser,
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
         ownerApplicationService: OwnerApplicationService,
         pharmacyService: PharmacyService
     ) {
+        self.user = user
         self.authService = authService
         self.pushTokenCoordinator = pushTokenCoordinator
         self.ownerApplicationService = ownerApplicationService
@@ -45,7 +48,7 @@ struct AdminTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                AdminProfileScreen(authService: authService, pushTokenCoordinator: pushTokenCoordinator)
+                AdminProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator)
             }
         }
         .tint(.theme.primary)
@@ -71,6 +74,7 @@ struct AdminTabView: View {
 
 #Preview {
     AdminTabView(
+        user: .samples[0],
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,
         ownerApplicationService: MockOwnerApplicationService.sample,
