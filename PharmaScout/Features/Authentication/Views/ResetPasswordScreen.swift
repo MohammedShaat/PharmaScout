@@ -27,7 +27,7 @@ struct ResetPasswordScreen: View {
             doNotHaveAnAccountSection
         }
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-        .errorAlert(title: "Password Reset Failed", error: vm.passwordResetLoadingState.error)
+        .errorAlert(title: "Password Reset Failed", loadingState: $vm.passwordResetLoadingState)
         .sheet(isPresented: $vm.showPasswordUpdated, onDismiss: router.onPasswordResetSucceeed) {
             PasswordUpdatedView(onContinueClicked: router.onPasswordResetSucceeed)
                 .presentationDetents([.medium])

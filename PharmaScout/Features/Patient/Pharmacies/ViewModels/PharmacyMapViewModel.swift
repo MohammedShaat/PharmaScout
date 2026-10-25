@@ -15,7 +15,7 @@ class PharmacyMapViewModel {
     
     private(set) var route: MapRoute?
     
-    private(set) var routeLoadingState: LoadingState = .init(pageSize: AppConstants.Network.pageSize)
+    var routeLoadingState: LoadingState = .init(pageSize: AppConstants.Network.pageSize)
     
     init(pharmacy: Pharmacy, userCoordinate: Coordinate, directionsService: DirectionsService) {
         self.pharmacy = pharmacy

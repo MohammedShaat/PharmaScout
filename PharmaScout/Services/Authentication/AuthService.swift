@@ -14,7 +14,7 @@ protocol AuthService {
     var authState: AsyncStream<AuthState> { get }
     var authSession: AuthSession? { get }
 
-    func signUp(email: String, password: String, redirectTo url: URL?) async throws
+    func signUp(email: String, password: String, fullName: String, redirectTo url: URL?) async throws
     
     func handle(url: URL, passwordReset: Bool)  async throws
 

@@ -26,7 +26,7 @@ struct ForgotPasswordScreen: View {
             doNotHaveAnAccountSection
         }
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-        .errorAlert(title: "Request Failed", error: vm.requestLoadingState.error)
+        .errorAlert(title: "Request Failed", loadingState: $vm.requestLoadingState)
         .navigationDestination(isPresented: $vm.emailSent) {
             destination
         }
@@ -84,7 +84,7 @@ struct ForgotPasswordScreen: View {
                     await vm.resend()
                 }
             }
-            .errorAlert(title: "Resend Failed", error: vm.requestLoadingState.error)
+            .errorAlert(title: "Resend Failed", loadingState: $vm.requestLoadingState)
     }
 }
 

@@ -36,7 +36,7 @@ struct MockAuthService: AuthService {
 //        return AuthSession(user: user, role: .pharmacist, pharmacyStaff: pharmacyStaffMember)
     }()
     
-    func signUp(email: String, password: String, redirectTo url: URL?) async throws {}
+    func signUp(email: String, password: String, fullName: String, redirectTo url: URL?) async throws {}
     
     func handle(url: URL, passwordReset: Bool) async throws {}
     

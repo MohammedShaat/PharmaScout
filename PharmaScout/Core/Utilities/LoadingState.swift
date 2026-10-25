@@ -23,7 +23,7 @@ struct LoadingState {
         } else {
             status = pagination.page != 0 ? .loadingMore : .loading
         }
-        error = nil
+        clearError()
     }
     
     mutating func stopLoading() {
@@ -33,6 +33,10 @@ struct LoadingState {
     mutating func fail(_ error: Error) {
         stopLoading()
         self.error = ErrorHandler.handle(error)
+    }
+    
+    mutating func clearError() {
+        error = nil
     }
     
     enum State {

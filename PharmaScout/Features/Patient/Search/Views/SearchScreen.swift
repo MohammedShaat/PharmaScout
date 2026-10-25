@@ -122,7 +122,7 @@ struct SearchScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .errorAlert(title: "Search Failed", error: vm.requestLoadingState.error)
+            .errorAlert(title: "Search Failed", loadingState: $vm.requestLoadingState)
             .sheet(isPresented: $vm.showSuccessMessage) {
                 MidSheetView(title: "Your request has been submitted successfully") {
                     vm.showSuccessMessage.toggle()

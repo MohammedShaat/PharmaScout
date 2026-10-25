@@ -21,8 +21,8 @@ class SignInViewModel {
         checkFieldsAreFilled()
     }
     
-    private(set) var emailSignInLoadingState = LoadingState()
-    private(set) var providerSignInLoadingState = LoadingState()
+    var emailSignInLoadingState = LoadingState()
+    var providerSignInLoadingState = LoadingState()
     
     init(authService: AuthService, googleAuthService: OAuthService, appleAuthService: OAuthService) {
         self.authService = authService
@@ -53,7 +53,6 @@ class SignInViewModel {
         do {
             let oAuthCredential = try await googleAuthService.signIn(viewController: vc)
             try await authService.signInWithCredential(oAuthCredential)
-            print("Signing with Google succeeded")
             
         } catch {
             providerSignInLoadingState.fail(error)
@@ -69,7 +68,6 @@ class SignInViewModel {
         do {
             let oAuthCredential = try await appleAuthService.signIn(viewController: vc)
             try await authService.signInWithCredential(oAuthCredential)
-            print("Signing with Apple succeeded")
             
         } catch {
             providerSignInLoadingState.fail(error)

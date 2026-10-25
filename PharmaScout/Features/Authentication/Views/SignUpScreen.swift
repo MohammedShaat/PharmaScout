@@ -33,8 +33,8 @@ struct SignUpScreen: View {
                 alreadyHaveAnAccountSection
             }
             .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-            .errorAlert(title: "Sign Up Failed", error: vm.emailSignUpLoadingState.error)
-            .errorAlert(title: "Sign Up Failed", error: vm.providerSignInLoadingState.error)
+            .errorAlert(title: "Sign Up Failed", loadingState: $vm.emailSignUpLoadingState)
+            .errorAlert(title: "Sign Up Failed", loadingState: $vm.providerSignInLoadingState)
             .navigationDestination(isPresented: $vm.confirmationSent) {
                 destination
             }
@@ -117,7 +117,7 @@ struct SignUpScreen: View {
                     await vm.resend()
                 }
             }
-            .errorAlert(title: "Resend Failed", error: vm.emailSignUpLoadingState.error)
+            .errorAlert(title: "Resend Failed", loadingState: $vm.emailSignUpLoadingState)
     }
 }
 

@@ -44,7 +44,7 @@ struct PharmacyMapScreen: View {
             }
         }
         .mapStyle(.standard)
-        .errorAlert(title: "Failed to get driections", error: vm.routeLoadingState.error)
+        .errorAlert(title: "Failed to get driections", loadingState: $vm.routeLoadingState)
         .task {
             await vm.loadRoute()
         }
