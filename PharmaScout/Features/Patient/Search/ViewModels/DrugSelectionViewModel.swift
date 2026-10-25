@@ -24,7 +24,7 @@ class DrugSelectionViewModel {
     private(set) var genericDrugs: [GenericDrug] = []
     private(set) var drugFormulations: [DrugFormulation] = []
     
-    private(set) var searchLoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
+    var searchLoadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private(set) var selectedGenericDrug: GenericDrug?
     var isGenericDrugSelected: Bool { selectedGenericDrug != nil }

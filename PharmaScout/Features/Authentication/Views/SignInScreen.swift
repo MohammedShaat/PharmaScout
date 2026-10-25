@@ -29,8 +29,12 @@ struct SignInScreen: View {
                 doNotHaveAnAccountSection
             }
             .padding(.horizontal, DesignSystem.Spacing.xxLarge)
-            .errorAlert(title: "Sign In Failed", error: vm.emailSignInLoadingState.error)
-            .errorAlert(title: "Sign In Failed", error: vm.providerSignInLoadingState.error)
+            .errorAlert(
+                title: "Sign In Failed",
+                loadingState: vm.emailSignInLoadingState.error != nil
+                ? $vm.emailSignInLoadingState
+                : $vm.providerSignInLoadingState
+            )
         }
     }
     

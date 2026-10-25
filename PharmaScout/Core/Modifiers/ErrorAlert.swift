@@ -9,13 +9,19 @@ import SwiftUI
 
 struct ErrorAlert: ViewModifier {
     let title: String
-    let error: AppError?
+    @Binding var loadingState: LoadingState
+    
+    private var error: AppError? { loadingState.error }
     
     func body(content: Content) -> some View {
         content
             .alert(
                 title,
-                isPresented: .init(optionalValue: error),
+                isPresented: .init(optionalValue: error) { isPresented in
+                    if !isPresented {
+                        loadingState.clearError()
+                    }
+                },
                 presenting: error
             ) { _ in
                 
@@ -26,8 +32,8 @@ struct ErrorAlert: ViewModifier {
 }
 
 extension View {
-    func errorAlert(title: String, error: AppError?) -> some View {
-        modifier(ErrorAlert(title: title, error: error))
+    func errorAlert(title: String, loadingState: Binding<LoadingState>) -> some View {
+        modifier(ErrorAlert(title: title, loadingState: loadingState))
     }
 }
 

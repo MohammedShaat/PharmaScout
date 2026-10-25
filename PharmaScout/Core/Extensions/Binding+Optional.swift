@@ -9,12 +9,17 @@
 import SwiftUI
 
 extension Binding where Value == Bool {
-    init<T>(optionalValue: T?) {
+    init<T>(
+        optionalValue: T?,
+        onPresentationChange: ((Bool) -> Void)? = nil
+    ) {
         self.init(
            get: {
                optionalValue != nil
            },
-           set: { _ in }
+           set: { isPresented in
+               onPresentationChange?(isPresented)
+           }
        )
     }
 }

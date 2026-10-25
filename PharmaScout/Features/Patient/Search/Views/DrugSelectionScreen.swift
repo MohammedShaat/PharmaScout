@@ -155,7 +155,7 @@ struct DrugSelectionScreen: View {
                 }
             }
             .padding(DesignSystem.Spacing.xLarge)
-            .errorAlert(title: "Search failed", error: vm.searchLoadingState.error)
+            .errorAlert(title: "Search failed", loadingState: $vm.searchLoadingState)
         }
         .refreshable(action: vm.refresh)
         .onAppear {

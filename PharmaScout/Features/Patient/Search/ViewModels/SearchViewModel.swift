@@ -35,7 +35,7 @@ class SearchViewModel {
     var canStartSearch: Bool { !hasReachedSearchLimit && selectedDrugs.isNotEmpty }
 
     private(set) var numberOfActiveSearchsLoadingState: LoadingState = LoadingState()
-    private(set) var requestLoadingState: LoadingState = LoadingState()
+    var requestLoadingState: LoadingState = LoadingState()
     var showNoPharmaciesMessage: Bool = false
     var showSuccessMessage: Bool = false
 

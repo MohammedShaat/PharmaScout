@@ -499,6 +499,12 @@ extension SupabaseManager {
             }
         }
     }
+    
+    enum Authentication {
+        enum User {
+            static let name = "full_name"
+        }
+    }
 }
 
 

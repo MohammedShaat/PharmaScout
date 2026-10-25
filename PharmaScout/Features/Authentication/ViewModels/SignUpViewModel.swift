@@ -23,8 +23,8 @@ class SignUpViewModel {
         checkFieldsAreFilled()
     }
     
-    private(set) var emailSignUpLoadingState = LoadingState()
-    private(set) var providerSignInLoadingState = LoadingState()
+    var emailSignUpLoadingState = LoadingState()
+    var providerSignInLoadingState = LoadingState()
     
     var confirmationSent: Bool = false
     
@@ -50,6 +50,7 @@ class SignUpViewModel {
             try await authService.signUp(
                 email: email,
                 password: password,
+                fullName: name,
                 redirectTo: DeepLink.emailConfirmation.url
             )
             confirmationSent = true

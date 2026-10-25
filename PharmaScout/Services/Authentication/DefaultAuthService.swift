@@ -21,9 +21,14 @@ class DefaultAuthService: AuthService {
     private var auth: AuthClient { supabase.auth }
     private var passwordRecovery: Bool = false
     
-    func signUp(email: String, password: String, redirectTo url: URL?) async throws {
+    func signUp(email: String, password: String, fullName: String, redirectTo url: URL?) async throws {
+        let userData = SupabaseManager.Authentication.User.self
+        
         do {
-            try await auth.signUp(email: email, password: password, redirectTo: url)
+            let data: [String: AnyJSON] = [
+                userData.name: .string(fullName),
+            ]
+            try await auth.signUp(email: email, password: password, data: data, redirectTo: url)
             
         } catch {
             throw SupabaseErrorMapper.mapAuthError(error)
@@ -187,13 +192,5 @@ extension OAuthProvider {
         case .google: .google
         case .apple: .apple
         }
-    }
-}
-
-extension AppUser {
-    init(from user: User) {
-        self.id = user.id.uuidString.lowercased()
-        self.fullName = user.userMetadata["full_name"]?.stringValue
-        self.email = user.email
     }
 }
