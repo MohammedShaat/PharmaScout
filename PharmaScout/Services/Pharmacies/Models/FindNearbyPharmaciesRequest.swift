@@ -8,12 +8,13 @@
 
 import Foundation
 
-struct FindNearbyPharmaciesParams: Codable {
+struct FindNearbyPharmaciesRequest: Codable {
     let latitude: Double
     let longitude: Double
     let radiusMeters: Double
     let limit: Int
     let offset: Int
+    var onlyOpen: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case latitude = "p_latitude"
@@ -21,5 +22,6 @@ struct FindNearbyPharmaciesParams: Codable {
         case radiusMeters = "p_radius_meters"
         case limit = "p_limit"
         case offset = "p_offset"
+        case onlyOpen = "p_only_open"
     }
 }

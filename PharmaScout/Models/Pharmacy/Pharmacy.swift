@@ -42,3 +42,17 @@ enum PharmacyStatus: String, Codable {
         }
     }
 }
+
+enum PharmacyFilter: String, Codable, CaseIterable, Identifiable {
+    case all
+    case open
+    
+    var id: String { rawValue }
+    
+    var title: String {
+        switch self {
+        case .all: "All"
+        case .open: "Open"
+        }
+    }
+}

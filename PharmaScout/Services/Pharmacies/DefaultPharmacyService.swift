@@ -12,15 +12,12 @@ import Supabase
 struct DefaultPharmacyService: PharmacyService {
     private let supabase = SupabaseManager.shared.client
     
-    func findNearbyPharmacies(params: FindNearbyPharmaciesParams) async throws -> [Pharmacy] {
+    func findNearbyPharmacies(_ request: FindNearbyPharmaciesRequest) async throws -> [Pharmacy] {
         
         let findNearbyPharmaciesFunc = SupabaseManager.Database.Functions.findNearbyPharmacies.self
         do {
             let nearbyPharmacies: [Pharmacy] = try await supabase
-                .rpc(
-                    findNearbyPharmaciesFunc.name,
-                    params: params
-                )
+                .rpc(findNearbyPharmaciesFunc.name, params: request)
                 .execute()
                 .value
             

@@ -107,7 +107,7 @@ class HomeViewModel {
             
             while (nearbyPharmacies.count < limit && radiusMeters <= maxRadiusMeters)
                     || keepSearching {
-                let params = FindNearbyPharmaciesParams(
+                let request = FindNearbyPharmaciesRequest(
                     latitude: locationCoordinate.latitude,
                     longitude: locationCoordinate.longitude,
                     radiusMeters: radiusMeters,
@@ -115,7 +115,7 @@ class HomeViewModel {
                     offset: refresh ? 0 : nearbyPharmacies.count
                 )
                 
-                let newPharmacies = try await pharmacyService.findNearbyPharmacies(params: params)
+                let newPharmacies = try await pharmacyService.findNearbyPharmacies(request)
                 
                 if refresh {
                     nearbyPharmacies = newPharmacies

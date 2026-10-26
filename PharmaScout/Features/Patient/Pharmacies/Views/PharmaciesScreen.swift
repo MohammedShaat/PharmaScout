@@ -13,7 +13,7 @@ struct PharmaciesScreen: View {
     
     @State private var vm: PharmaciesViewModel
     var path: Binding<NavigationPath>
-    @State private var searchFurtherTask: Task<Void, Never>? = nil
+    @State private var nearbyPharmaciesTask: Task<Void, Never>? = nil
     
     init(
         path: Binding<NavigationPath>,
@@ -32,43 +32,9 @@ struct PharmaciesScreen: View {
         CustomNavStack(path: path) {
             ScrollView {
                 VStack(spacing: DesignSystem.Spacing.large) {
+                    filterSection
                     
-                    LoadingContentView(
-                        LoadingState: vm.loadingState,
-                        isEmpty: vm.nearbyPharmacies.isEmpty,
-                        emptyMessage: "Couldn't find nearby pharmacies") {
-                            // MARK: - Pharmacies list
-                            LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                                ForEach(vm.nearbyPharmacies) { nearbyPharmacy in
-                                    
-                                    nearbyPharmacyItem(pharmacy: nearbyPharmacy)
-                                        .task(id: nearbyPharmacy.id) {
-                                            if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id {
-                                                await vm.loadMore()
-                                            }
-                                        }
-                                    
-                                    if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id  {
-                                        
-                                        if vm.loadingState.status == .loadingMore {
-                                            RingProgressView()
-                                            
-                                        // MARK: Search further
-                                        } else if vm.canExpandRadius {
-                                            Text("Search further than \(vm.radiusMeters.meterToKilometer.formatted(.number))km?")
-                                                .foregroundStyle(.theme.textPrimary)
-                                                .font(.headline)
-                                                .clickable {
-                                                    searchFurtherTask?.cancel()
-                                                    searchFurtherTask = Task {
-                                                        await vm.searchFurther()
-                                                    }
-                                                }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                    pharmacyListSection
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -87,7 +53,63 @@ struct PharmaciesScreen: View {
             }
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadNearbyPharmaciesIfNeeded)
+            .onChange(of: vm.filter) {
+                nearbyPharmaciesTask?.cancel()
+                nearbyPharmaciesTask = Task {
+                    await vm.onFilterChanged()
+                }
+            }
         }
+    }
+    
+    private var filterSection: some View {
+        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
+            Picker("Status", selection: $vm.filter) {
+                ForEach(PharmacyFilter.allCases) { status in
+                    Text(status.title)
+                        .tag(status)
+                }
+            }
+        }
+    }
+    
+    private var pharmacyListSection: some View {
+        LoadingContentView(
+            LoadingState: vm.loadingState,
+            isEmpty: vm.nearbyPharmacies.isEmpty,
+            emptyMessage: "Couldn't find nearby pharmacies") {
+                // MARK: - Pharmacies list
+                LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(vm.nearbyPharmacies) { nearbyPharmacy in
+                        
+                        nearbyPharmacyItem(pharmacy: nearbyPharmacy)
+                            .task(id: nearbyPharmacy.id) {
+                                if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id {
+                                    await vm.loadMore()
+                                }
+                            }
+                        
+                        if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id  {
+                            
+                            if vm.loadingState.status == .loadingMore {
+                                RingProgressView()
+                                
+                            // MARK: Search further
+                            } else if vm.canExpandRadius {
+                                Text("Search further than \(vm.radiusMeters.meterToKilometer.formatted(.number))km?")
+                                    .foregroundStyle(.theme.textPrimary)
+                                    .font(.headline)
+                                    .clickable {
+                                        nearbyPharmaciesTask?.cancel()
+                                        nearbyPharmaciesTask = Task {
+                                            await vm.searchFurther()
+                                        }
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
     }
     
     private func nearbyPharmacyItem(pharmacy: Pharmacy) -> some View {

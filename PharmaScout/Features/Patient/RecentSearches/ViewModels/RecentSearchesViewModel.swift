@@ -12,6 +12,8 @@ class RecentSearchesViewModel {
     private let searchRequestService: SearchRequestService
     
     private(set) var searches: [Search] = []
+    var filter: SearchFilter = .all
+    
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private var hasStarted: Bool = false
@@ -42,6 +44,11 @@ class RecentSearchesViewModel {
         await loadSearches(refresh: true)
     }
     
+    func onFilterChanged() async {
+        loadingState.pagination.reset()
+        await loadSearches()
+    }
+    
     private func loadSearches(refresh: Bool = false) async {
         loadingState.startLoading(refresh: refresh)
         defer { loadingState.stopLoading() }
@@ -49,7 +56,8 @@ class RecentSearchesViewModel {
         do {
             let params = GetSearchesParams(
                 limit: refresh ? max(searches.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
-                offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : searches.count
+                offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : searches.count,
+                filter: filter
             )
             let newSearchs = try await searchRequestService.getSearches(params)
             

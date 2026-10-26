@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PharmacyService {
-    func findNearbyPharmacies(params: FindNearbyPharmaciesParams) async throws -> [Pharmacy]
+    func findNearbyPharmacies(_ request: FindNearbyPharmaciesRequest) async throws -> [Pharmacy]
     
     func getContactInfo(for pharmacyId: String) async throws -> [PharmacyContact]
     
