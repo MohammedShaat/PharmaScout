@@ -8,10 +8,6 @@
 import Foundation
 
 struct MockPharmacyService: PharmacyService {
-    func findOpenNearbyPharmacies(coordinate: Coordinate, radiusMeters: Double, count: Int) async throws -> [NearbyPharmacy] {
-        return NearbyPharmacy.samples
-    }
-    
     func findNearbyPharmacies(params: FindNearbyPharmaciesParams) async throws -> [Pharmacy] {
         try? await Task.sleep(for: .seconds(2))
         

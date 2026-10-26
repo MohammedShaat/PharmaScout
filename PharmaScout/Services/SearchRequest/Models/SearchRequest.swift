@@ -14,7 +14,6 @@ struct SearchRequest: Codable {
     let fulfilmentMode: FulfilmentMode
     let acceptSubstitute: Bool
     let drugs: [SearchItemRequest]
-    let pharmacies: [NearbyPharmacy]
     
     enum CodingKeys: String, CodingKey {
         case latitude = "p_latitude"
@@ -23,7 +22,6 @@ struct SearchRequest: Codable {
         case fulfilmentMode = "p_fulfilment_mode"
         case acceptSubstitute = "p_accept_substitute"
         case drugs = "p_drugs"
-        case pharmacies = "p_pharmacies"
     }
 }
 

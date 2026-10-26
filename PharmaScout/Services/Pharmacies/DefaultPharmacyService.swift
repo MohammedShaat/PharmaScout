@@ -12,32 +12,6 @@ import Supabase
 struct DefaultPharmacyService: PharmacyService {
     private let supabase = SupabaseManager.shared.client
     
-    func findOpenNearbyPharmacies(coordinate: Coordinate, radiusMeters: Double, count: Int) async throws -> [NearbyPharmacy] {
-        
-        let findPharmaciesWithinDistanceFunc = SupabaseManager.Database.Functions.findPharmaciesWithinDistance.self
-        let params = findPharmaciesWithinDistanceFunc.Params
-        
-        do {
-            let nearbyPharmacies: [NearbyPharmacy] = try await supabase
-                .rpc(
-                    findPharmaciesWithinDistanceFunc.name,
-                    params: [
-                        params.latitude: coordinate.latitude,
-                        params.longitude: coordinate.longitude,
-                        params.radiusMeters: radiusMeters
-                    ]
-                )
-                .limit(count)
-                .execute()
-                .value
-            
-            return nearbyPharmacies
-            
-        } catch {
-            throw SupabaseErrorMapper.mapDatabseError(error)
-        }
-    }
-    
     func findNearbyPharmacies(params: FindNearbyPharmaciesParams) async throws -> [Pharmacy] {
         
         let findNearbyPharmaciesFunc = SupabaseManager.Database.Functions.findNearbyPharmacies.self

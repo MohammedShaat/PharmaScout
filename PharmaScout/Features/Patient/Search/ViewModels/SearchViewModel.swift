@@ -12,7 +12,6 @@ class SearchViewModel {
     private let searchRequestService: SearchRequestService
     private let authService: AuthService
     private let locationService: LocationService
-    private let pharmacySerivce: PharmacyService
     
     private(set) var selectedDrugs: [SelectedDrug] = []
     private var numberOfActiveSearchs: Int?
@@ -43,12 +42,10 @@ class SearchViewModel {
         searchRequestService: SearchRequestService,
         authService: AuthService,
         locationService: LocationService,
-        pharmacySerivce: PharmacyService,
     ) {
         self.searchRequestService = searchRequestService
         self.authService = authService
         self.locationService = locationService
-        self.pharmacySerivce = pharmacySerivce
     }
 
     func addDrug(selectedDrug: SelectedDrug) {
@@ -88,18 +85,16 @@ class SearchViewModel {
         do {
             let coordinate = try locationService.getCurrentLocation()
             
-            let nearbyPharmacies = try await pharmacySerivce.findOpenNearbyPharmacies(
-                coordinate: coordinate,
+            let request = SearchRequest(
+                latitude: coordinate.latitude,
+                longitude: coordinate.longitude,
                 radiusMeters: distanceMeters,
-                count: pharmacyLimit,
+                fulfilmentMode: fulfilmentMode,
+                acceptSubstitute: acceptSubstitutes,
+                drugs: selectedDrugs.map { SearchItemRequest(from: $0) },
             )
             
-            guard nearbyPharmacies.isNotEmpty else {
-                showNoPharmaciesMessage = true
-                return
-            }
-            
-            try await createSearchRequest(coordinate: coordinate, pharmacies: nearbyPharmacies)
+            try await searchRequestService.createSearchRequest(request: request)
             
             showSuccessMessage = true
             await refresh()
@@ -111,20 +106,6 @@ class SearchViewModel {
         }
     }
     
-    private func createSearchRequest(coordinate: Coordinate, pharmacies: [NearbyPharmacy]) async throws {
-        let request = SearchRequest(
-            latitude: coordinate.latitude,
-            longitude: coordinate.longitude,
-            radiusMeters: distanceMeters,
-            fulfilmentMode: fulfilmentMode,
-            acceptSubstitute: acceptSubstitutes,
-            drugs: selectedDrugs.map { SearchItemRequest(from: $0) },
-            pharmacies: pharmacies
-        )
-        
-        try await searchRequestService.createSearchRequest(request: request)
-    }
-        
     private func clear() {
         selectedDrugs.removeAll()
     }

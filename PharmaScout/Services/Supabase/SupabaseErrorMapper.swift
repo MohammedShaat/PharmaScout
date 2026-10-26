@@ -76,8 +76,8 @@ extension SupabaseErrorMapper {
             
         
         // MARK: Expand search
-        case "P5001": ContinueSearchError.searchIsNotAwaitingContinuation
-        case "P5002": ContinueSearchError.radiusExceedsMaximum
+        case "P5001": SearchError.searchIsNotAwaitingContinuation
+        case "P5002": SearchError.radiusExceedsMaximum
             
         
         // MARK: Ownership application error
@@ -87,6 +87,11 @@ extension SupabaseErrorMapper {
             
         // MARK: Pharmacy creation error
         case "P4001": PharmacyCreationError.alreadyHasPharmacy
+            
+        
+        // MARK: Create search
+        case "P6001": SearchError.duplicateDrugFormulation
+        case "P6002": SearchError.noPharmaciesWithinRadius
         
         
         default: UnknownError.unKnown(error)
