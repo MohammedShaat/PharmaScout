@@ -22,10 +22,10 @@ struct MockSearchRequestService: SearchRequestService {
         try? await Task.sleep(for: .seconds(2))
         
         let filteredSearches = Search.samples
-            .filter {
+            .filter { search in
                 params.filter == .all ||
-                (params.filter == .pending && $0.status == .pending) ||
-                (params.filter == .nonPending && $0.status != .pending)
+                (params.filter == .nonPending && search.status != .pending) ||
+                (params.filter.rawValue == search.status.rawValue)
             }
             .sorted { $0.createdAt < $1.createdAt }
             .dropFirst(params.offset)

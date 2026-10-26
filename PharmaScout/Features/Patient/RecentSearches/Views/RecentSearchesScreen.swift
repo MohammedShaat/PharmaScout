@@ -40,30 +40,9 @@ struct RecentSearchesScreen: View {
         CustomNavStack(path: path) {
             ScrollView {
                 VStack(spacing: DesignSystem.Spacing.large) {
+                    filterSection
                     
-                    LoadingContentView(
-                        LoadingState: vm.loadingState,
-                        isEmpty: vm.searches.isEmpty,
-                        emptyMessage: "There is no searches") {
-                            LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                                ForEach(vm.searches) { search in
-                                    searchItemView(search)
-                                        .onAppear {
-                                            if search.id == vm.searches.last?.id {
-                                                searchesTask?.cancel()
-                                                searchesTask = Task {
-                                                    await vm.loadMore()
-                                                }
-                                            }
-                                        }
-                                    
-                                    if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
-                                        RingProgressView()
-                                    }
-                                }
-                            }
-                        }
-                    
+                    searchListSection
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -84,7 +63,49 @@ struct RecentSearchesScreen: View {
             }
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadSearchesIfNeeded)
+            .onChange(of: vm.filter) {
+                searchesTask?.cancel()
+                searchesTask = Task {
+                    await vm.onFilterChanged()
+                }
+            }
         }
+    }
+    
+    private var filterSection: some View {
+        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
+            Picker("Status", selection: $vm.filter) {
+                ForEach(SearchFilter.allCases) { status in
+                    Text(status.title)
+                        .tag(status)
+                }
+            }
+        }
+    }
+    
+    private var searchListSection: some View {
+        LoadingContentView(
+            LoadingState: vm.loadingState,
+            isEmpty: vm.searches.isEmpty,
+            emptyMessage: "There is no searches") {
+                LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(vm.searches) { search in
+                        searchItemView(search)
+                            .onAppear {
+                                if search.id == vm.searches.last?.id {
+                                    searchesTask?.cancel()
+                                    searchesTask = Task {
+                                        await vm.loadMore()
+                                    }
+                                }
+                            }
+                        
+                        if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
+                            RingProgressView()
+                        }
+                    }
+                }
+            }
     }
     
     private func searchItemView(_ search: Search) -> some View {

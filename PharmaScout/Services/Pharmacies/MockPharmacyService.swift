@@ -8,16 +8,17 @@
 import Foundation
 
 struct MockPharmacyService: PharmacyService {
-    func findNearbyPharmacies(params: FindNearbyPharmaciesParams) async throws -> [Pharmacy] {
+    func findNearbyPharmacies(_ request: FindNearbyPharmaciesRequest) async throws -> [Pharmacy] {
         try? await Task.sleep(for: .seconds(2))
         
         let nearbyPharmacies = Pharmacy.samples
-            .filter {
-                $0.distanceMeters <= params.radiusMeters
+            .filter { pharmacy in
+                pharmacy.distanceMeters <= request.radiusMeters
+                && (!request.onlyOpen || pharmacy.isOpen)
             }
             .sorted { $0.distanceMeters < $1.distanceMeters }
-            .dropFirst(params.offset)
-            .prefix(params.limit)
+            .dropFirst(request.offset)
+            .prefix(request.limit)
         
         return Array(nearbyPharmacies)
     }

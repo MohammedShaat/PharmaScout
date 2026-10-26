@@ -13,9 +13,9 @@ class PharmaciesViewModel {
     private let locationService: LocationService
     
     private(set) var nearbyPharmacies: [Pharmacy] = []
+    var filter: PharmacyFilter = .all
 
     private(set) var userCoordinate: Coordinate?    
-    private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private(set) var radiusMeters: Double = AppConstants.Search.minBrowseDistanceMeters
     private let maxRadiusMeters: Double = AppConstants.Search.maxBrowseDistanceMeters
@@ -23,6 +23,8 @@ class PharmaciesViewModel {
     var canExpandRadius: Bool {
         expandToNextRadius && radiusMeters < maxRadiusMeters
     }
+
+    private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
@@ -61,6 +63,11 @@ class PharmaciesViewModel {
         await loadNearbyPharmacies(refresh: true)
     }
     
+    func onFilterChanged() async {
+        loadingState.pagination.reset()
+        await loadNearbyPharmacies()
+    }
+    
     private func loadNearbyPharmacies(refresh: Bool = false) async {
         getLocation()
         guard let userCoordinate else {
@@ -72,21 +79,26 @@ class PharmaciesViewModel {
         defer { loadingState.stopLoading() }
         
         do {
-            let params = FindNearbyPharmaciesParams(
+            let request = FindNearbyPharmaciesRequest(
                 latitude: userCoordinate.latitude,
                 longitude: userCoordinate.longitude,
                 radiusMeters: radiusMeters,
                 limit: refresh ? max(nearbyPharmacies.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
-                offset: refresh ? 0 : nearbyPharmacies.count
+                offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : nearbyPharmacies.count,
+                onlyOpen: filter == .open ? true : false
             )
             
-            let newNearbyPharmacies = try await pharmacyService.findNearbyPharmacies(params: params)
+            let newNearbyPharmacies = try await pharmacyService.findNearbyPharmacies(request)
             
             if refresh {
                 nearbyPharmacies = newNearbyPharmacies
                 
             } else {
-                nearbyPharmacies.append(contentsOf: newNearbyPharmacies)
+                if loadingState.pagination.hasPreviousPage {
+                    nearbyPharmacies.append(contentsOf: newNearbyPharmacies)
+                } else {
+                    nearbyPharmacies = newNearbyPharmacies
+                }
                 
                 if newNearbyPharmacies.isNotEmpty {
                     loadingState.pagination.nextPage()

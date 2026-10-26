@@ -18,9 +18,3 @@ struct GetSearchesParams: Codable {
         case filter = "p_filter"
     }
 }
-
-enum SearchFilter: String, Codable {
-    case all
-    case pending
-    case nonPending = "non_pending"
-}

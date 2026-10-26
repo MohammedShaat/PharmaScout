@@ -45,3 +45,27 @@ enum SearchStatus: String, Codable {
     case unfulfilled = "unfulfilled"
     case awaitingContinuation = "awaiting_continuation"
 }
+
+enum SearchFilter: String, Codable, CaseIterable, Identifiable {
+    case all = "all"
+    case pending = "pending"
+    case nonPending = "non_pending"
+    case partiallyFulfilled = "partially_fulfilled"
+    case fulfilled = "fulfilled"
+    case unfulfilled = "unfulfilled"
+    case awaitingContinuation = "awaiting_continuation"
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .all: "All"
+        case .pending: "Pending"
+        case .nonPending: "Not Pending"
+        case .partiallyFulfilled: "Partially Fulfilled"
+        case .fulfilled: "Fulfilled"
+        case .unfulfilled: "Unfulfilled"
+        case .awaitingContinuation: "Awaiting Continuation"
+        }
+    }
+}
