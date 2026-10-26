@@ -49,14 +49,18 @@ class RecentSearchesViewModel {
         do {
             let params = GetSearchesParams(
                 limit: refresh ? max(searches.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
-                offset: refresh ? 0 : searches.count
+                offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : searches.count
             )
             let newSearchs = try await searchRequestService.getSearches(params)
             
             if refresh {
                 searches = newSearchs
             } else {
-                searches.append(contentsOf: newSearchs)
+                if loadingState.pagination.hasPreviousPage {
+                    searches.append(contentsOf: newSearchs)
+                } else {
+                    searches = newSearchs
+                }
     
                 if newSearchs.isNotEmpty {
                     loadingState.pagination.nextPage()

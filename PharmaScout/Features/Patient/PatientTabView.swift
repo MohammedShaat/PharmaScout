@@ -52,7 +52,7 @@ struct PatientTabView: View {
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
-                SearchScreen(drugService: drugService, searchRequestService: searchRequestService, authService: authService, locationService: locationService, pharmacySerivce: pharmacySerivce)
+                SearchScreen(drugService: drugService, searchRequestService: searchRequestService, authService: authService, locationService: locationService)
             }
             
             Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {

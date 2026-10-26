@@ -17,14 +17,12 @@ struct SearchScreen: View {
         searchRequestService: SearchRequestService,
         authService: AuthService,
         locationService: LocationService,
-        pharmacySerivce: PharmacyService,
     ) {
         self.drugService = drugService
         let viewModel = SearchViewModel(
             searchRequestService: searchRequestService,
             authService: authService,
             locationService: locationService,
-            pharmacySerivce: pharmacySerivce
         )
         self._vm = State(wrappedValue: viewModel)
     }
@@ -191,6 +189,5 @@ enum SearchRoute: Hashable {
         searchRequestService: MockSearchRequestService.sample,
         authService: MockAuthService.sample,
         locationService: MockLocationService.sample,
-        pharmacySerivce: MockPharmacyService.sample
     )
 }

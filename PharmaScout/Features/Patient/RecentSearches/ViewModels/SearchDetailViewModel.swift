@@ -88,7 +88,7 @@ class SearchDetailViewModel {
             let pharmacyCount = try await searchRequestService.continueSearch(request: request)
             
             if pharmacyCount == 0 {
-                continueSearchLoadingState.fail(ContinueSearchError.noPharmaciesWithinRadius)
+                continueSearchLoadingState.fail(SearchError.noPharmaciesWithinRadius)
                 showExpandRadius = true
             }
             

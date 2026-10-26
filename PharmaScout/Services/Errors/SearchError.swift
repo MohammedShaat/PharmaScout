@@ -7,11 +7,12 @@
 
 import Foundation
 
-enum ContinueSearchError: AppError {
+enum SearchError: AppError {
     case radiusExceedsMaximum
     case radiusMustBeGreaterThanCurrent
     case searchIsNotAwaitingContinuation
     case noPharmaciesWithinRadius
+    case duplicateDrugFormulation
 
     var errorDescription: String {
         switch self {
@@ -23,9 +24,12 @@ enum ContinueSearchError: AppError {
 
         case .searchIsNotAwaitingContinuation:
             "Search is not awaiting continuation"
-            
+
         case .noPharmaciesWithinRadius:
             "No pharmacies found within the search radius"
+
+        case .duplicateDrugFormulation:
+            "A drug formulation cannot appear more than once in a search"
         }
     }
 }
