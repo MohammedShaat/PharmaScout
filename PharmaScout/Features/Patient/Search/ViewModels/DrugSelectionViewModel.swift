@@ -13,13 +13,11 @@ class DrugSelectionViewModel {
     let editingSelectedDrug: SelectedDrug?
     let selectedFormulationIds: [String]
     
-    var searchText: String = "" {
-        didSet { onSearchTextChanged() }
-    }
+    var searchText: String = ""
     private var trimmedSearchText: String {
         searchText.trimmed
     }
-    private var lastSearchText: String = ""
+    private var lastSearchText: String?
     
     private(set) var genericDrugs: [GenericDrug] = []
     private(set) var drugFormulations: [DrugFormulation] = []
@@ -43,7 +41,12 @@ class DrugSelectionViewModel {
         }
     }
     
-    func search() async {
+    func onSearchTextChanged() async {
+        searchLoadingState.pagination.reset()
+        await search()
+    }
+    
+    private func search() async {
         if isGenericDrugSelected {
             await searchDrugFormulations()
         } else {
@@ -151,10 +154,6 @@ class DrugSelectionViewModel {
         drugFormulations.removeAll()
         searchText = selectedDrugFormulation?.title ?? ""
         selectedDrugFormulation = nil
-    }
-
-    private func onSearchTextChanged() {
-        searchLoadingState.pagination.reset()
     }
 }
 

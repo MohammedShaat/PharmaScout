@@ -64,4 +64,13 @@ struct MockInquiryService: InquiryService {
             (other.createdAt, other.id) > (inquiry.createdAt, inquiry.id)
         }
     }
+    
+    func subscribeToPharmacyInquiriesChanges(pharmacyId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
+    
+    
+    func subscribeToInquiryChanges(inquiryId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
 }

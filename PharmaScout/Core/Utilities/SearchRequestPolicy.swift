@@ -10,17 +10,17 @@ import Foundation
 enum SearchRequestPolicy {
     static func shouldPerform(
         query: String,
-        lastQuery: String,
+        lastQuery: String?,
         minimumQueryLength: Int = 3,
         allowsEmptyQuery: Bool = false,
         hasPreviousPage: Bool,
         isRefreshing: Bool
     ) -> Bool {
-        let queryChanged = query.trimmed.lowercased() != lastQuery.trimmed.lowercased()
+        let queryChanged = lastQuery == nil || query.trimmed.lowercased() != lastQuery?.trimmed.lowercased()
         let meetsMinimumLength = query.count >= minimumQueryLength
         let queryIsValid = queryChanged && meetsMinimumLength
         
-        let emptyQueryIsAllowed = allowsEmptyQuery && query.isEmpty
+        let emptyQueryIsAllowed = allowsEmptyQuery && query.isEmpty && queryChanged
 
         return queryIsValid
             || emptyQueryIsAllowed

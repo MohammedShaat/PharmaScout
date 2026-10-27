@@ -55,11 +55,8 @@ struct InquiriesScreen: View {
             }
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
-            .onAppear {
-//                vm.loadInquiriesIfNeeded()
-            }
             .task(id: vm.searchText) {
-                await vm.loadInquiries()
+                await vm.onSearchTextChanged()
             }
             .onDisappear {
                 inquiriesTask?.cancel()
@@ -69,6 +66,9 @@ struct InquiriesScreen: View {
                 inquiriesTask = Task {
                     await vm.onFilterChanged()
                 }
+            }
+            .task {
+                await vm.listenToChanges()
             }
         }
     }

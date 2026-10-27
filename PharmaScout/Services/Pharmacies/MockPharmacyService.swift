@@ -125,4 +125,20 @@ struct MockPharmacyService: PharmacyService {
     func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
+    
+    func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
+    
+    func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
+    
+    func subscribeToWorkingHoursChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
+    
+    func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
 }
