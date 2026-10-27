@@ -66,6 +66,7 @@ struct InquiryDetailScreen: View {
         .onDisappear {
             responseTask?.cancel()
         }
+        .task(vm.listenToChanges)
     }
     
     private var infoSection: some View {

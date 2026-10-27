@@ -42,6 +42,9 @@ struct PharmacistDashboardScreen: View {
             .customNavBarVisibility(false)
             .refreshable(action: vm.refreshData)
             .onAppear(perform: vm.loadDataIfNeeded)
+            .task {
+                await vm.listenToChanges()
+            }
         }
     }
     

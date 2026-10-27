@@ -162,7 +162,7 @@ struct DrugSelectionScreen: View {
             isSearchFocused = true
         }
         .task(id: vm.searchText) {
-            await vm.search()
+            await vm.onSearchTextChanged()
         }
         .onDisappear {
             selectionTask?.cancel()

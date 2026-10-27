@@ -69,9 +69,11 @@ struct PharmacyScreen: View {
                 }
             }
             .refreshable(action: vm.refresh)
-            .onAppear {
-                vm.loadDataIfNeeded()
-            }
+            .onAppear(perform: vm.loadDataIfNeeded)
+            .task(vm.listenToPharmacyChanges)
+            .task(vm.listenToContactChanges)
+            .task(vm.listenToWokringHoursChanges)
+            .task(vm.listenToStaffChanges)
         }
     }
     

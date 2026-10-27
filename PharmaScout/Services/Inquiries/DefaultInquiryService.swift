@@ -8,8 +8,10 @@
 import Foundation
 import Supabase
 
-struct DefaultInquiryService: InquiryService {
+class DefaultInquiryService: InquiryService {
     private let supabase = SupabaseManager.shared.client
+    
+    private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
     func getInquiries(_ params: GetInquiriesParams) async throws -> [Inquiry] {
         let getPharmacyInquiriesFunc = SupabaseManager.Database.Functions.getPharmacyInquiries.self
@@ -118,5 +120,45 @@ struct DefaultInquiryService: InquiryService {
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
+    }
+    
+    func subscribeToPharmacyInquiriesChanges(pharmacyId: String) async throws -> AsyncStream<Void> {
+        let inquiryTable = SupabaseManager.Database.Table.PharmacyInquiry.self
+        let columns = inquiryTable.Column.self
+        let hub = realtimeHub(
+            for: "\(inquiryTable.name)-\(pharmacyId)",
+            tableName: inquiryTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    
+    func subscribeToInquiryChanges(inquiryId: String) async throws -> AsyncStream<Void> {
+        let inquiryTable = SupabaseManager.Database.Table.PharmacyInquiry.self
+        let columns = inquiryTable.Column.self
+        let hub = realtimeHub(
+            for: "\(inquiryTable.name)-\(inquiryId)",
+            tableName: inquiryTable.name,
+            filter: .eq(columns.id, value: inquiryId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+
+    private func realtimeHub(for id: String, tableName: String, filter: RealtimePostgresFilter? = nil) -> SupabaseManager.SupabaseRealtimeHub {
+        if let existing = realtimeHubs[id] { return existing }
+        
+        let hub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "\(tableName)-\(id)",
+            tableName: tableName,
+            filter: filter,
+            onIdle: { [weak self] idleHub in
+                if self?.realtimeHubs[id] === idleHub {
+                    self?.realtimeHubs[id] = nil
+                }
+            }
+        )
+        realtimeHubs[id] = hub
+        return hub
     }
 }

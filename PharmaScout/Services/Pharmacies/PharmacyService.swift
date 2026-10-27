@@ -45,4 +45,12 @@ protocol PharmacyService {
     func getPharmacyApplication(for pharmacyId: String) async throws -> PharmacyApplication
     
     func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws
+    
+    func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToWorkingHoursChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
 }

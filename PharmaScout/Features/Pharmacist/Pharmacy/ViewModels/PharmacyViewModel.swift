@@ -36,7 +36,6 @@ class PharmacyViewModel {
     
     func loadDataIfNeeded() {
         guard !hasStarted else { return }
-        hasStarted = true
         
         firstLoadTask = Task {
             async let loadPharmacy = loadPharmacy()
@@ -45,6 +44,7 @@ class PharmacyViewModel {
             async let loadStaff = loadStaff()
             
             _ = await (loadPharmacy, loadContact, loadWorkingHours, loadStaff)
+            hasStarted = true
         }
     }
     
@@ -57,8 +57,6 @@ class PharmacyViewModel {
         _ = await (loadPharmacy, loadContact, loadWorkingHours, loadStaff)
     }
     
-    
- 
     private func loadPharmacy(refresh: Bool = false) async {
         pharmacyLoadingState.startLoading(refresh: refresh)
         defer { pharmacyLoadingState.stopLoading() }
@@ -109,6 +107,54 @@ class PharmacyViewModel {
         } catch {
             staffLoadingState.fail(error)
             print("Failed to get pharmacy staff\n", error)
+        }
+    }
+    
+    func listenToPharmacyChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToPharmacyChanges(for: pharmacyId) },
+                trigger: { await loadPharmacy(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to pharmacy changes\n", error)
+        }
+    }
+    
+    func listenToContactChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToContactChanges(for: pharmacyId) },
+                trigger: { await loadContact(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to contact changes\n", error)
+        }
+    }
+    
+    func listenToWokringHoursChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToWorkingHoursChanges(for: pharmacyId) },
+                trigger: { await loadWorkingHours(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to working hours changes\n", error)
+        }
+    }
+    
+    func listenToStaffChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToStaffChanges(for: pharmacyId) },
+                trigger: { await loadStaff(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to staff hours changes\n", error)
         }
     }
 }

@@ -40,7 +40,6 @@ class InquiryDetailViewModel {
     
     func loadDataIfNeeded() {
         guard !hasStarted else { return }
-        hasStarted = true
         
         firstLoadTask = Task {
             let refreshing = inquiry != nil
@@ -48,6 +47,7 @@ class InquiryDetailViewModel {
             async let checkEditEligibility = checkEditEligibility()
             
             _ = await (getInquiry, checkEditEligibility)
+            hasStarted = true
         }
     }
     
@@ -56,6 +56,19 @@ class InquiryDetailViewModel {
         async let checkEditEligibility = checkEditEligibility(refresh: true)
         
         _ = await (refreshInquiry, checkEditEligibility)
+    }
+    
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await inquiryService.subscribeToInquiryChanges(inquiryId: inquiryId) },
+                trigger: refresh
+            )
+            
+        } catch {
+            print("Failed to subscribe to inquiry chagnes")
+        }
     }
     
     private func getInquiry(refresh: Bool = false) async {

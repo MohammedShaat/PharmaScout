@@ -18,7 +18,7 @@ class SelectLocationViewModel {
     private(set) var selectedCoordiante: Coordinate?
 
     var searchText = ""
-    private var lastSearchText = ""
+    private var lastSearchText: String?
    
     private(set) var suggestions: [PlaceSuggestion] = []
 

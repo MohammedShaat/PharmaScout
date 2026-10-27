@@ -19,4 +19,9 @@ protocol InquiryService {
     func getNumberOfAnsweredTodaysInquiries(for pharmacyId: String) async throws -> Int
     
     func canEditInquiry(forId inquiryId: String) async throws -> Bool
+    
+    func subscribeToPharmacyInquiriesChanges(pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    
+    func subscribeToInquiryChanges(inquiryId: String) async throws -> AsyncStream<Void>
 }

@@ -41,13 +41,13 @@ class PharmacistDashboardViewModel {
     
     func loadDataIfNeeded() {
         guard !hasStarted else { return }
-        hasStarted = true
         
         firstLoadTask = Task {
             async let pendingInquiries = loadPendingInquiries()
             async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
             
             _ = await (pendingInquiries, numberOfTodaysInquiries)
+            hasStarted = true
         }
     }
     
@@ -56,6 +56,19 @@ class PharmacistDashboardViewModel {
         async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
         
         _ = await (pendingInquiries, numberOfTodaysInquiries)
+    }
+    
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await inquiryService.subscribeToPharmacyInquiriesChanges(pharmacyId: staffMembership.pharmacyId) },
+                trigger: refreshData
+            )
+            
+        } catch {
+            print("Failed to subscribe to inquiry changes\n", error)
+        }
     }
     
     private func loadPendingInquiries(refresh: Bool = false) async {

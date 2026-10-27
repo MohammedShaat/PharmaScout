@@ -9,8 +9,10 @@
 import Foundation
 import Supabase
 
-struct DefaultPharmacyService: PharmacyService {
+class DefaultPharmacyService: PharmacyService {
     private let supabase = SupabaseManager.shared.client
+    
+    private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
     func findNearbyPharmacies(_ request: FindNearbyPharmaciesRequest) async throws -> [Pharmacy] {
         
@@ -334,5 +336,66 @@ struct DefaultPharmacyService: PharmacyService {
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
+    }
+    
+    func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
+        let contactColumns = pharmacyTable.Column.self
+        let hub = realtimeHub(
+            for: "\(pharmacyTable.name)-\(pharmacyId)",
+            tableName: pharmacyTable.name,
+            filter: .eq(contactColumns.id, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        let columns = pharmacyContactTable.Column.self
+        let hub = realtimeHub(
+            for: "\(pharmacyContactTable.name)-\(pharmacyId)",
+            tableName: pharmacyContactTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToWorkingHoursChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
+        let columns = pharmacyHoursTable.Column.self
+        let hub = realtimeHub(
+            for: "\(pharmacyHoursTable.name)-\(pharmacyId)",
+            tableName: pharmacyHoursTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let staffTable = SupabaseManager.Database.Table.PharmacyStaff.self
+        let columns = staffTable.Column.self
+        let hub = realtimeHub(
+            for: "\(staffTable.name)-\(pharmacyId)",
+            tableName: staffTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+
+    private func realtimeHub(for id: String, tableName: String, filter: RealtimePostgresFilter? = nil) -> SupabaseManager.SupabaseRealtimeHub {
+        if let existing = realtimeHubs[id] { return existing }
+        
+        let hub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "\(tableName)-\(id)",
+            tableName: tableName,
+            filter: filter,
+            onIdle: { [weak self] idleHub in
+                if self?.realtimeHubs[id] === idleHub {
+                    self?.realtimeHubs[id] = nil
+                }
+            }
+        )
+        realtimeHubs[id] = hub
+        return hub
     }
 }

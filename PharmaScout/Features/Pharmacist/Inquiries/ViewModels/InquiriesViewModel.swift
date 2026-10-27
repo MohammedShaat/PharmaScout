@@ -15,32 +15,16 @@ class InquiriesViewModel {
     private(set) var inquiries: [Inquiry] = []
     var filter: InquiryFilter = .all
     
-    var searchText: String = "" {
-        didSet { onSearchTextChanged() }
-    }
-    private(set) var lastSearchText: String = ""
+    var searchText: String = ""
+    private(set) var lastSearchText: String?
     
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
-    private var hasStarted: Bool = false
-    private var firstLoadTask: Task<Void, Never>?
+    private var hasLoadedOnce: Bool = false
     
     init(staffMembership: StaffMembership, inquiryService: InquiryService) {
         self.inquiryService = inquiryService
         self.staffMembership = staffMembership
-    }
-    
-    deinit {
-        firstLoadTask?.cancel()
-    }
-    
-    func loadInquiriesIfNeeded() {
-        guard !hasStarted else { return }
-        hasStarted = true
-        
-        firstLoadTask = Task {
-            await loadInquiries()
-        }
     }
     
     func refresh() async {
@@ -56,14 +40,35 @@ class InquiriesViewModel {
         await loadInquiries(filterHasChanged: true)
     }
     
-    func loadInquiries(refresh: Bool = false, filterHasChanged: Bool = false) async {
+    func onSearchTextChanged() async {
+        loadingState.pagination.reset()
+        await loadInquiries()
+    }
+    
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasLoadedOnce,
+                realtimeStream: {
+                    try await inquiryService.subscribeToPharmacyInquiriesChanges(
+                        pharmacyId: staffMembership.pharmacyId
+                    )
+                },
+                trigger: refresh
+            )
+        } catch {
+            print("Failed to subscribe to inquiry changes\n", error)
+        }
+    }
+    
+    private func loadInquiries(refresh: Bool = false, filterHasChanged: Bool = false) async {
         var shouldPerform: Bool {
             SearchRequestPolicy.shouldPerform(
                 query: searchText,
                 lastQuery: lastSearchText,
                 allowsEmptyQuery: true,
                 hasPreviousPage: loadingState.pagination.hasPreviousPage,
-                isRefreshing: loadingState.status == .refreshing
+                isRefreshing: refresh
             )
         }
         
@@ -99,6 +104,8 @@ class InquiriesViewModel {
                 return try await inquiryService.getInquiries(params)
                 
             } onSuccess: { newInquiries in
+                hasLoadedOnce = true
+                
                 if refresh {
                     inquiries = newInquiries
                     
@@ -110,9 +117,5 @@ class InquiriesViewModel {
                     }
                 }
             }
-    }
-    
-    private func onSearchTextChanged() {
-        loadingState.pagination.reset()
     }
 }
