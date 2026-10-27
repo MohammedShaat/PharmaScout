@@ -28,6 +28,8 @@ struct CreateOrEditWorkingHoursScreen: View {
             
             addNewWorkingHourSection
             
+            errorSection
+            
             buttonSection
         }
         .padding(DesignSystem.Spacing.xLarge)
@@ -50,21 +52,28 @@ struct CreateOrEditWorkingHoursScreen: View {
     
     @ViewBuilder
     private var addNewWorkingHourSection: some View {
-        if vm.canAddWorkingHour {
-            ActionPromptView(actionTitle: "Add day", action: vm.addWorkingHour)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-        }
+        ActionPromptView(actionTitle: "Add day", action: vm.addWorkingHour)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private func workingHourItemView(_ workingHour: Binding<WorkingHour>) -> some View {
-        WorkingHourView(workingHour: workingHour, availableDays: vm.availableDays)
+        WorkingHourView(workingHour: workingHour)
             .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    @ViewBuilder
+    private var errorSection: some View {
+        if let error = vm.workingHourError {
+            Text(error.errorDescription)
+        }
     }
     
     private var buttonSection: some View {
         PrimaryButtonView(title: "Save") {
-            onSaveTapped?(vm.workingHours)
-            dismiss()
+            if vm.checkWorkingHours() {
+                onSaveTapped?(vm.workingHours)
+                dismiss()
+            }
         }
     }
 }

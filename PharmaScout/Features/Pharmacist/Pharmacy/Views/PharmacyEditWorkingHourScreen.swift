@@ -55,10 +55,8 @@ struct PharmacyEditWorkingHourScreen: View {
     
     @ViewBuilder
     private var addNewWorkingHourSection: some View {
-        if vm.canAddWorkingHour {
-            ActionPromptView(actionTitle: "Add day", action: vm.addWorkingHour)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-        }
+        ActionPromptView(actionTitle: "Add working hour", action: vm.addWorkingHour)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     @ViewBuilder
@@ -69,7 +67,7 @@ struct PharmacyEditWorkingHourScreen: View {
     }
     
     private func workingHourItemView(_ workingHour: Binding<WorkingHour>) -> some View {
-        WorkingHourView(workingHour: workingHour, availableDays: vm.availableDays)
+        WorkingHourView(workingHour: workingHour)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     

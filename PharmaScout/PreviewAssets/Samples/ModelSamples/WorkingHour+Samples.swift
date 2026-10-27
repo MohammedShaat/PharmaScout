@@ -11,11 +11,11 @@ extension WorkingHour {
     static let samples = Pharmacy.samples.map { pharmacy in
         (1...7).map { index in
             let opensAt = Calendar.current.date(bySetting: .hour, value: 8, of: .now)!
-            let closesAt = Calendar.current.date(byAdding: .hour, value: 22, to: .now)!
+            let closesAt = Calendar.current.date(bySetting: .hour, value: 22, of: .now)!
             
             return WorkingHour(
                 id: UUID().uuidString,
-                day: .from(index),
+                day: .init(from: index),
                 opensAt: opensAt,
                 closesAt: closesAt
             )
