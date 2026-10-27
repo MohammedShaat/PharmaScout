@@ -18,11 +18,6 @@ class PharmacyEditWorkingHourViewModel {
     var selectedDays: Set<DayOfWeek> {
         Set(workingHours.map { $0.day })
     }
-    var availableDays: Set<DayOfWeek> {
-        Set(DayOfWeek.allCases.filter { selectedDays.doesNotContain($0) })
-    }
-    
-    var canAddWorkingHour: Bool { workingHours.count < 7 }
     
     private(set) var loadingState = LoadingState()
     
@@ -33,10 +28,13 @@ class PharmacyEditWorkingHourViewModel {
     }
     
     func updateworkingHours(onSuccess: () -> Void) async {
-        loadingState.startLoading()
-        defer { loadingState.stopLoading() }
         
         do {
+            try checkWorkingHoursAreValid()
+            
+            loadingState.startLoading()
+            defer { loadingState.stopLoading() }
+
             let request = UpdateOrCreatePharmacyHoursRequest(
                 hours: workingHours.map { UpdatePharmacyHour($0, pharmacyId: pharmacy.id)  }
             )
@@ -54,14 +52,9 @@ class PharmacyEditWorkingHourViewModel {
     }
     
     func addWorkingHour() {
-        guard let day = availableDays.first else {
-            print("No available days")
-            return
-        }
-        
         let newWorkingHour = WorkingHour(
             id: UUID().uuidString,
-            day: day,
+            day: .init(from: .random(in: 1...7)),
             opensAt: .startOfToday,
             closesAt: .startOfToday
         )
@@ -71,5 +64,13 @@ class PharmacyEditWorkingHourViewModel {
     func deleteWorkingHour(_ workingHour: WorkingHour) {
         workingHours.removeAll { $0.id == workingHour.id }
         deletedworkingHourIds.append(workingHour.id)
+    }
+    
+    private func checkWorkingHoursAreValid() throws {
+        try workingHours.forEach { workingHour in
+            if let error = workingHour.validationError {
+                throw error
+            }
+        }
     }
 }

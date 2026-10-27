@@ -9,7 +9,6 @@ import SwiftUI
 
 struct WorkingHourView: View {
     @Binding var workingHour: WorkingHour
-    let availableDays: Set<DayOfWeek>
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -18,8 +17,9 @@ struct WorkingHourView: View {
                 
                 
                 Picker("Day", selection: $workingHour.day) {
-                    ForEach(daysToDisplay($workingHour.day.wrappedValue), id: \.self) { day in
+                    ForEach(DayOfWeek.allCases) { day in
                         Text(day.rawValue.capitalized)
+                            .tag(day)
                     }
                 }
             }
@@ -31,18 +31,11 @@ struct WorkingHourView: View {
             }
         }
     }
-    
-    private func daysToDisplay(_ currentDay: DayOfWeek) -> [DayOfWeek] {
-        let days = availableDays.union([currentDay])
-        return Array(days)
-    }
 }
 
 #Preview {
     @State @Previewable var workingHour = WorkingHour.samples[0]
     
-    WorkingHourView(
-        workingHour: $workingHour,
-        availableDays: [.monday, .tuesday, .wednesday]
-    )
+    WorkingHourView(workingHour: $workingHour)
+        .padding()
 }

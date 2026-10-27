@@ -14,7 +14,7 @@ struct WorkingHour: Codable, Identifiable {
     var closesAt: Date
 }
 
-enum DayOfWeek: String, Codable, CaseIterable {
+enum DayOfWeek: String, Codable, CaseIterable, Identifiable {
     case monday
     case tuesday
     case wednesday
@@ -22,6 +22,8 @@ enum DayOfWeek: String, Codable, CaseIterable {
     case friday
     case saturday
     case sunday
+    
+    var id: String { rawValue }
 }
 
 
@@ -29,15 +31,15 @@ enum DayOfWeek: String, Codable, CaseIterable {
 
 // MARK: - DayOfWeek index conversion
 extension DayOfWeek {
-    static func from(_ index: Int) -> Self {
+    init(from index: Int) {
         switch index {
-        case 1: .monday
-        case 2: .tuesday
-        case 3: .wednesday
-        case 4: .thursday
-        case 5: .friday
-        case 6: .saturday
-        default: .sunday
+        case 1: self = .monday
+        case 2: self = .tuesday
+        case 3: self = .wednesday
+        case 4: self = .thursday
+        case 5: self = .friday
+        case 6: self = .saturday
+        default: self = .sunday
         }
     }
     
@@ -69,7 +71,7 @@ extension WorkingHour {
         self.id = try container.decode(String.self, forKey: .id)
 
         let dayInt = try container.decode(Int.self, forKey: .day)
-        self.day = .from(dayInt)
+        self.day = .init(from: dayInt)
 
         let opensAtStr = try container.decode(String.self, forKey: .opensAt)
         self.opensAt = opensAtStr.toDateFromTime() ?? .startOfToday
