@@ -116,6 +116,19 @@ class SearchDetailViewModel {
         }
     }
     
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await searchRequestService.subscribeToSearchChanges(searchId: searchId) },
+                trigger: refresh
+            )
+            
+        } catch {
+            print("Failed to subscribe to search chagnes")
+        }
+    }
+    
     private func loadSearchDetail(refresh: Bool = false) async {
         getLocation()
         guard let userCoordinate else {

@@ -9,6 +9,7 @@ import Foundation
 
 @Observable
 class RecentSearchesViewModel {
+    private let userId: String
     private let searchRequestService: SearchRequestService
     
     private(set) var searches: [Search] = []
@@ -19,7 +20,8 @@ class RecentSearchesViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(searchRequestService: SearchRequestService) {
+    init(userId: String, searchRequestService: SearchRequestService) {
+        self.userId = userId
         self.searchRequestService = searchRequestService
     }
     
@@ -47,6 +49,19 @@ class RecentSearchesViewModel {
     func onFilterChanged() async {
         loadingState.pagination.reset()
         await loadSearches()
+    }
+    
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
+                trigger: refresh
+            )
+            
+        } catch {
+            print("Failed to subscribe to searches chagnes")
+        }
     }
     
     private func loadSearches(refresh: Bool = false) async {

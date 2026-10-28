@@ -8,8 +8,9 @@
 import Foundation
 import Supabase
 
-struct DefaultSearchRequestService: SearchRequestService {
+class DefaultSearchRequestService: SearchRequestService {
     private let supabase = SupabaseManager.shared.client
+    private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
     func createSearchRequest(request: SearchRequest) async throws {
         let createSeachFunc = SupabaseManager.Database.Functions.CreateSearch.self
@@ -34,7 +35,7 @@ struct DefaultSearchRequestService: SearchRequestService {
                 .from(searchTable.name)
                 .select(head: true, count: .exact)
                 .eq(column.userId, value: userId)
-                .eq(column.status, value: SearchStatus.pending.rawValue)
+                .in(column.status, values: [SearchStatus.pending.rawValue, SearchStatus.awaitingContinuation.rawValue])
                 .execute()
                 .count
             
@@ -113,5 +114,44 @@ struct DefaultSearchRequestService: SearchRequestService {
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
+    }
+    
+    func subscribeToUserSearchsChanges(userId: String) async throws -> AsyncStream<Void> {
+        let searchTable = SupabaseManager.Database.Table.Search.self
+        let columns = searchTable.Column.self
+        let hub = realtimeHub(
+            for: "\(searchTable.name)-\(userId)",
+            tableName: searchTable.name,
+            filter: .eq(columns.userId, value: userId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToSearchChanges(searchId: String) async throws -> AsyncStream<Void> {
+        let searchTable = SupabaseManager.Database.Table.Search.self
+        let columns = searchTable.Column.self
+        let hub = realtimeHub(
+            for: "\(searchTable.name)-\(searchId)",
+            tableName: searchTable.name,
+            filter: .eq(columns.id, value: searchId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+
+    private func realtimeHub(for id: String, tableName: String, filter: RealtimePostgresFilter? = nil) -> SupabaseManager.SupabaseRealtimeHub {
+        if let existing = realtimeHubs[id] { return existing }
+        
+        let hub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "\(tableName)-\(id)",
+            tableName: tableName,
+            filter: filter,
+            onIdle: { [weak self] idleHub in
+                if self?.realtimeHubs[id] === idleHub {
+                    self?.realtimeHubs[id] = nil
+                }
+            }
+        )
+        realtimeHubs[id] = hub
+        return hub
     }
 }

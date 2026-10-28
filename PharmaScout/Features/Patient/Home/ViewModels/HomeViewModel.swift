@@ -9,13 +9,11 @@ import Foundation
 
 @Observable
 class HomeViewModel {
-    private let authService: AuthService
+    private let userId: String
     private let locationService: LocationService
     private let pharmacyService: PharmacyService
     private let searchRequestService: SearchRequestService
     
-    private(set) var user: AppUser?
-    private(set) var userName: String = ""
     var hasUnreadNotifications: Bool = true
     
     private(set) var nearbyPharmacies: [Pharmacy] = []
@@ -37,12 +35,12 @@ class HomeViewModel {
     private var firstLoadTask: Task<Void, Never>?
     
     init(
-        authService: AuthService,
+        userId: String,
         locationService: LocationService,
         pharmacyService: PharmacyService,
         searchRequestService: SearchRequestService
     ) {
-        self.authService = authService
+        self.userId = userId
         self.locationService = locationService
         self.pharmacyService = pharmacyService
         self.searchRequestService = searchRequestService
@@ -58,27 +56,21 @@ class HomeViewModel {
         
         firstLoadTask = Task {
             getLocation()
-            async let loadUserData = loadUserData()
             async let loadActiveSearches = loadActiveSearches()
             async let loadRecentSearches = loadRecentSearches()
             async let loadNearbyPharmacies = loadNearbyPharmacies()
             
-            _ = await (loadUserData, loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
+            _ = await (loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
         }
     }
     
     func refresh() async {
         getLocation()
-        async let loadUserData = loadUserData()
-        async let loadActiveSearches = loadActiveSearches()
-        async let loadRecentSearches = loadRecentSearches()
-        async let loadNearbyPharmacies = loadNearbyPharmacies()
+        async let loadActiveSearches = loadActiveSearches(refresh: true)
+        async let loadRecentSearches = loadRecentSearches(refresh: true)
+        async let loadNearbyPharmacies = loadNearbyPharmacies(refresh: true)
         
-        _ = await (loadUserData, loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
-    }
-    
-    private func loadUserData() async {
-        user = try? await authService.getUser()
+        _ = await (loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
     }
     
     private func getLocation() {
@@ -89,6 +81,23 @@ class HomeViewModel {
         } catch {
             locationError = ErrorHandler.handle(error)
             print("Failed to get location\n", error)
+        }
+    }
+    
+    func listenToSearchesChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
+                trigger: {
+                    async let activeSearches = loadActiveSearches(refresh: true)
+                    async let recentSearches = loadRecentSearches(refresh: true)
+                    _ = await (activeSearches, recentSearches)
+                }
+            )
+            
+        } catch {
+            print("Failed to subscribe to searches chagnes")
         }
     }
     

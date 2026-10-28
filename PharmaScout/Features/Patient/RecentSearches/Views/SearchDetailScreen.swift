@@ -57,6 +57,7 @@ struct SearchDetailScreen: View {
         .onDisappear {
             continueSearchTask?.cancel()
         }
+        .task(vm.listenToChanges)
     }
     
     private var searchSection: some View {
