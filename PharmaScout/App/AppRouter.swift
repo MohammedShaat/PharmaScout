@@ -14,9 +14,6 @@ class AppRouter {
     private let authService: AuthService
     private(set) var destination: Destination = .loading
     
-    private(set) var authState: AuthState?
-    private(set) var authSession: AuthSession?
-    
     private(set) var pendingNotificationRoute: NotificationRoute?
     
     init(authService: AuthService) {
@@ -45,16 +42,11 @@ class AppRouter {
     }
     
     func subscribeToAuthStateChanges() async {
-        for await state in authService.authState {
-            
-            authState = state
-            authSession = authService.authSession
-            
+        for await state in await authService.authStateStream() {
             if state.invalidatesPendingNotificationRoute {
                 pendingNotificationRoute = nil
             }
-
-            destination = destination(for: state)
+            destination = destination(state: state)
         }
     }
     
@@ -76,22 +68,13 @@ class AppRouter {
         return route
     }
     
-    func onPasswordResetSucceeed() {
-        if let authState {
-            destination = destination(for: authState)
-        }
-    }
-    
     func navigateToSignIn() {
         destination = .signIn
     }
     
-    private func destination(for state: AuthState) -> Destination {
+    private func destination(state: AuthState) -> Destination {
         switch state {
-        case .authenticated:
-            guard let authSession = authSession else {
-                return .authenticationFailure(AppAuthError.sessionMissing.errorDescription)
-            }
+        case .authenticated(let authSession):
             switch authSession.accountState {
             case .patient: return .patient(authSession.user)
             case .pharmacist(let staffMembership): return .pharmacist(authSession.user, staffMembership)

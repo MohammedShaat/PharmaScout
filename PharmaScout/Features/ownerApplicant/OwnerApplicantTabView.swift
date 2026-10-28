@@ -48,7 +48,7 @@ struct OwnerApplicantTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                OwnerApplicantHomeScreen(ownerApplicantTabViewModel: vm, ownerApplicationSummary: ownerApplicationSummary, ownerApplicationService: ownerApplicationService)
+                OwnerApplicantHomeScreen(ownerApplicantTabViewModel: vm, ownerApplicationSummary: ownerApplicationSummary)
             }
             
             if vm.status == .approved {
@@ -62,6 +62,9 @@ struct OwnerApplicantTabView: View {
             }
         }
         .tint(.theme.primary)
+        .onChange(of: ownerApplicationSummary) {
+            vm.onApplicationStatusChanged(ownerApplicationSummary: ownerApplicationSummary)
+        }
     }
     
     private func tabImage(_ tab: OwnerApplicantTab) -> String {

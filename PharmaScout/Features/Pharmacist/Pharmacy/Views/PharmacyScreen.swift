@@ -8,8 +8,8 @@
 import SwiftUI
 
 struct PharmacyScreen: View {
+    private let userId: String
     private let pharmacistAccess: PharmacistAccess
-    private let authService: AuthService
     private let pharmacyService: PharmacyService
     
     @State private var vm: PharmacyViewModel
@@ -19,13 +19,13 @@ struct PharmacyScreen: View {
     private var canEditStaff: Bool { pharmacistAccess.can(.manageStaff) }
     
     init(
+        userId: String,
         pharmacyId: String,
         pharmacistAccess: PharmacistAccess,
-        authService: AuthService,
         pharmacyService: PharmacyService
     ) {
+        self.userId = userId
         self.pharmacistAccess = pharmacistAccess
-        self.authService = authService
         self.pharmacyService = pharmacyService
         
         let viewModel = PharmacyViewModel(
@@ -64,7 +64,7 @@ struct PharmacyScreen: View {
                         PharmacyEditWorkingHourScreen(pharmacyService: pharmacyService, pharmacy: pharmacy, workingHours: vm.workingHours)
                         
                     case .editStaff:
-                        PharmacyEditStaffScreen(authService: authService, pharmacyService: pharmacyService, pharmacy: pharmacy, staffMembers: vm.pharmacyStaff)
+                        PharmacyEditStaffScreen(userId: userId, pharmacyService: pharmacyService, pharmacy: pharmacy, staffMembers: vm.pharmacyStaff)
                     }
                 }
             }
@@ -157,9 +157,9 @@ enum PharmacyRoute {
 
 #Preview {
     PharmacyScreen(
+        userId: AppUser.samples[0].id,
         pharmacyId: Pharmacy.samples[0].id,
         pharmacistAccess: .full(role: .owner),
-        authService: MockAuthService.sample,
         pharmacyService: MockPharmacyService.sample
     )
 }

@@ -38,7 +38,6 @@ struct JoinPharmacyScreen: View {
                 sendTask?.cancel()
             }
         }
-        .refreshable(action: vm.refresh)
     }
     
     private var successSection: some View {

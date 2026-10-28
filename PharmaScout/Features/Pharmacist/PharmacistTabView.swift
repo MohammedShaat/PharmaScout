@@ -48,7 +48,7 @@ struct PharmacistTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen(pharmacistTabViewModel: vm, staffMembership: staffMembership, inquiryService: inquiryService, authService: authService)
+                PharmacistHomeScreen(user: user, pharmacistTabViewModel: vm, staffMembership: staffMembership, inquiryService: inquiryService)
             }
             
             if vm.access.canAccess(.inquiries) {
@@ -59,7 +59,7 @@ struct PharmacistTabView: View {
             
             if vm.access.canAccess(.pharmacy) {
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                    PharmacyScreen(pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, authService: authService, pharmacyService: pharmacyService)
+                    PharmacyScreen(userId: user.id, pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, pharmacyService: pharmacyService)
                 }
             }
             
@@ -79,6 +79,9 @@ struct PharmacistTabView: View {
         .onChange(of: router.pendingNotificationRoute, initial: true) { oldValue, newValue in
             guard let route = router.consumePendingPharmacistNotificationRoute() else { return }
             vm.handle(route)
+        }
+        .onChange(of: staffMembership) {
+            vm.onStaffMembershipChanged(staffMembership)
         }
     }
     

@@ -8,18 +8,12 @@
 import SwiftUI
 
 struct ResetPasswordScreen: View {
-    private let onPasswordResetSucceeded: (() -> Void)?
     private let onBackToSignInTapped: (() -> Void)?
     
     @State private var vm: ResetPasswordViewModel
     @State private var resetPassTask: Task<Void, Never>?
     
-    init(
-        authSerivce: AuthService,
-        onPasswordResetSucceeded: (() -> Void)? = nil,
-        onBackToSignInTapped: (() -> Void)? = nil
-    ) {
-        self.onPasswordResetSucceeded = onPasswordResetSucceeded
+    init(authSerivce: AuthService, onBackToSignInTapped: (() -> Void)? = nil) {
         self.onBackToSignInTapped = onBackToSignInTapped
         
         self._vm = State(wrappedValue: ResetPasswordViewModel(authService: authSerivce))
@@ -38,8 +32,8 @@ struct ResetPasswordScreen: View {
         .customNavBarVisibility(false)
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
         .errorAlert(title: "Password Reset Failed", loadingState: $vm.passwordResetLoadingState)
-        .sheet(isPresented: $vm.showPasswordUpdated, onDismiss: onPasswordResetSucceeded) {
-            PasswordUpdatedView(onContinueClicked: onPasswordResetSucceeded)
+        .sheet(isPresented: $vm.showPasswordUpdated) {
+            PasswordUpdatedView { vm.showPasswordUpdated = false }
                 .presentationDetents([.medium])
         }
         .onDisappear {

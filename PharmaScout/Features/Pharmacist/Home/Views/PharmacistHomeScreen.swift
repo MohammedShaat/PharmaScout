@@ -8,36 +8,36 @@
 import SwiftUI
 
 struct PharmacistHomeScreen: View {
+    private let user: AppUser
     private let pharmacistTabViewModel: PharmacistTabViewModel
     private let staffMembership: StaffMembership
     private let inquiryService: InquiryService
-    private let authService: AuthService
     
     init(
+        user: AppUser,
         pharmacistTabViewModel: PharmacistTabViewModel,
         staffMembership: StaffMembership,
         inquiryService: InquiryService,
-        authService: AuthService
     ) {
+        self.user = user
         self.pharmacistTabViewModel = pharmacistTabViewModel
         self.staffMembership = staffMembership
         self.inquiryService = inquiryService
-        self.authService = authService
     }
     
     var body: some View {
         switch pharmacistTabViewModel.access {
         case .full:
             PharmacistDashboardScreen(
+                user: user,
                 pharmacistTabViewModel: pharmacistTabViewModel,
                 staffMembership: staffMembership,
                 inquiryService: inquiryService,
-                authService: authService
             )
             
         case .restricted(let role, let restriction):
             PharmacistRestrictedHomeScreen(
-                authService: authService,
+                user: user,
                 role: role,
                 pharmacistRestriction: restriction
             )
@@ -47,9 +47,9 @@ struct PharmacistHomeScreen: View {
 
 #Preview {
     PharmacistHomeScreen(
+        user: AppUser.samples[0],
         pharmacistTabViewModel: .sample,
         staffMembership: .samples[0],
         inquiryService: MockInquiryService.sample,
-        authService: MockAuthService.sample,
     )
 }

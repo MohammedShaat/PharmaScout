@@ -11,8 +11,6 @@ import Foundation
 
 protocol AuthService {
     var resendIntervalSec: Double { get }
-    var authState: AsyncStream<AuthState> { get }
-    var authSession: AuthSession? { get }
 
     func signUp(email: String, password: String, fullName: String, redirectTo url: URL?) async throws
     
@@ -28,8 +26,6 @@ protocol AuthService {
     
     func signInWithCredential(_ credential: OAuthCredential) async throws
     
-    func getUser() async throws -> AppUser
-    
-    func refreshAuthSession() async throws
+    func authStateStream() async -> AsyncStream<AuthState>
 }
 

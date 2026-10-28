@@ -8,13 +8,17 @@
 import Foundation
 import Supabase
 
+struct RealtimeTable {
+    let tableName: String
+    var filter: RealtimePostgresFilter? = nil
+}
+
 extension SupabaseManager {
     class SupabaseRealtimeHub {
         private let supabase = SupabaseManager.shared.client
         
         private let channelName: String
-        private let tableName: String
-        private let filter: RealtimePostgresFilter?
+        private let realtimeTables: [RealtimeTable]
         private let onIdle: ((SupabaseRealtimeHub) -> Void)?
         
         private var realtimeChannel: RealtimeChannelV2?
@@ -24,13 +28,11 @@ extension SupabaseManager {
         
         init(
             channelName: String,
-            tableName: String,
-            filter: RealtimePostgresFilter? = nil,
+            realtimeTables: RealtimeTable...,
             onIdle: ((SupabaseRealtimeHub) -> Void)? = nil
         ) {
             self.channelName = channelName
-            self.tableName = tableName
-            self.filter = filter
+            self.realtimeTables = realtimeTables
             self.onIdle = onIdle
         }
         
@@ -61,12 +63,14 @@ extension SupabaseManager {
 
             let task = Task {
                 let channel = supabase.channel("\(channelName)-\(UUID().uuidString)")
-                let changes = channel.postgresChange(
-                    AnyAction.self,
-                    schema: "public",
-                    table: tableName,
-                    filter: filter
-                )
+                let streamsGroup = realtimeTables.map {
+                    channel.postgresChange(
+                        AnyAction.self,
+                        schema: "public",
+                        table: $0.tableName,
+                        filter: $0.filter
+                    )
+                }
 
                 do {
                     try await channel.subscribeWithError()
@@ -77,8 +81,14 @@ extension SupabaseManager {
                 }
 
                 realtimeChannel = channel
-                emittingTask = Task { [weak self = self] in
-                    for await _ in changes { self?.broadcast() }
+                emittingTask = Task {
+                    await withTaskGroup { group in
+                        streamsGroup.forEach { stream in
+                            group.addTask {
+                                for await _ in stream { await self.broadcast() }
+                            }
+                        }
+                    }
                 }
             }
             setupTask = task
@@ -103,5 +113,20 @@ extension SupabaseManager {
             onIdle?(self)
             await supabase.removeChannel(channel)
         }
+    }
+}
+
+extension SupabaseManager.SupabaseRealtimeHub {
+    convenience init(
+        channelName: String,
+        tableName: String,
+        filter: RealtimePostgresFilter?,
+        onIdle: ((SupabaseManager.SupabaseRealtimeHub) -> Void)? = nil
+    ) {
+        self.init(
+            channelName: channelName,
+            realtimeTables: RealtimeTable(tableName: tableName, filter: filter),
+            onIdle: onIdle
+        )
     }
 }

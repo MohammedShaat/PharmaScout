@@ -10,7 +10,7 @@ import Foundation
 import Supabase
 
 enum AuthState {
-    case authenticated
+    case authenticated(AuthSession)
     case non
     case signedOut
     case passwordReset

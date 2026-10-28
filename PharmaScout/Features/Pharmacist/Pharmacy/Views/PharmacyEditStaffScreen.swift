@@ -15,13 +15,13 @@ struct PharmacyEditStaffScreen: View {
     @State private var isSwipingAnItem = false
     
     init(
-        authService: AuthService,
+        userId: String,
         pharmacyService: PharmacyService,
         pharmacy: Pharmacy,
         staffMembers: [PharmacyStaffMember]
     ) {
         let viewModel = PharmacyEditStaffViewModel(
-            authService: authService,
+            userId: userId,
             pharmacyService: pharmacyService,
             pharmacy: pharmacy,
             staffMembers: staffMembers
@@ -142,7 +142,7 @@ struct PharmacyEditStaffScreen: View {
     let staffMembers = PharmacyStaffMember.samples.filter { $0.pharmacyId == pharmacy.id }
     
     PharmacyEditStaffScreen(
-        authService: MockAuthService.sample,
+        userId: AppUser.samples[0].id,
         pharmacyService: MockPharmacyService.sample,
         pharmacy: pharmacy,
         staffMembers: staffMembers

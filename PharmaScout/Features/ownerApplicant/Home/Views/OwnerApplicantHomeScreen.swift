@@ -9,25 +9,19 @@ import SwiftUI
 
 struct OwnerApplicantHomeScreen: View {
     private let tabVM: OwnerApplicantTabViewModel
-    @State private var vm: OwnerApplicantHomeViewModel
+    private let ownerApplicationSummary: OwnerApplicationSummary
     
     init(
         ownerApplicantTabViewModel: OwnerApplicantTabViewModel,
         ownerApplicationSummary: OwnerApplicationSummary,
-        ownerApplicationService: OwnerApplicationService
     ) {
         self.tabVM = ownerApplicantTabViewModel
-        
-        let viewModel = OwnerApplicantHomeViewModel(
-            ownerApplicationSummary: ownerApplicationSummary,
-            ownerApplicationService: ownerApplicationService
-        )
-        self._vm = State(wrappedValue: viewModel)
+        self.ownerApplicationSummary = ownerApplicationSummary
     }
     
     var body: some View {
         VStack {
-            switch vm.ownerApplicationSummary.status {
+            switch ownerApplicationSummary.status {
             case .approved:
                 approvedSection
             case .pending:
@@ -71,6 +65,5 @@ struct OwnerApplicantHomeScreen: View {
     OwnerApplicantHomeScreen(
         ownerApplicantTabViewModel: .sample,
         ownerApplicationSummary: .samples[0],
-        ownerApplicationService: MockOwnerApplicationService.sample
     )
 }

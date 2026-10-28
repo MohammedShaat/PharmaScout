@@ -10,7 +10,7 @@ import SwiftUI
 
 @Observable
 class PharmacistTabViewModel {
-    let membership: StaffMembership
+    private(set) var membership: StaffMembership
     var selectedTab: PharmacistTab = .home
     var inquiriesPath = NavigationPath()
     
@@ -18,7 +18,7 @@ class PharmacistTabViewModel {
     
     init(staffMembership: StaffMembership) {
         self.membership = staffMembership
-        self.access = PharmacistAccess(membership: membership)
+        self.access = PharmacistAccess(membership: staffMembership)
     }
     
     func navigateToInquiriesTab() {
@@ -49,4 +49,8 @@ class PharmacistTabViewModel {
         }
     }
     
+    func onStaffMembershipChanged(_ membership: StaffMembership) {
+        self.membership = membership
+        access = PharmacistAccess(membership: membership)
+    }
 }
