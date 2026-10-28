@@ -9,8 +9,8 @@ import Foundation
 
 @Observable
 class SearchViewModel {
+    private let userId: String
     private let searchRequestService: SearchRequestService
-    private let authService: AuthService
     private let locationService: LocationService
     
     private(set) var selectedDrugs: [SelectedDrug] = []
@@ -37,14 +37,16 @@ class SearchViewModel {
     var requestLoadingState: LoadingState = LoadingState()
     var showNoPharmaciesMessage: Bool = false
     var showSuccessMessage: Bool = false
+    
+    private var hasStarted: Bool = false
 
     init(
+        userId: String,
         searchRequestService: SearchRequestService,
-        authService: AuthService,
         locationService: LocationService,
     ) {
+        self.userId = userId
         self.searchRequestService = searchRequestService
-        self.authService = authService
         self.locationService = locationService
     }
 
@@ -65,13 +67,13 @@ class SearchViewModel {
         defer { numberOfActiveSearchsLoadingState.stopLoading() }
         
         do {
-            let userId = try await authService.getUser().id
             numberOfActiveSearchs = try await searchRequestService.getNumberOfActiveSearchs(userId: userId)
             
         } catch {
             numberOfActiveSearchsLoadingState.fail(error)
             print("Failed to get number of active searchs\n", error)
         }
+        hasStarted = true
     }
     
     func startSearch() async {
@@ -108,5 +110,18 @@ class SearchViewModel {
     
     private func clear() {
         selectedDrugs.removeAll()
+    }
+    
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
+                trigger: refresh
+            )
+            
+        } catch {
+            print("Failed to subscribe to searches chagnes")
+        }
     }
 }

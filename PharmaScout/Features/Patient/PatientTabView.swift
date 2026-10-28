@@ -51,15 +51,15 @@ struct PatientTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(authService: authService, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce, searchRequestService: searchRequestService)
+                HomeScreen(user: user, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce, searchRequestService: searchRequestService)
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
-                SearchScreen(drugService: drugService, searchRequestService: searchRequestService, authService: authService, locationService: locationService)
+                SearchScreen(userId: user.id, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService)
             }
             
             Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {
-                RecentSearchesScreen(path: $vm.recentSearchsPath, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm, appConfigService: appConfigService)
+                RecentSearchesScreen(path: $vm.recentSearchsPath, userId: user.id, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm, appConfigService: appConfigService)
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {

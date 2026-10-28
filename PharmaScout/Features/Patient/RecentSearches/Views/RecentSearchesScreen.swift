@@ -19,6 +19,7 @@ struct RecentSearchesScreen: View {
     
     init(
         path: Binding<NavigationPath>,
+        userId: String,
         searchRequestService: SearchRequestService,
         locationService: LocationService,
         patientTabViewModel: PatientTabViewModel,
@@ -31,6 +32,7 @@ struct RecentSearchesScreen: View {
         
         self.patientTabViewModel = patientTabViewModel
         let viewModel = RecentSearchesViewModel(
+            userId: userId,
             searchRequestService: searchRequestService
         )
         self._vm = State(wrappedValue: viewModel)
@@ -69,6 +71,7 @@ struct RecentSearchesScreen: View {
                     await vm.onFilterChanged()
                 }
             }
+            .task(vm.listenToChanges)
         }
     }
     
@@ -132,6 +135,7 @@ struct RecentSearchesScreen: View {
     
     RecentSearchesScreen(
         path: $path,
+        userId: AppUser.samples[0].id,
         searchRequestService: MockSearchRequestService.sample,
         locationService: MockLocationService.sample,
         patientTabViewModel: PatientTabViewModel.sample,

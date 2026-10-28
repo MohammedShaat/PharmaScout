@@ -8,25 +8,25 @@
 import SwiftUI
 
 struct HomeScreen: View {
-    private let authService: AuthService
+    private let user: AppUser
     private let drugService: DrugService
     private let patientTabViewModel: PatientTabViewModel
     
     @State private var vm: HomeViewModel
     
     init(
-        authService: AuthService,
+        user: AppUser,
         drugService: DrugService,
         patientTabViewModel: PatientTabViewModel,
         locationService: LocationService,
         pharmacyService: PharmacyService,
         searchRequestService: SearchRequestService
     ) {
-        self.authService = authService
+        self.user = user
         self.drugService = drugService
         self.patientTabViewModel = patientTabViewModel
         let viewModel = HomeViewModel(
-            authService: authService,
+            userId: user.id,
             locationService: locationService,
             pharmacyService: pharmacyService,
             searchRequestService: searchRequestService
@@ -53,11 +53,12 @@ struct HomeScreen: View {
             .customNavBarVisibility(false)
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadDataIfNeeded)
+            .task(vm.listenToSearchesChanges)
         }
     }
     
     private var headerSection: some View {
-        GreetingHeaderView(user: vm.user, hasUnreadNotifications: vm.hasUnreadNotifications)
+        GreetingHeaderView(user: user, hasUnreadNotifications: vm.hasUnreadNotifications)
     }
     
     private var searchSection: some View {
@@ -103,7 +104,7 @@ struct HomeScreen: View {
 
 #Preview {
     HomeScreen(
-        authService: MockAuthService.sample,
+        user: .samples[0],
         drugService: MockDrugService.sample,
         patientTabViewModel: PatientTabViewModel.sample,
         locationService: MockLocationService.sample,

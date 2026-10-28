@@ -13,15 +13,15 @@ struct SearchScreen: View {
     @State private var vm: SearchViewModel
     
     init(
+        userId: String,
         drugService: DrugService,
         searchRequestService: SearchRequestService,
-        authService: AuthService,
         locationService: LocationService,
     ) {
         self.drugService = drugService
         let viewModel = SearchViewModel(
+            userId: userId,
             searchRequestService: searchRequestService,
-            authService: authService,
             locationService: locationService,
         )
         self._vm = State(wrappedValue: viewModel)
@@ -158,6 +158,7 @@ struct SearchScreen: View {
             .task {
                 await vm.getNumberOfActiveSearchs()
             }
+            .task(vm.listenToChanges)
         }
     }
     
@@ -185,9 +186,9 @@ enum SearchRoute: Hashable {
 
 #Preview {
     SearchScreen(
+        userId: AppUser.samples[0].id,
         drugService: MockDrugService.sample,
         searchRequestService: MockSearchRequestService.sample,
-        authService: MockAuthService.sample,
         locationService: MockLocationService.sample,
     )
 }

@@ -58,4 +58,12 @@ struct MockSearchRequestService: SearchRequestService {
         
         return 2
     }
+    
+    func subscribeToUserSearchsChanges(userId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
+    
+    func subscribeToSearchChanges(searchId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
 }
