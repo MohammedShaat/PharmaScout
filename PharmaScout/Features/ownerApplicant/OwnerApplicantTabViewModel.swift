@@ -9,7 +9,7 @@ import Foundation
 
 @Observable
 class OwnerApplicantTabViewModel {
-    private let ownerApplicationSummary: OwnerApplicationSummary
+    private(set) var ownerApplicationSummary: OwnerApplicationSummary
     
     var selectedTab: OwnerApplicantTab = .home
     var status: OwnerApplicationStatus { ownerApplicationSummary.status }
@@ -20,6 +20,10 @@ class OwnerApplicantTabViewModel {
     
     func navigateToCreatePharmacyTab() {
         selectedTab = .createPharmacy
+    }
+    
+    func onApplicationStatusChanged(ownerApplicationSummary: OwnerApplicationSummary) {
+        self.ownerApplicationSummary = ownerApplicationSummary
     }
 }
 

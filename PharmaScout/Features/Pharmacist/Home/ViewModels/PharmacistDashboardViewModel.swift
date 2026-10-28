@@ -11,9 +11,6 @@ import Foundation
 class PharmacistDashboardViewModel {
     let staffMembership: StaffMembership
     private let inquiryService: InquiryService
-    private let authService: AuthService
-    
-    var user: AppUser? { authService.authSession?.user }
     
     var pharmacyId: String { staffMembership.pharmacyId }
     
@@ -29,10 +26,9 @@ class PharmacistDashboardViewModel {
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
     
-    init(staffMembership: StaffMembership, inquiryService: InquiryService, authService: AuthService) {
+    init(staffMembership: StaffMembership, inquiryService: InquiryService) {
         self.staffMembership = staffMembership
         self.inquiryService = inquiryService
-        self.authService = authService
     }
     
     deinit {

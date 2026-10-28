@@ -40,7 +40,7 @@ enum SupabaseErrorMapper {
 extension SupabaseErrorMapper {
     static private func mapAuthErrorToAppError(_ error: AuthError) -> AppAuthError {
         switch error.errorCode {
-        case .emailExists: .emailAlreadyExists
+        case .emailExists, .userAlreadyExists: .emailAlreadyExists
             
         case .weakPassword: .weakPassword
             

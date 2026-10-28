@@ -63,19 +63,15 @@ struct ProfileScreen: View {
     
     @ViewBuilder
     private var joinPharmacy: some View {
-        if vm.canJoinPharmacy {
-            CustomNavValueLink(value: ProfileRoute.joinPharmacy) {
-                Text("Join a pharmacy")
-            }
+        CustomNavValueLink(value: ProfileRoute.joinPharmacy) {
+            Text("Join a pharmacy")
         }
     }
     
     @ViewBuilder
     private var becomePharmacyOwner: some View {
-        if vm.canJoinPharmacy {
-            CustomNavValueLink(value: ProfileRoute.becomePharmacyOwner) {
-                Text("Become a pharmacy owner")
-            }
+        CustomNavValueLink(value: ProfileRoute.becomePharmacyOwner) {
+            Text("Become a pharmacy owner")
         }
     }
     

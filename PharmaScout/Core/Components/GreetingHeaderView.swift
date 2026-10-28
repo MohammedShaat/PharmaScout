@@ -40,10 +40,8 @@ struct GreetingHeaderView: View {
 }
 
 #Preview {
-    let authService = MockAuthService.sample
-    
     VStack {
-        GreetingHeaderView(user: authService.authSession?.user, hasUnreadNotifications: true)
+        GreetingHeaderView(user: .samples[0], hasUnreadNotifications: true)
             .padding()
         Spacer()
     }

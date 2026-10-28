@@ -7,12 +7,12 @@
 
 import Foundation
 
-struct AuthSession {
+struct AuthSession: Equatable {
     let user: AppUser
     let accountState: AccountState
 }
 
-enum AccountState: nonisolated Decodable {
+enum AccountState: nonisolated Decodable, Equatable {
     case patient
     case pharmacist(StaffMembership)
     case admin

@@ -8,21 +8,22 @@
 import SwiftUI
 
 struct PharmacistDashboardScreen: View {
+    private let user: AppUser
     private let pharmacistTabViewModel: PharmacistTabViewModel
     @State private var vm: PharmacistDashboardViewModel
     
     init(
+        user: AppUser,
         pharmacistTabViewModel: PharmacistTabViewModel,
         staffMembership: StaffMembership,
         inquiryService: InquiryService,
-        authService: AuthService
     ) {
+        self.user = user
         self.pharmacistTabViewModel = pharmacistTabViewModel
         
         let viewModel = PharmacistDashboardViewModel(
             staffMembership: staffMembership,
             inquiryService: inquiryService,
-            authService: authService
         )
         self._vm = State(wrappedValue: viewModel)
     }
@@ -50,7 +51,7 @@ struct PharmacistDashboardScreen: View {
     
     
     private var headerSection: some View {
-        GreetingHeaderView(user: vm.user, hasUnreadNotifications: vm.hasUnreadNotifications)
+        GreetingHeaderView(user: user, hasUnreadNotifications: vm.hasUnreadNotifications)
     }
     
     private var recentPendingInquiries: some View {
@@ -101,9 +102,9 @@ struct PharmacistDashboardScreen: View {
 
 #Preview {
     PharmacistDashboardScreen(
+        user: .samples[0],
         pharmacistTabViewModel: .sample,
         staffMembership: .samples[0],
         inquiryService: MockInquiryService.sample,
-        authService: MockAuthService.sample
     )
 }

@@ -9,7 +9,6 @@ import Foundation
 
 @Observable
 class PharmacyEditStaffViewModel {
-    private let authService: AuthService
     private let pharmacyService: PharmacyService
     private let pharmacy: Pharmacy
     private let oldStaffMembers: [PharmacyStaffMember]
@@ -21,15 +20,12 @@ class PharmacyEditStaffViewModel {
     
     private(set) var loadingState = LoadingState()
     
-    init(authService: AuthService, pharmacyService: PharmacyService, pharmacy: Pharmacy, staffMembers: [PharmacyStaffMember]) {
-        self.authService = authService
+    init(userId: String, pharmacyService: PharmacyService, pharmacy: Pharmacy, staffMembers: [PharmacyStaffMember]) {
         self.pharmacyService = pharmacyService
         self.pharmacy = pharmacy
-//        self.oldStaffMembers = staffMembers
-//        self.staffMembers = staffMembers
         
         let staffMembersExceptCurrentUser = staffMembers.filter { member in
-            member.userInfo.id != authService.authSession?.user.id
+            member.userInfo.id != userId
         }
         self.oldStaffMembers = staffMembersExceptCurrentUser
         self.staffMembers = staffMembersExceptCurrentUser

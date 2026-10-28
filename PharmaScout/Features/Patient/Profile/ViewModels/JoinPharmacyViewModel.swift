@@ -48,21 +48,4 @@ class JoinPharmacyViewModel {
             print("Failed to send code\n", error)
         }
     }
-    
-    func refresh() async {
-        await refreshAuthSession()
-    }
-    
-    private func refreshAuthSession() async {
-        authSessionLoadingState.startLoading(refresh: true)
-        defer { authSessionLoadingState.stopLoading() }
-        
-        do {
-            try await authService.refreshAuthSession()
-            
-        } catch {
-            authSessionLoadingState.fail(error)
-            print("Failed to refresh auth session\n", error)
-        }
-    }
 }

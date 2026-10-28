@@ -8,25 +8,11 @@
 import SwiftUI
 
 struct PharmacistRestrictedHomeScreen: View {
-    private let role: PharmacyStaffRole
-    private let pharmacistRestriction: PharmacistRestriction
+    let user: AppUser
+    let role: PharmacyStaffRole
+    let pharmacistRestriction: PharmacistRestriction
     
-    @State private var vm: PharmacistRestrictedViewModel
-    @State private var refreshAuthSessionTask: Task<Void, Never>?
-    
-    init(
-        authService: AuthService,
-        role: PharmacyStaffRole,
-        pharmacistRestriction: PharmacistRestriction
-    ) {
-        self.role = role
-        self.pharmacistRestriction = pharmacistRestriction
-        
-        let viewModel = PharmacistRestrictedViewModel(
-            authService: authService,
-        )
-        self._vm = State(wrappedValue: viewModel)
-    }
+    @State private var vm = PharmacistRestrictedViewModel()
     
     var body: some View {
         CustomNavStack {
@@ -44,16 +30,12 @@ struct PharmacistRestrictedHomeScreen: View {
                 .padding(DesignSystem.Spacing.xLarge)
             }
             .customNavBarVisibility(false)
-            .refreshable(action: vm.refresh)
-            .onDisappear {
-                refreshAuthSessionTask?.cancel()
-            }
         }
     }
     
     
     private var headerSection: some View {
-        GreetingHeaderView(user: vm.user, hasUnreadNotifications: vm.hasUnreadNotifications)
+        GreetingHeaderView(user: user, hasUnreadNotifications: vm.hasUnreadNotifications)
     }
     
     private var isOwner: Bool { role == .owner }
@@ -86,7 +68,7 @@ struct PharmacistRestrictedHomeScreen: View {
 
 #Preview {
     PharmacistRestrictedHomeScreen(
-        authService: MockAuthService.sample,
+        user: .samples[0],
         role: .owner,
         pharmacistRestriction: .pharmacyPending,
     )

@@ -74,7 +74,7 @@ struct RootView: View {
                 AuthenticationFlowView(authSerivce: authService, googleAuthService: googleAuthService, appleAuthService: appleAuthService, onboardingService: onboardingService, initialRoute: router.destination == .signIn ? .signIn : nil)
                 
             case .resetPassword:
-                ResetPasswordScreen(authSerivce: authService, onPasswordResetSucceeded: router.onPasswordResetSucceeed, onBackToSignInTapped: router.navigateToSignIn)
+                ResetPasswordScreen(authSerivce: authService, onBackToSignInTapped: router.navigateToSignIn)
                 
             case .authenticationFailure(let message):
                 AuthenticationStateErrorScreen(errorMessage: message)

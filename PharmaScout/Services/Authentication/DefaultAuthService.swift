@@ -9,17 +9,22 @@ import Foundation
 import Supabase
 
 class DefaultAuthService: AuthService {
-    let resendIntervalSec: Double = 60
-    
-    var authState: AsyncStream<AuthState>  {
-        authStateStream()
-    }
-    
-    private(set) var authSession: AuthSession?
-
     private let supabase = SupabaseManager.shared.client
     private var auth: AuthClient { supabase.auth }
+    let resendIntervalSec: Double = 60
+    
+    private var subscribers: [String: AsyncStream<AuthState>.Continuation] = [:]
+    private var authListenerTask: Task<Void, Never>?
+    private var accountStateListenerTask: Task<Void, Never>?
+    private var lastAuthState: AuthState?
+    private var currentAuthSession: AuthSession? {
+        switch lastAuthState {
+        case .authenticated(let session): session
+        default: nil
+        }
+    }
     private var passwordRecovery: Bool = false
+    private var accountStateRealtimeHub: SupabaseManager.SupabaseRealtimeHub?
     
     func signUp(email: String, password: String, fullName: String, redirectTo url: URL?) async throws {
         let userData = SupabaseManager.Authentication.User.self
@@ -66,7 +71,9 @@ class DefaultAuthService: AuthService {
         do {
             let userAttributes = UserAttributes(password: newPassword)
             try await auth.update(user: userAttributes)
-            
+            if let currentAuthSession {
+                publish(.authenticated(currentAuthSession))
+            }
         } catch {
             throw SupabaseErrorMapper.mapAuthError(error)
         }
@@ -106,25 +113,140 @@ class DefaultAuthService: AuthService {
             throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
+}
+
+
+// MARK: - Auth events
+extension DefaultAuthService {
+    func authStateStream() async -> AsyncStream<AuthState> {
+        let id = UUID().uuidString
+        let (stream, continuation) = AsyncStream.makeStream(of: AuthState.self, bufferingPolicy: .bufferingNewest(1))
+        subscribers[id] = continuation
+        continuation.onTermination = { [weak self] _ in
+            guard let self else { return }
+            Task { @MainActor in self.subscribers[id] = nil }
+        }
+        if let lastAuthState { continuation.yield(lastAuthState) }
+        
+        startListeningToAuthChangesIfNeeded()
+        
+        return stream
+    }
     
-    func getUser() async throws -> AppUser {
-        do {
-            let user = try await auth.user()
-            return AppUser(from: user)
-            
-        } catch {
-            throw SupabaseErrorMapper.mapAuthError(error)
+    private func startListeningToAuthChangesIfNeeded() {
+        guard authListenerTask == nil else { return }
+        
+        let changes = auth.authStateChanges
+        authListenerTask = Task { [weak self] in
+            for await (event, session) in changes {
+                await self?.handleAuthState(event: event, session: session)
+            }
         }
     }
     
-    func refreshAuthSession() async throws {
-        do {
-            let session = try await auth.session
-            authSession = try await makeAuthSession(session)
+    private func handleAuthState(event: AuthChangeEvent, session: Session?) async {
+        switch event {
+        case .initialSession, .signedIn:
+            guard let session, !session.isExpired else {
+                stopListeningToAccountStateChanges()
+                publish(.non)
+                return
+            }
+            do {
+                let authSession = try await makeAuthSession(session)
+                if passwordRecovery {
+                    passwordRecovery = false
+                    publish(.passwordReset)
+                } else if case .authenticated = lastAuthState {
+                    break   // Already authenticated
+                } else {
+                    publish(.authenticated(authSession))
+                    await startListeningToAccountStateChangesIfNeeded(userId: session.user.id.uuidString)
+                }
+                
+            } catch {
+                stopListeningToAccountStateChanges()
+                publish(.failed(error))
+            }
             
-        } catch {
-            throw SupabaseErrorMapper.mapAuthError(error)
+        case .passwordRecovery:
+            passwordRecovery = false
+            if case .passwordReset = lastAuthState { return }
+            publish(.passwordReset)
+            
+        case .userUpdated:
+            guard let session, let currentAuthSession else { return }
+            let authSession = AuthSession(
+                user: AppUser(from: session.user),
+                accountState: currentAuthSession.accountState
+            )
+            if currentAuthSession != authSession { publish(.authenticated(authSession)) }
+            
+        case .signedOut:
+            passwordRecovery = false
+            stopListeningToAccountStateChanges()
+            publish(.signedOut)
+            
+        default:
+            break
         }
+    }
+    
+    private func publish(_ state: AuthState) {
+        subscribers.values.forEach { continuation in
+            continuation.yield(state)
+        }
+        if case .failed = state {
+            lastAuthState = nil
+        } else {
+            lastAuthState = state
+        }
+    }
+    
+    // MARK: Subscribing to account state changes
+    private func startListeningToAccountStateChangesIfNeeded(userId: String) async {
+        guard accountStateListenerTask == nil else { return }
+        
+        let realtimeHub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "account_state",
+            realtimeTables: RealtimeTable(
+                tableName: SupabaseManager.Database.Table.ownerApplication.name,
+                filter: .eq(SupabaseManager.Database.Table.ownerApplication.Column.applicantId, value: userId)
+            ),
+            RealtimeTable(
+                tableName: SupabaseManager.Database.Table.PharmacyStaff.name,
+                filter: .eq(SupabaseManager.Database.Table.PharmacyStaff.Column.userId, value: userId)
+            ),
+        )
+        
+        guard let accountStateStream = try? await realtimeHub.subscribeToChanges() else { return }
+        accountStateRealtimeHub = realtimeHub
+        accountStateListenerTask = Task { [weak self] in
+            for await _ in  accountStateStream {
+                await self?.handleAccountState()
+            }
+        }
+    }
+    
+    private func stopListeningToAccountStateChanges() {
+        accountStateListenerTask?.cancel()
+        accountStateListenerTask = nil
+        accountStateRealtimeHub = nil
+    }
+    
+    private func handleAccountState() async  {
+        guard let session = auth.currentSession, !session.isExpired,
+              case .authenticated = lastAuthState, !passwordRecovery else { return }
+        if let authSession = try? await makeAuthSession(session) {
+            publish(.authenticated(authSession))
+        }
+    }
+    
+    // MARK: Supabase-RPC get account state
+    private func makeAuthSession(_ session: Session) async throws -> AuthSession {
+        let user = AppUser(from: session.user)
+        let accountState = try await getAccountState()
+        return AuthSession(user: user, accountState: accountState)
     }
     
     private func getAccountState() async throws -> AccountState {
@@ -140,67 +262,6 @@ class DefaultAuthService: AuthService {
             
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
-        }
-    }
-    
-    private func makeAuthSession(_ session: Session) async throws -> AuthSession {
-        let user = AppUser(from: session.user)
-        
-        let accountState = try await getAccountState()
-        
-        return AuthSession(user: user, accountState: accountState)
-    }
-}
-
-extension DefaultAuthService {
-    func authStateStream() -> AsyncStream<AuthState> {
-        AsyncStream { continuation in
-            let task = Task {
-                for await (event, session) in auth.authStateChanges {
-                    switch event {
-                        
-                    // Start (authenticated or non-authenticated)
-                    case .initialSession, .signedIn:
-                        guard let session else {
-                            authSession = nil
-                            continuation.yield(.non)
-                            continue
-                        }
-                        
-                        do {
-                            authSession = try await makeAuthSession(session)
-                            
-                            if passwordRecovery {
-                                continuation.yield(.passwordReset)
-                                passwordRecovery = false
-                            } else {
-                                continuation.yield(.authenticated)
-                            }
-                            
-                        } catch {
-                            authSession = nil
-                            continuation.yield(.failed(error))
-                        }
-                        
-                        
-                    // Password reset
-                    case .passwordRecovery:
-                        continuation.yield(.passwordReset)
-
-                    // Sign out
-                    case .signedOut:
-                        authSession = nil
-                        continuation.yield(.signedOut)
-                        
-                    default:
-                        continue
-                    }
-                }
-            }
-            
-            continuation.onTermination = { _ in
-                task.cancel()
-            }
         }
     }
 }
