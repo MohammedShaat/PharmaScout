@@ -8,8 +8,9 @@
 import Foundation
 import Supabase
 
-struct DefaultOwnerApplicationService: OwnerApplicationService {
+class DefaultOwnerApplicationService: OwnerApplicationService {
     private let supabase = SupabaseManager.shared.client
+    private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
     func generateCode() async throws -> InvitaionCode {
         let createOwnerCodeFunc = SupabaseManager.Database.Functions.createOwnerCode.self
@@ -118,5 +119,42 @@ struct DefaultOwnerApplicationService: OwnerApplicationService {
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)
         }
+    }
+    
+    func subscribeToOwnerApplicationsChanges() async throws -> AsyncStream<Void> {
+        let ownerApplicationTable = SupabaseManager.Database.Table.ownerApplication.self
+        let hub = realtimeHub(
+            for: ownerApplicationTable.name,
+            tableName: ownerApplicationTable.name,
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToOwnerApplicationChanges(for ownerApplicationId: String) async throws -> AsyncStream<Void> {
+        let ownerApplicationTable = SupabaseManager.Database.Table.ownerApplication.self
+        let columns = ownerApplicationTable.Column.self
+        let hub = realtimeHub(
+            for: "\(ownerApplicationTable.name)-\(ownerApplicationId)",
+            tableName: ownerApplicationTable.name,
+            filter: .eq(columns.id, value: ownerApplicationId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+
+    private func realtimeHub(for id: String, tableName: String, filter: RealtimePostgresFilter? = nil) -> SupabaseManager.SupabaseRealtimeHub {
+        if let existing = realtimeHubs[id] { return existing }
+        
+        let hub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "\(tableName)-\(id)",
+            tableName: tableName,
+            filter: filter,
+            onIdle: { [weak self] idleHub in
+                if self?.realtimeHubs[id] === idleHub {
+                    self?.realtimeHubs[id] = nil
+                }
+            }
+        )
+        realtimeHubs[id] = hub
+        return hub
     }
 }

@@ -50,6 +50,7 @@ struct OwnerApplicationsScreen: View {
                     await vm.onFilterChanged()
                 }
             }
+            .task(vm.listenToChanges)
         }
     }
     

@@ -49,6 +49,18 @@ class AdminPharmaciesViewModel {
         await loadPharmacyApplications()
     }
     
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: pharmacyService.subscribeToPharmacyApplicationsChanges,
+                trigger: refresh
+            )
+        } catch {
+            print("Failed to subscribe to pharmacy applications changes\n", error)
+        }
+    }
+    
     private func loadPharmacyApplications(refresh refreshing: Bool = false) async {
         loadingState.startLoading(refresh: refreshing)
         defer { loadingState.stopLoading() }

@@ -141,4 +141,8 @@ struct MockPharmacyService: PharmacyService {
     func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
         .makeStream().stream
     }
+    
+    func subscribeToPharmacyApplicationsChanges() async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
 }

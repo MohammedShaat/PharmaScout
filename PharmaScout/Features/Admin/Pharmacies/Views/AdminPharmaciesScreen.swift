@@ -50,6 +50,7 @@ struct AdminPharmaciesScreen: View {
                     await vm.onFilterChanged()
                 }
             }
+            .task(vm.listenToChanges)
         }
     }
     

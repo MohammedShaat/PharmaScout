@@ -53,4 +53,6 @@ protocol PharmacyService {
     func subscribeToWorkingHoursChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
     
     func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToPharmacyApplicationsChanges() async throws -> AsyncStream<Void>
 }
