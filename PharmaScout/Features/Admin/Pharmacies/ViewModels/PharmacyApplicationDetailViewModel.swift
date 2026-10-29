@@ -109,8 +109,6 @@ class PharmacyApplicationDetailViewModel {
             reviewLoadingState.fail(error)
             print("Failed to get pharmacy application\n", error)
         }
-        
-        await getPharmacyApplication()
     }
     
     private func getPharmacyApplication(refresh: Bool = false) async {
@@ -150,6 +148,42 @@ class PharmacyApplicationDetailViewModel {
         } catch {
             workingHoursLoadingState.fail(error)
             print("Failed to get pharmacy working hours\n", error)
+        }
+    }
+    
+    func listenToPharmacyChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToPharmacyChanges(for: pharmacyId) },
+                trigger: { await getPharmacyApplication(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to pharmacy changes\n", error)
+        }
+    }
+    
+    func listenToContactChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToContactChanges(for: pharmacyId) },
+                trigger: { await loadContact(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to contact changes\n", error)
+        }
+    }
+    
+    func listenToWokringHoursChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: { try await pharmacyService.subscribeToWorkingHoursChanges(for: pharmacyId) },
+                trigger: { await loadWorkingHours(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to working hours changes\n", error)
         }
     }
 }

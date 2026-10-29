@@ -371,6 +371,15 @@ class DefaultPharmacyService: PharmacyService {
         return try await hub.subscribeToChanges()
     }
     
+    func subscribeToPharmacyApplicationsChanges() async throws -> AsyncStream<Void> {
+        let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
+        let hub = realtimeHub(
+            for: pharmacyTable.name,
+            tableName: pharmacyTable.name,
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
     func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
         let staffTable = SupabaseManager.Database.Table.PharmacyStaff.self
         let columns = staffTable.Column.self

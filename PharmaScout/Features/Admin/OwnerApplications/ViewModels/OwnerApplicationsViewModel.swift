@@ -49,6 +49,18 @@ class OwnerApplicationsViewModel {
         await loadApplications()
     }
     
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasStarted,
+                realtimeStream: ownerApplicationService.subscribeToOwnerApplicationsChanges,
+                trigger: refresh
+            )
+        } catch {
+            print("Failed to subscribe to owner applications changes\n", error)
+        }
+    }
+    
     private func loadApplications(refresh refreshing: Bool = false) async {
         loadingState.startLoading(refresh: refreshing)
         defer { loadingState.stopLoading() }

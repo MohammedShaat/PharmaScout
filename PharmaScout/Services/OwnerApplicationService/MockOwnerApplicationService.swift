@@ -43,4 +43,12 @@ struct MockOwnerApplicationService: OwnerApplicationService {
     func reviewOwnerApplication(_ request: ReviewOwnerApplicationRequest) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
+    
+    func subscribeToOwnerApplicationsChanges() async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
+    
+    func subscribeToOwnerApplicationChanges(for ownerApplicationId: String) async throws -> AsyncStream<Void> {
+        .makeStream().stream
+    }
 }

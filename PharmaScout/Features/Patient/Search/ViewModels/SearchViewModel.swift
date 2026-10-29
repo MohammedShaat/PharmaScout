@@ -99,7 +99,6 @@ class SearchViewModel {
             try await searchRequestService.createSearchRequest(request: request)
             
             showSuccessMessage = true
-            await refresh()
             clear()
 
         } catch {

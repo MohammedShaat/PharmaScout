@@ -209,14 +209,16 @@ extension DefaultAuthService {
         
         let realtimeHub = SupabaseManager.SupabaseRealtimeHub(
             channelName: "account_state",
-            realtimeTables: RealtimeTable(
-                tableName: SupabaseManager.Database.Table.ownerApplication.name,
-                filter: .eq(SupabaseManager.Database.Table.ownerApplication.Column.applicantId, value: userId)
-            ),
-            RealtimeTable(
-                tableName: SupabaseManager.Database.Table.PharmacyStaff.name,
-                filter: .eq(SupabaseManager.Database.Table.PharmacyStaff.Column.userId, value: userId)
-            ),
+            realtimeTables: [
+                RealtimeTable(
+                    tableName: SupabaseManager.Database.Table.ownerApplication.name,
+                    filter: .eq(SupabaseManager.Database.Table.ownerApplication.Column.applicantId, value: userId)
+                ),
+                RealtimeTable(
+                    tableName: SupabaseManager.Database.Table.PharmacyStaff.name,
+                    filter: .eq(SupabaseManager.Database.Table.PharmacyStaff.Column.userId, value: userId)
+                )
+            ]
         )
         
         guard let accountStateStream = try? await realtimeHub.subscribeToChanges() else { return }

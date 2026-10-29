@@ -38,6 +38,7 @@ struct OwnerApplicationDetailScreen: View {
         .onDisappear {
             task?.cancel()
         }
+        .task(vm.listenToChanges)
     }
     
     private var applicationDetailSection: some View {

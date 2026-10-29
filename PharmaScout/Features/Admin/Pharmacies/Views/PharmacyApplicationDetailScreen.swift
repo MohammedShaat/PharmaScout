@@ -51,6 +51,9 @@ struct PharmacyApplicationDetailScreen: View {
         .onDisappear {
             reviewTask?.cancel()
         }
+        .task(vm.listenToPharmacyChanges)
+        .task(vm.listenToContactChanges)
+        .task(vm.listenToWokringHoursChanges)
     }
     
     private var seeMap: some View {

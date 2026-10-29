@@ -19,4 +19,8 @@ protocol OwnerApplicationService {
     func revokeOwnerApplication(for applicationId: String) async throws
     
     func reviewOwnerApplication(_ request: ReviewOwnerApplicationRequest) async throws
+    
+    func subscribeToOwnerApplicationsChanges() async throws -> AsyncStream<Void>
+    
+    func subscribeToOwnerApplicationChanges(for ownerApplicationId: String) async throws -> AsyncStream<Void>
 }

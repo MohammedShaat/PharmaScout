@@ -28,7 +28,7 @@ extension SupabaseManager {
         
         init(
             channelName: String,
-            realtimeTables: RealtimeTable...,
+            realtimeTables: [RealtimeTable],
             onIdle: ((SupabaseRealtimeHub) -> Void)? = nil
         ) {
             self.channelName = channelName
@@ -125,7 +125,7 @@ extension SupabaseManager.SupabaseRealtimeHub {
     ) {
         self.init(
             channelName: channelName,
-            realtimeTables: RealtimeTable(tableName: tableName, filter: filter),
+            realtimeTables: [RealtimeTable(tableName: tableName, filter: filter)],
             onIdle: onIdle
         )
     }
