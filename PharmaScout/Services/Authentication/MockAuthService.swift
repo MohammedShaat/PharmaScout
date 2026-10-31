@@ -27,6 +27,8 @@ struct MockAuthService: AuthService {
     func authStateStream() async -> AsyncStream<AuthState> {
         .makeStream().stream
     }
+    
+    func deleteUser() async throws {}
 }
 
 

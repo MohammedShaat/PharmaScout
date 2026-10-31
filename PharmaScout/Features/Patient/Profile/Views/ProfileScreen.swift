@@ -15,6 +15,7 @@ struct ProfileScreen: View {
     
     @State private var vm: ProfileViewModel
     @State private var task: Task<Void, Never>?
+    @State private var showingDeleteAccountConfirmation: Bool = false
     
     init(
         user: AppUser,
@@ -43,9 +44,25 @@ struct ProfileScreen: View {
                 becomePharmacyOwner
                 
                 logout
+                
+                deleteAccount
             }
             .customNavTitle(user.fullName ?? "")
             .customBackButtonVisibility(false)
+            .alert("Delete Account?", isPresented: $showingDeleteAccountConfirmation) {
+                Button("Delete Account", role: .destructive) {
+                    task?.cancel()
+                    task = Task {
+                        await vm.deleteAccount()
+                    }
+                }
+                
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text(
+                    "Your account will be permanently deleted. This action cannot be undone."
+                )
+            }
             .customNavigationDestination(for: ProfileRoute.self) { route in
                 switch route {
                 case .joinPharmacy:
@@ -76,12 +93,20 @@ struct ProfileScreen: View {
     }
     
     private var logout: some View {
-        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
+        Button("Log out") {
             task?.cancel()
             task = Task {
                 await vm.logout()
             }
         }
+        .disabled(vm.loadingState.status != .idle)
+    }
+    
+    private var deleteAccount: some View {
+        Button("Delete account", role: .destructive) {
+            showingDeleteAccountConfirmation = true
+        }
+        .disabled(vm.loadingState.status != .idle)
     }
 }
 
