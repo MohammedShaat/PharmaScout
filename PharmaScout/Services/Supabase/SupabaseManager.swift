@@ -505,6 +505,12 @@ extension SupabaseManager {
             static let name = "full_name"
         }
     }
+    
+    enum EdgeFunctions {
+        enum deleteUser {
+            static let name = "delete-user"
+        }
+    }
 }
 
 

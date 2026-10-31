@@ -27,5 +27,7 @@ protocol AuthService {
     func signInWithCredential(_ credential: OAuthCredential) async throws
     
     func authStateStream() async -> AsyncStream<AuthState>
+    
+    func deleteUser() async throws
 }
 

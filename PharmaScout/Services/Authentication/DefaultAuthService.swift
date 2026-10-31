@@ -113,6 +113,15 @@ class DefaultAuthService: AuthService {
             throw SupabaseErrorMapper.mapAuthError(error)
         }
     }
+    
+    func deleteUser() async throws {
+        do {
+            try await supabase.functions.invoke(SupabaseManager.EdgeFunctions.deleteUser.name)
+            try await auth.signOut(scope: .local)
+        } catch {
+            throw SupabaseErrorMapper.mapAuthError(error)
+        }
+    }
 }
 
 

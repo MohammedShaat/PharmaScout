@@ -12,7 +12,7 @@ class ProfileViewModel {
     private let authService: AuthService
     private let pushTokenCoordinator: PushTokenCoordinator
     
-    private(set) var logoutLoadingState = LoadingState()
+    private(set) var loadingState = LoadingState()
     
     init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator) {
         self.authService = authService
@@ -20,16 +20,30 @@ class ProfileViewModel {
     }
     
     func logout() async {
-        logoutLoadingState.startLoading()
-        defer { logoutLoadingState.stopLoading() }
+        loadingState.startLoading()
+        defer { loadingState.stopLoading() }
         
         do {
             await pushTokenCoordinator.willSignOut()
             try await authService.signOut()
             
         } catch {
-            logoutLoadingState.fail(error)
-            print("Failed to sign out: \(error)")
+            loadingState.fail(error)
+            print("Failed to sign out\n", error)
+        }
+    }
+    
+    func deleteAccount() async {
+        loadingState.startLoading()
+        defer { loadingState.stopLoading() }
+        
+        do {
+            await pushTokenCoordinator.willSignOut()
+            try await authService.deleteUser()
+            
+        } catch {
+            loadingState.fail(error)
+            print("Failed to delete account\n", error)
         }
     }
 }
