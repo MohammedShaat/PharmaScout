@@ -41,7 +41,7 @@ class PharmacistProfileViewModel {
         
         do {
             await pushTokenCoordinator.willSignOut()
-            try await authService.deleteUser()
+            try await authService.deleteAccount(reauth: nil)
             
         } catch {
             loadingState.fail(error)

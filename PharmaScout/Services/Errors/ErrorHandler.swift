@@ -28,6 +28,9 @@ enum ErrorHandler {
         case _ as CancellationError:
             return nil
             
+        case _ as ReauthError:
+            return nil
+            
         case let appError as AppError:
             return appError
 

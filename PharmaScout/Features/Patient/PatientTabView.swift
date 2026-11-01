@@ -19,6 +19,8 @@ struct PatientTabView: View {
     private let pushTokenCoordinator: PushTokenCoordinator
     private let appConfigService: AppConfigService
     private let ownerApplicationService: OwnerApplicationService
+    private let appleReauthenticationService: AppleReauthenticationService
+    private let googleReauthenticationService: GoogleReauthenticationService
     
     @State private var vm = PatientTabViewModel()
     
@@ -33,7 +35,9 @@ struct PatientTabView: View {
         directionsService: DirectionsService,
         pushTokenCoordinator: PushTokenCoordinator,
         appConfigService: AppConfigService,
-        ownerApplicationService: OwnerApplicationService
+        ownerApplicationService: OwnerApplicationService,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService
     ) {
         self.user = user
         self.router = router
@@ -46,6 +50,8 @@ struct PatientTabView: View {
         self.pushTokenCoordinator = pushTokenCoordinator
         self.appConfigService = appConfigService
         self.ownerApplicationService = ownerApplicationService
+        self.appleReauthenticationService = appleReauthenticationService
+        self.googleReauthenticationService = googleReauthenticationService
     }
     
     var body: some View {
@@ -67,7 +73,7 @@ struct PatientTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                ProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacySerivce, ownerApplicationService: ownerApplicationService)
+                ProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacySerivce, ownerApplicationService: ownerApplicationService, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
             }
         }
         .tint(.theme.textPrimary)	
@@ -109,6 +115,8 @@ struct PatientTabView: View {
         directionsService: MockDirectionsSrevice.sample,
         pushTokenCoordinator: .sample,
         appConfigService: MockAppConfigService.sample,
-        ownerApplicationService: MockOwnerApplicationService.sample
+        ownerApplicationService: MockOwnerApplicationService.sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample
     )
 }

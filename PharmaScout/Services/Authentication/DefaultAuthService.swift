@@ -114,13 +114,30 @@ class DefaultAuthService: AuthService {
         }
     }
     
-    func deleteUser() async throws {
+    func getProviders() async throws -> [AuthProvider] {
         do {
-            try await supabase.functions.invoke(SupabaseManager.EdgeFunctions.deleteUser.name)
+            let providerNames = try await auth.user().identities?.map(\.provider)
+            return providerNames?.compactMap(AuthProvider.init(rawValue:)) ?? []
         } catch {
-            throw SupabaseErrorMapper.mapFunctionsError(error)
+            throw SupabaseErrorMapper.mapAuthError(error)
         }
+    }
+    
+    func deleteAccount(reauth reauthCredential: ReauthCredential?) async throws {
+        let deleteUserFunc = SupabaseManager.EdgeFunctions.deleteUser.self
         
+        let invokeOptions = reauthCredential.map {
+            FunctionInvokeOptions(body: DeleteAccountPayload(reauth: $0))
+        } ?? FunctionInvokeOptions()
+        
+        do {
+            try await supabase.functions.invoke(deleteUserFunc.name, options: invokeOptions)
+        } catch {
+            throw SupabaseErrorMapper.mapDeleteAccountFunctionError(error)
+        }
+    }
+    
+    func clearLocalSession() async throws {
         do {
             try await auth.signOut(scope: .local)
         } catch {

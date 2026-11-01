@@ -7,7 +7,8 @@
 
 import Foundation
 
-struct DeletionBlockedResponse: Decodable {
+struct DeleteAccountBodyResponse: Codable {
     let error: String
-    let blockers: [String]
+    let providers: [String]?
+    let blockers: [AccountDeletionBlocker]?
 }

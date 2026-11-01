@@ -28,7 +28,16 @@ struct MockAuthService: AuthService {
         .makeStream().stream
     }
     
-    func deleteUser() async throws {}
+    func getProviders() async throws -> [AuthProvider] {
+        try? await Task.sleep(for: .seconds(1))
+        return [.google, .email]
+    }
+    
+    func deleteAccount(reauth reauthCredential: ReauthCredential?) async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
+    
+    func clearLocalSession() async throws {}
 }
 
 

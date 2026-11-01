@@ -13,3 +13,11 @@ struct MockGoogleAuthService: OAuthService {
         OAuthCredential(provider: .google, idToken: "", accessToken: nil)
     }
 }
+
+
+extension MockGoogleAuthService: GoogleReauthenticationService {
+    func idToken(viewController vc: UIViewController) async throws -> String {
+        try? await Task.sleep(for: .seconds(1))
+        return ""
+    }
+}
