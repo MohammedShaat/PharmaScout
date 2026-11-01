@@ -28,6 +28,10 @@ protocol AuthService {
     
     func authStateStream() async -> AsyncStream<AuthState>
     
-    func deleteUser() async throws
+    func getProviders() async throws -> [AuthProvider]
+    
+    func deleteAccount(reauth reauthCredential: ReauthCredential?) async throws
+    
+    func clearLocalSession() async throws
 }
 

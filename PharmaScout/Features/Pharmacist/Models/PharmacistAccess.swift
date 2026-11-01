@@ -93,17 +93,18 @@ enum PharmacistAccess {
             }
             
         case .restricted(let role, let reason):
-                var allowed: [PharmacistCapability]
-                switch role {
-                case .owner:    allowed = restrictedAccessForOwner
-                case .employee: allowed = restrictedAccessForEmployee
-                }
-
-                if reason == .pharmacyClosed {
-                    allowed.append(.joinAnotherPharmacy)
-                    allowed.removeAll { $0 == .closePharmacy }
-                }
-                return allowed.contains(capability)
+            var allowed: [PharmacistCapability]
+            switch role {
+            case .owner:    allowed = restrictedAccessForOwner
+            case .employee: allowed = restrictedAccessForEmployee
+            }	
+            switch reason {
+            case .pharmacyClosed, .membershipRejected:
+                allowed.append(.joinAnotherPharmacy)
+                allowed.removeAll { $0 == .closePharmacy }
+            default: break
+            }
+            return allowed.contains(capability)
         }
     }
     

@@ -25,6 +25,8 @@ struct RootView: View {
     private let geocodingService: GeocodingService
     private let placeSearchService: PlaceSearchService
     private let onboardingService: OnboardingService
+    private let appleReauthenticationService: AppleReauthenticationService
+    private let googleReauthenticationService: GoogleReauthenticationService
     
     init(
         router: AppRouter,
@@ -43,7 +45,9 @@ struct RootView: View {
         ownerApplicationService: OwnerApplicationService,
         geocodingService: GeocodingService,
         placeSearchService: PlaceSearchService,
-        onboardingService: OnboardingService
+        onboardingService: OnboardingService,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService
     ) {
         self.router = router
         self.authService = authService
@@ -62,6 +66,8 @@ struct RootView: View {
         self.geocodingService = geocodingService
         self.placeSearchService = placeSearchService
         self.onboardingService = onboardingService
+        self.appleReauthenticationService = appleReauthenticationService
+        self.googleReauthenticationService = googleReauthenticationService
     }
     
     var body: some View {
@@ -80,7 +86,7 @@ struct RootView: View {
                 AuthenticationStateErrorScreen(errorMessage: message)
                 
             case .patient(let user):
-                PatientTabView(user: user, router: router, authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService, ownerApplicationService: ownerApplicationService)
+                PatientTabView(user: user, router: router, authService: authService, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, pharmacySerivce: pharmacySerivce, directionsService: directionsService, pushTokenCoordinator: pushTokenCoordinator, appConfigService: appConfigService, ownerApplicationService: ownerApplicationService, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
             
             case .pharmacist(let user, let staffMembership):
                 PharmacistTabView(user: user, router: router, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator)
@@ -118,7 +124,9 @@ struct RootView: View {
         ownerApplicationService: MockOwnerApplicationService.sample,
         geocodingService: MockGeocodingService.sample,
         placeSearchService: MockPlaceSearchService.sample,
-        onboardingService: MockOnboardingService.sample
+        onboardingService: MockOnboardingService.sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample
     )
     .task {
         await router.subscribeToAuthStateChanges()

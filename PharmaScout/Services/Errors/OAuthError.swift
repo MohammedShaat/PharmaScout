@@ -15,6 +15,8 @@ enum OAuthError: AppError {
     case refreshTokenExpired(OAuthProvider)
     case failed(OAuthProvider)
     case invalidResponse(OAuthProvider)
+    case noNonce(OAuthProvider)
+    case noCode(OAuthProvider)
     case unknow(Error)
     
     var errorDescription: String {

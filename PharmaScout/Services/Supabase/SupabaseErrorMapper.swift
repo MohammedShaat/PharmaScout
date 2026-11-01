@@ -37,10 +37,10 @@ enum SupabaseErrorMapper {
         }
     }
     
-    static func mapFunctionsError(_ error: Error) -> Error {
+    static func mapDeleteAccountFunctionError(_ error: Error) -> Error {
             switch error {
             case let functionsError as FunctionsError:
-                mapFunctionsErrorToAppError(functionsError)
+                mapDeleteAccountFunctionsErrorToAppError(functionsError)
 
             case let urlError as URLError:
                 NetworkError(from: urlError)
@@ -120,31 +120,24 @@ extension SupabaseErrorMapper {
 
 
 extension SupabaseErrorMapper {
-    static private func mapFunctionsErrorToAppError(_ error: FunctionsError) -> AppError {
+    static private func mapDeleteAccountFunctionsErrorToAppError(_ error: FunctionsError) -> AccountDeletionError {
         switch error {
         case let .httpError(code, data):
-            switch code {
-            case 409:
-                mapDeletionError(data) ?? UnknownError.unKnown(error)
-                
-            default:
-                UnknownError.unKnown(error)
+            guard let body = try? JSONDecoder().decode(DeleteAccountBodyResponse.self, from: data) else {
+                return AccountDeletionError.generic
             }
-            
+            switch code {
+            case 400:
+                let providers = body.providers?.compactMap(AuthProvider.init(rawValue:)) ?? []
+                return .reauthenticationRequired(providers: providers)
+            case 403, 429:
+                guard let deletionCode = AccountDeletionErrorCode(rawValue: body.error) else { return .generic }
+                return .reauthenticationFailed(deletionCode)
+            default:
+                return .generic
+            }
         default:
-            UnknownError.unKnown(error)
+            return .generic
         }
-    }
-    
-    static private func mapDeletionError(_ data: Data) -> AppError? {
-        guard let response = try? JSONDecoder().decode(DeletionBlockedResponse.self,from: data) else { return nil }
-
-        let blockers = response.blockers.compactMap(
-            AccountDeletionBlocker.init(rawValue:)
-        )
-
-        guard !blockers.isEmpty else { return nil }
-
-        return AccountDeletionError.blocked(blockers)
     }
 }

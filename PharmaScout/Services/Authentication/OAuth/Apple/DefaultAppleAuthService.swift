@@ -17,7 +17,11 @@ class DefaultAppleAuthService: NSObject, OAuthService {
     func signIn(viewController vc: UIViewController) async throws -> OAuthCredential {
         do {
             
-            let result = try await startSignInFlowWithCheckedContinuation(viewController: vc)
+            let result = try await startFlowWithCheckedContinuation(
+                viewController: vc,
+                requestedScopes: [.email, .fullName],
+                useNonce: true
+            )
             
             guard let appleIDCredential = result.appleIdCredential else {
                 throw OAuthError.noExistingCredentials(.apple)
@@ -30,8 +34,7 @@ class DefaultAppleAuthService: NSObject, OAuthService {
             }
 
             guard let nonce = result.nonce else {
-                print("No nonce")
-                throw OAuthError.failed(.apple)
+                throw OAuthError.noNonce(.apple)
             }
             
             let fullNameString = [
@@ -59,11 +62,14 @@ class DefaultAppleAuthService: NSObject, OAuthService {
         }
     }
     
-    private func startSignInFlowWithCheckedContinuation(viewController vc: UIViewController) async throws -> AppleAuthResult {
+    private func startFlowWithCheckedContinuation(
+        viewController vc: UIViewController,
+        requestedScopes: [ASAuthorization.Scope],
+        useNonce: Bool,
+    ) async throws -> AppleAuthResult {
         try await withCheckedThrowingContinuation { continuation in
             
-            startSignInFlow(viewController: vc) { result in
-                
+            startFlow(viewController: vc, requestedScopes: requestedScopes, useNonce: useNonce) { result in
                 switch result {
                 case .success(let credential):
                     continuation.resume(returning: credential)
@@ -71,22 +77,26 @@ class DefaultAppleAuthService: NSObject, OAuthService {
                 case .failure(let error):
                     continuation.resume(throwing: error)
                 }
-                
             }
             
         }
     }
     
-    private func startSignInFlow(viewController vc: UIViewController, onCompletion: @escaping (Result<AppleAuthResult, Error>) -> Void) {
+    private func startFlow(
+        viewController vc: UIViewController,
+        requestedScopes: [ASAuthorization.Scope],
+        useNonce: Bool,
+        onCompletion: @escaping (Result<AppleAuthResult, Error>) -> Void
+    ) {
         self.onCompletion = onCompletion
-        let nonce = randomNonceString()
+        let nonce = useNonce ? randomNonceString() : nil
         currentNonce = nonce
 
         let provider = ASAuthorizationAppleIDProvider()
         
         let request = provider.createRequest()
-        request.requestedScopes = [.email, .fullName]
-        request.nonce = sha256(nonce)
+        request.requestedScopes = requestedScopes
+        request.nonce = currentNonce.map { sha256($0) }
         
         let authorizationController = ASAuthorizationController(authorizationRequests: [request])
         authorizationController.delegate = self
@@ -147,11 +157,48 @@ extension DefaultAppleAuthService: ASAuthorizationControllerDelegate {
         let appleIdCredential = authorization.credential as? ASAuthorizationAppleIDCredential
         
         let result = AppleAuthResult(appleIdCredential: appleIdCredential, nonce: currentNonce)
-        onCompletion?(.success(result))
+        finish(.success(result))
     }
     
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: any Error) {
-        onCompletion?(.failure(error))
+        finish(.failure(error))
+    }
+    
+    private func finish(_ result: Result<AppleAuthResult, Error>) {
+        let completion = onCompletion
+        onCompletion = nil
+        currentNonce = nil
+        completion?(result)
+    }
+}
+
+
+// MARK: - Reauthentication
+extension DefaultAppleAuthService: AppleReauthenticationService {
+    func authorizationCode(viewController vc: UIViewController) async throws -> String {
+        do {
+            let result = try await startFlowWithCheckedContinuation(viewController: vc, requestedScopes: [], useNonce: false)
+            
+            guard let appleIDCredential = result.appleIdCredential else {
+                throw OAuthError.noExistingCredentials(.apple)
+            }
+            
+            guard let code = appleIDCredential.authorizationCode
+                .flatMap({ String(data: $0, encoding: .utf8) })
+            else {
+                throw OAuthError.noCode(.apple)
+            }
+
+            return code
+        }
+        catch let error as ASAuthorizationError {
+            throw mapASAuthorizationError(error)
+
+        }
+        catch let urlError as URLError {
+            throw NetworkError(from: urlError)
+            
+        }
     }
 }
 

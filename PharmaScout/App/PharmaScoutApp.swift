@@ -10,8 +10,8 @@ import SwiftUI
 @main
 struct PharmaScoutApp: App {
     private let authService: AuthService = DefaultAuthService()
-    private let googleAuthService: OAuthService = DefaultGoogleAuthService()
-    private let appleAuthService: OAuthService = DefaultAppleAuthService()
+    private let googleAuthService: OAuthService
+    private let appleAuthService: OAuthService
     private let drugService: DrugService = DefaultDrugService()
     private let searchRequestService: SearchRequestService = DefaultSearchRequestService()
     private let locationService: LocationService = DefaultLocationService()
@@ -25,6 +25,8 @@ struct PharmaScoutApp: App {
     private let geocodingService: GeocodingService = DefaultGeocodingService()
     private let placeSearchService: PlaceSearchService = DefaultPlaceSearchService(region: nil)
     private let onboardingService: OnboardingService = DefaultOnboardingService()
+    private let appleReauthenticationService: AppleReauthenticationService
+    private let googleReauthenticationService: GoogleReauthenticationService
     
     @State private var router: AppRouter
     private let pushTokenCooridnator: PushTokenCoordinator
@@ -35,6 +37,14 @@ struct PharmaScoutApp: App {
     init() {
         self._router = State(wrappedValue: AppRouter(authService: authService))
         self.pushTokenCooridnator = PushTokenCoordinator(deviceTokenService: deviceTokenService)
+        
+        let appleService = DefaultAppleAuthService()
+        self.appleAuthService = appleService
+        self.appleReauthenticationService = appleService
+        
+        let googleService = DefaultGoogleAuthService()
+        self.googleAuthService = googleService
+        self.googleReauthenticationService = googleService
     }
     
     var body: some Scene {
@@ -56,7 +66,9 @@ struct PharmaScoutApp: App {
                 ownerApplicationService: ownerApplicationService,
                 geocodingService: geocodingService,
                 placeSearchService: placeSearchService,
-                onboardingService: onboardingService
+                onboardingService: onboardingService,
+                appleReauthenticationService: appleReauthenticationService,
+                googleReauthenticationService: googleReauthenticationService
             )
             .onOpenURL { url in
                 Task {
