@@ -497,6 +497,10 @@ extension SupabaseManager {
                     static let rejectionReason = "p_rejection_reason"
                 }
             }
+        
+            enum ClosePharmacy {
+                static let name = "close_pharmacy"
+            }
         }
     }
     

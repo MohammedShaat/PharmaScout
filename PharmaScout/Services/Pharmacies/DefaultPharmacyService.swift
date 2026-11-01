@@ -52,7 +52,7 @@ class DefaultPharmacyService: PharmacyService {
     func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour] {
         let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
         let columns = pharmacyHoursTable.Column.self
-
+        
         do {
             let hours: [WorkingHour] = try await supabase
                 .from(pharmacyHoursTable.name)
@@ -154,7 +154,7 @@ class DefaultPharmacyService: PharmacyService {
     
     func createOrUpdateWokringHours(_ request: UpdateOrCreatePharmacyHoursRequest) async throws {
         let table = SupabaseManager.Database.Table.PharmacyHours.self
-
+        
         do {
             try await supabase
                 .from(table.name)
@@ -338,6 +338,23 @@ class DefaultPharmacyService: PharmacyService {
         }
     }
     
+    func closePharmacy() async throws {
+        let reviewPharmacyFunc = SupabaseManager.Database.Functions.ClosePharmacy.self
+        
+        do {
+            try await supabase
+                .rpc(reviewPharmacyFunc.name)
+                .execute()
+                .value
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+}
+
+
+extension DefaultPharmacyService {
     func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
         let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
         let contactColumns = pharmacyTable.Column.self
@@ -407,4 +424,5 @@ class DefaultPharmacyService: PharmacyService {
         realtimeHubs[id] = hub
         return hub
     }
+
 }

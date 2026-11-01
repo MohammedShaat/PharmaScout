@@ -11,25 +11,54 @@ import Foundation
 class PharmacistProfileViewModel {
     private let authService: AuthService
     private let pushTokenCoordinator: PushTokenCoordinator
+    private let pharmacyService: PharmacyService
     
-    private(set) var logoutLoadingState = LoadingState()
+    var loadingState = LoadingState()
     
-    init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator) {
+    init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator, pharmacyService: PharmacyService) {
         self.authService = authService
         self.pushTokenCoordinator = pushTokenCoordinator
+        self.pharmacyService = pharmacyService
     }
     
     func logout() async {
-        logoutLoadingState.startLoading()
-        defer { logoutLoadingState.stopLoading() }
+        loadingState.startLoading()
+        defer { loadingState.stopLoading() }
         
         do {
             await pushTokenCoordinator.willSignOut()
             try await authService.signOut()
             
         } catch {
-            logoutLoadingState.fail(error)
-            print("Failed to sign out: \(error)")
+            loadingState.fail(error)
+            print("Failed to sign out\n", error)
+        }
+    }
+    
+    func deleteAccount() async {
+        loadingState.startLoading()
+        defer { loadingState.stopLoading() }
+        
+        do {
+            await pushTokenCoordinator.willSignOut()
+            try await authService.deleteUser()
+            
+        } catch {
+            loadingState.fail(error)
+            print("Failed to delete account\n", error)
+        }
+    }
+    
+    func closePharmacy() async {
+        loadingState.startLoading()
+        defer { loadingState.stopLoading() }
+        
+        do {
+            try await pharmacyService.closePharmacy()
+            
+        } catch {
+            loadingState.fail(error)
+            print("Failed to close pharmacy\n", error)
         }
     }
 }

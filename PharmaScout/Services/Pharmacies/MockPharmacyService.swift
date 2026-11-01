@@ -126,6 +126,10 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
     }
     
+    func closePharmacy() async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
+    
     func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
         .makeStream().stream
     }
