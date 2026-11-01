@@ -16,8 +16,12 @@ struct PharmacistProfileScreen: View {
     
     @State private var vm: PharmacistProfileViewModel
     @State private var task: Task<Void, Never>?
+    @State private var showingDeleteAccountConfirmation: Bool = false
+    @State private var showingClosePharmacyConfirmation: Bool = false
     
     private var canManageStaff: Bool { pharmacistAccess.can(.manageStaff) }
+    private var canClosePharmacy: Bool { pharmacistAccess.can(.closePharmacy) }
+    private var canJoinAnotherPharmacy: Bool { pharmacistAccess.can(.joinAnotherPharmacy) }
     
     init(
         user: AppUser,
@@ -35,7 +39,8 @@ struct PharmacistProfileScreen: View {
         
         let viewModel = PharmacistProfileViewModel(
             authService: authService,
-            pushTokenCoordinator: pushTokenCoordinator
+            pushTokenCoordinator: pushTokenCoordinator,
+            pharmacyService: pharmacyService
         )
         self._vm = State(initialValue: viewModel)
     }
@@ -43,33 +48,77 @@ struct PharmacistProfileScreen: View {
     var body: some View {
         CustomNavStack {
             Form {
-                if canManageStaff {
-                    invite
-                }
+                if canManageStaff { invite }
+                
+                if canClosePharmacy{ closePharmacy }
+                
+                if canJoinAnotherPharmacy{ joinAnotherPharmacy }
                 
                 logout
+                
+                deleteAccount
             }
             .customNavTitle(user.fullName ?? "")
             .customBackButtonVisibility(false)
-            .onDisappear {
-                task?.cancel()
+            .errorAlert(title: "Failed", loadingState: $vm.loadingState)
+            .alert("Delete Account?", isPresented: $showingDeleteAccountConfirmation) {
+                Button("Delete Account", role: .destructive) {
+                    task?.cancel()
+                    task = Task {
+                        await vm.deleteAccount()
+                    }
+                }
+                
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text(
+                    "Your account will be permanently deleted. This action cannot be undone."
+                )
+            }
+            .alert("Close Pharmacy?", isPresented: $showingClosePharmacyConfirmation) {
+                Button("Close Pharmacy", role: .destructive) {
+                    task?.cancel()
+                    task = Task {
+                        await vm.closePharmacy()
+                    }
+                }
+                
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text(
+                    "Your pharmacy will be permanently closed. This action cannot be undone."
+                )
             }
             .customNavigationDestination(for: PharmacistProfileRoute.self) { route in
                 switch route {
                 case .joinCode:
                     JoinCodeScreen(pharmacyService: pharmacyService, pharmacyId: pharmacyId)
+                    
+                case .joinAnotherPharmacy:
+                    JoinPharmacyScreen(authService: authService, pharmacyService: pharmacyService)
                 }
+            }
+            .onDisappear {
+                task?.cancel()
             }
         }
     }
     
     private var logout: some View {
-        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
+        Button("Log out") {
             task?.cancel()
             task = Task {
                 await vm.logout()
             }
         }
+        .disabled(vm.loadingState.status != .idle)
+    }
+    
+    private var deleteAccount: some View {
+        Button("Delete account", role: .destructive) {
+            showingDeleteAccountConfirmation = true
+        }
+        .disabled(vm.loadingState.status != .idle)
     }
     
     private var invite: some View {
@@ -77,10 +126,25 @@ struct PharmacistProfileScreen: View {
             Text("Invite a pharmacist?")
         }
     }
+    
+    private var joinAnotherPharmacy: some View {
+        CustomNavValueLink(value: PharmacistProfileRoute.joinAnotherPharmacy) {
+            Text("Join another pharmacy")
+        }
+    }
+    
+    private var closePharmacy: some View {
+        Button("Close pharmacy") {
+            showingClosePharmacyConfirmation = true
+        }
+        .disabled(vm.loadingState.status != .idle)
+    }
+    
 }
 
 enum PharmacistProfileRoute {
     case joinCode
+    case joinAnotherPharmacy
 }
 
 #Preview {

@@ -46,6 +46,8 @@ protocol PharmacyService {
     
     func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws
     
+    func closePharmacy() async throws
+    
     func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
     
     func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void>

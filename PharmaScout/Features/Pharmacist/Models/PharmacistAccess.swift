@@ -13,6 +13,8 @@ enum PharmacistCapability: CaseIterable {
     case viewPharmacy
     case viewAnalytics
     case manageStaff
+    case closePharmacy
+    case joinAnotherPharmacy
 }
 
 
@@ -20,6 +22,7 @@ enum PharmacistRestriction: Equatable {
     case pharmacyPending
     case pharmacyRejected(reason: String?)
     case pharmacySuspended
+    case pharmacyClosed
     case membershipPending
     case membershipRejected(reason: String?)
     case membershipSuspended
@@ -69,12 +72,14 @@ enum PharmacistAccess {
             self = .restricted(role: membership.role, reason: .pharmacyPending)
         case .suspended:
             self = .restricted(role: membership.role, reason: .pharmacySuspended)
+        case .closed:
+            self = .restricted(role: membership.role, reason: .pharmacyClosed)
         }
     }
     
-    func can(_ capablility: PharmacistCapability) -> Bool {
-        let fullAccessForOwner: [PharmacistCapability] = PharmacistCapability.allCases
-        let restrictedAccessForOwner: [PharmacistCapability] = [.viewPharmacy, .editPharmacy]
+    func can(_ capability: PharmacistCapability) -> Bool {
+        let fullAccessForOwner: [PharmacistCapability] = PharmacistCapability.allCases.filter { $0 != .joinAnotherPharmacy }
+        let restrictedAccessForOwner: [PharmacistCapability] = [.viewPharmacy, .editPharmacy, .closePharmacy]
         let fullAccessForEmployee: [PharmacistCapability] = [.viewPharmacy, .respondToInquiry]
         let restrictedAccessForEmployee: [PharmacistCapability] = []
         
@@ -82,17 +87,23 @@ enum PharmacistAccess {
         case .full(let role):
             switch role {
             case .owner:
-                return fullAccessForOwner.contains(capablility)
+                return fullAccessForOwner.contains(capability)
             case .employee:
-                return fullAccessForEmployee.contains(capablility)
+                return fullAccessForEmployee.contains(capability)
             }
-        case .restricted(let role, _):
-            switch role {
-            case .owner:
-                return restrictedAccessForOwner.contains(capablility)
-            case .employee:
-                return restrictedAccessForEmployee.contains(capablility)
-            }
+            
+        case .restricted(let role, let reason):
+                var allowed: [PharmacistCapability]
+                switch role {
+                case .owner:    allowed = restrictedAccessForOwner
+                case .employee: allowed = restrictedAccessForEmployee
+                }
+
+                if reason == .pharmacyClosed {
+                    allowed.append(.joinAnotherPharmacy)
+                    allowed.removeAll { $0 == .closePharmacy }
+                }
+                return allowed.contains(capability)
         }
     }
     

@@ -8,6 +8,7 @@
 import Foundation
 import Helpers
 import Auth
+import Functions
 
 enum SupabaseErrorMapper {
     static func mapAuthError(_ error: Error) -> Error {
@@ -35,7 +36,21 @@ enum SupabaseErrorMapper {
             error
         }
     }
+    
+    static func mapFunctionsError(_ error: Error) -> Error {
+            switch error {
+            case let functionsError as FunctionsError:
+                mapFunctionsErrorToAppError(functionsError)
+
+            case let urlError as URLError:
+                NetworkError(from: urlError)
+
+            default:
+                error
+            }
+        }
 }
+
 
 extension SupabaseErrorMapper {
     static private func mapAuthErrorToAppError(_ error: AuthError) -> AppAuthError {
@@ -58,7 +73,10 @@ extension SupabaseErrorMapper {
             
         }
     }
-    
+}
+
+
+extension SupabaseErrorMapper {
     static private func mapPostgrestErrorToAppError(_ error: PostgrestError) -> AppError {
         switch error.code {
         // MARK: Input error
@@ -73,6 +91,7 @@ extension SupabaseErrorMapper {
             
         // MARK: Join pharmacy error
         case "P2001": PharmacyJoinError.alreadyPharmacyMember
+        case "P2002": PharmacyJoinError.alreadyMemberOfAnotherPharmacy
             
         
         // MARK: Expand search
@@ -96,5 +115,36 @@ extension SupabaseErrorMapper {
         
         default: UnknownError.unKnown(error)
         }
+    }
+}
+
+
+extension SupabaseErrorMapper {
+    static private func mapFunctionsErrorToAppError(_ error: FunctionsError) -> AppError {
+        switch error {
+        case let .httpError(code, data):
+            switch code {
+            case 409:
+                mapDeletionError(data) ?? UnknownError.unKnown(error)
+                
+            default:
+                UnknownError.unKnown(error)
+            }
+            
+        default:
+            UnknownError.unKnown(error)
+        }
+    }
+    
+    static private func mapDeletionError(_ data: Data) -> AppError? {
+        guard let response = try? JSONDecoder().decode(DeletionBlockedResponse.self,from: data) else { return nil }
+
+        let blockers = response.blockers.compactMap(
+            AccountDeletionBlocker.init(rawValue:)
+        )
+
+        guard !blockers.isEmpty else { return nil }
+
+        return AccountDeletionError.blocked(blockers)
     }
 }

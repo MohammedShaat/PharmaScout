@@ -48,6 +48,8 @@ struct PharmacistRestrictedHomeScreen: View {
                 isOwner ? "Your pharmacy application was rejected." : "The pharmacy application was rejected."
             case .pharmacySuspended:
                 isOwner ? "Your pharmacy is suspended." : "The pharmacy is suspended."
+            case .pharmacyClosed:
+                isOwner ? "Your pharmacy is closed." : "The pharmacy is closed."
             case .membershipPending:
                 "Your request is pending. Waiting for the pharmacy owner’s approval."
             case .membershipRejected:

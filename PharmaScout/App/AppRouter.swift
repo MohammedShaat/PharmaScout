@@ -85,7 +85,9 @@ class AppRouter {
         case .non: return .authenticationFlow
         case .signedOut: return .signIn
         case .passwordReset: return .resetPassword
-        case .failed(let error): return .authenticationFailure(error.localizedDescription)
+        case .failed(let error):
+            print("Authenticatin failed\n", error)
+            return .authenticationFailure(error.localizedDescription)
         }
     }
 }

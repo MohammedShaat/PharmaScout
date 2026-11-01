@@ -32,6 +32,7 @@ enum PharmacyStatus: String, Codable {
     case approved
     case rejected
     case suspended
+    case closed
 
     var title: String {
         switch self {
@@ -39,6 +40,7 @@ enum PharmacyStatus: String, Codable {
         case .approved: "Approved"
         case .rejected: "Rejected"
         case .suspended: "Suspended"
+        case .closed: "closed"
         }
     }
 }
