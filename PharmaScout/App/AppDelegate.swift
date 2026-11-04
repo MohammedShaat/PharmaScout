@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Sentry
 
 class AppDelegate: NSObject, UIApplicationDelegate {
     let tokenStream: AsyncStream<String>
@@ -28,20 +29,18 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
-        UNUserNotificationCenter.current().delegate = self
+        CrashReportingManager.start()
         
+        UNUserNotificationCenter.current().delegate = self
         Task {
             do {
                 let granted = try await UNUserNotificationCenter.current()
                     .requestAuthorization(options: [.alert, .badge, .sound])
-                
                 guard granted else {
                     print("Notification permission not granted")
                     return
                 }
-                
                 application.registerForRemoteNotifications()
-                
             } catch {
                 print("Notification permission error\n", error)
             }

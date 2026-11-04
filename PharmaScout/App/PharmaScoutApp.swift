@@ -71,22 +71,13 @@ struct PharmaScoutApp: App {
                 googleReauthenticationService: googleReauthenticationService
             )
             .onOpenURL { url in
-                Task {
-                    await router.handleUrl(url)
-                }
+                Task { await router.handleUrl(url) }
             }
-            .task {
-                await router.subscribeToAuthStateChanges()
-            }
-            .task {
-                await pushTokenCooridnator.observeToken(appDelegate.tokenStream)
-            }
-            .task {
-                await pushTokenCooridnator.observeAuthState(authService.authStateStream())
-            }
-            .task {
-                await router.observeNotificationRoute(appDelegate.notificationStream)
-            }
+            .task { await router.subscribeToAuthStateChanges() }
+            .task { await pushTokenCooridnator.observeToken(appDelegate.tokenStream) }
+            .task { await pushTokenCooridnator.observeAuthState(authService.authStateStream()) }
+            .task { await router.observeNotificationRoute(appDelegate.notificationStream) }
+            .task { await CrashReportingManager.observeAuthChanges(authService.authStateStream()) }
         }
     }
 }
