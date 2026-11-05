@@ -28,7 +28,7 @@ struct PharmacyDetailScreen: View {
                 
                 LoadingContentView(
                     LoadingState: vm.contactLoadingState,
-                    isEmpty: vm.contacts.isEmpty,
+                    showMessage: vm.contacts.isEmpty,
                     emptyMessage: "There is no contact info"
                 ) {
                     PharmacyContactView(contacts: vm.contacts)
@@ -37,7 +37,7 @@ struct PharmacyDetailScreen: View {
                 
                 LoadingContentView(
                     LoadingState: vm.workingHoursLoadingState,
-                    isEmpty: vm.workingHours.isEmpty,
+                    showMessage: vm.workingHours.isEmpty,
                     emptyMessage: "There is no working hours info"
                 ) {
                     PharmacyWorkingHoursView(workingHours: vm.workingHours)

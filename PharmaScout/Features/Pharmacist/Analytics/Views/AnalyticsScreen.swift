@@ -37,7 +37,7 @@ struct AnalyticsScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadAnalyticsIfNeeded)
             .onDisappear {
@@ -84,7 +84,7 @@ struct AnalyticsScreen: View {
     private var pharmacySearchAnalyticsSection: some View {
         LoadingContentView(
             LoadingState: vm.pharmacyAnalyticsLoadingState,
-            isEmpty: vm.pharmacySearchAnalytics == nil,
+            showMessage: vm.pharmacySearchAnalytics == nil,
             emptyMessage: "No pharmacy search analytics") {
                 if let pharmacySearchAnalytics = vm.pharmacySearchAnalytics {
                     VStack(spacing: DesignSystem.Spacing.large) {
@@ -116,7 +116,7 @@ struct AnalyticsScreen: View {
     private func drugDemandListSection(_ drugDemands: [DrugDemand], loadingState: LoadingState) -> some View {
         LoadingContentView(
             LoadingState: loadingState,
-            isEmpty: drugDemands.isEmpty,
+            showMessage: drugDemands.isEmpty,
             emptyMessage: "There is no analytics") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(drugDemands) { drugDemand in

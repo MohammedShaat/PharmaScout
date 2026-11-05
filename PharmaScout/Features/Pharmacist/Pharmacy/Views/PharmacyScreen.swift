@@ -49,7 +49,7 @@ struct PharmacyScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavTitle(vm.pharmacy?.name ?? "")
             .customNavigationDestination(for: PharmacyRoute.self) { route in
                 if let pharmacy = vm.pharmacy {
@@ -85,7 +85,7 @@ struct PharmacyScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.pharmacyLoadingState,
-                isEmpty: vm.pharmacy == nil,
+                showMessage: vm.pharmacy == nil,
                 emptyMessage: "No pharmacy info") {
                     if let pharmacy = vm.pharmacy {
                         PharmacyAddressAndDistanceView(pharmacy: pharmacy)
@@ -102,7 +102,7 @@ struct PharmacyScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.contactLoadingState,
-                isEmpty: vm.contacts.isEmpty,
+                showMessage: vm.contacts.isEmpty,
                 emptyMessage: "There is no contact info"
             ) {
                 PharmacyContactView(contacts: vm.contacts)
@@ -119,7 +119,7 @@ struct PharmacyScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.workingHoursLoadingState,
-                isEmpty: vm.workingHours.isEmpty,
+                showMessage: vm.workingHours.isEmpty,
                 emptyMessage: "There is no working hours info"
             ) {
                 PharmacyWorkingHoursView(workingHours: vm.workingHours)
@@ -136,7 +136,7 @@ struct PharmacyScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.staffLoadingState,
-                isEmpty: vm.pharmacyStaff.isEmpty,
+                showMessage: vm.pharmacyStaff.isEmpty,
                 emptyMessage: "There is no staff") {
                     VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
                         ForEach(vm.pharmacyStaff) { member in

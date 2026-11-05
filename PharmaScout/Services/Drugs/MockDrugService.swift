@@ -21,11 +21,14 @@ struct MockDrugService: DrugService {
         
         try? await Task.sleep(for: AppConstants.Timing.searchDebounceInterval)
         
-        let allFormulatins = DrugFormulation.samples.filter {
+        let allFormulations = DrugFormulation.samples.filter {
             $0.genericDrugId == genericDrugId
         }
-        let end = min(to, allFormulatins.count)
         
-        return Array(allFormulatins[from..<end])
+        let start = min(max(from, 0), allFormulations.count)
+        let end = min(max(to, 0), allFormulations.count)
+        guard start < end else { return [] }
+        
+        return Array(allFormulations[start..<end])
     }
 }

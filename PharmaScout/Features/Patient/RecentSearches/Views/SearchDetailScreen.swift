@@ -63,7 +63,7 @@ struct SearchDetailScreen: View {
     private var searchSection: some View {
         LoadingContentView(
             LoadingState: vm.searchLoadingState,
-            isEmpty: vm.search == nil,
+            showMessage: vm.search == nil,
             emptyMessage: "") {
                 if let search = vm.search {
                     VStack(alignment: .leading) {
@@ -79,7 +79,7 @@ struct SearchDetailScreen: View {
     private var drugDetailsSection: some View {
         LoadingContentView(
             LoadingState: vm.detailLoadingState,
-            isEmpty: vm.searchDrugDetails.isEmpty,
+            showMessage: vm.searchDrugDetails.isEmpty,
             emptyMessage: "There is no details") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.searchDrugDetails) { searchDrugDetail in
@@ -92,7 +92,7 @@ struct SearchDetailScreen: View {
     private var continuationSection: some View {
         LoadingContentView(
             LoadingState: vm.distanceConfigsLoadingState,
-            isEmpty: vm.maxDistanceMeters == nil && vm.minDistanceMeters != nil,
+            showMessage: vm.maxDistanceMeters == nil && vm.minDistanceMeters != nil,
             emptyMessage: "") {
                 if let minDistanceMeters = vm.minDistanceMeters,
                    let maxDistanceMeters = vm.maxDistanceMeters {
@@ -101,9 +101,8 @@ struct SearchDetailScreen: View {
                         if vm.showExpandRadius {
                             DistanceSliderView(
                                 distance: $vm.distanceMeters,
-                                minDistanceMeters: minDistanceMeters,
-                                maxDistanceMeters: maxDistanceMeters,
-                                label: "Expand search radius to"
+                                minDistance: minDistanceMeters,
+                                maxDistance: maxDistanceMeters,
                             )
                         } else {
                             Text("Expand search distance?")

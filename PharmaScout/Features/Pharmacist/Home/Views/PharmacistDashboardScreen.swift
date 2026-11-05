@@ -40,7 +40,7 @@ struct PharmacistDashboardScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refreshData)
             .onAppear(perform: vm.loadDataIfNeeded)
             .task {
@@ -62,7 +62,7 @@ struct PharmacistDashboardScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.latestPendingInquiriesLoadingState,
-                isEmpty: vm.latestPendingInquiries.isEmpty,
+                showMessage: vm.latestPendingInquiries.isEmpty,
                 emptyMessage: "No pending Inquiries") {
                     VStack(spacing: DesignSystem.Spacing.large) {
                         ForEach(vm.latestPendingInquiries) { inquiry in
@@ -88,7 +88,7 @@ struct PharmacistDashboardScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.todaysInquiriesCountLoadingState,
-                isEmpty: vm.allTodaysInquiriesCount == 0,
+                showMessage: vm.allTodaysInquiriesCount == 0,
                 emptyMessage: "No inquiries today") {
                     VStack(alignment: .leading) {
                         Text("^[\(vm.allTodaysInquiriesCount) inquiry](inflect: true)")

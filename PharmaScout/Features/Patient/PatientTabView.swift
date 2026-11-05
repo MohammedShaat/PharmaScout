@@ -61,7 +61,7 @@ struct PatientTabView: View {
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
-                SearchScreen(userId: user.id, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService)
+                SearchScreen(userId: user.id, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm)
             }
             
             Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {

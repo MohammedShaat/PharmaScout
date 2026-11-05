@@ -22,7 +22,7 @@ struct OwnerInvitationScreen: View {
                 
                 LoadingContentView(
                     LoadingState: vm.codeLoadingState,
-                    isEmpty: vm.invitationCode == nil,
+                    showMessage: vm.invitationCode == nil,
                     emptyMessage: "") {
                         if let invitationCode = vm.invitationCode {
                             InvitationCodeView(
@@ -44,7 +44,7 @@ struct OwnerInvitationScreen: View {
                     }
                 }
             }
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .padding(DesignSystem.Spacing.xLarge)
             .onDisappear {
                 task?.cancel()

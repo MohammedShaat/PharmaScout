@@ -33,6 +33,8 @@ struct ThemeColors {
     let borderFocused = Color("borderFocused")
     let disabledBackground = Color("disabledBackground")
     let disabledContent = Color("disabledContent")
+    let mintTint = Color("mintTint")
+    let yellow = Color("yellow")
     
     // Text
     let textPrimary = Color("textPrimary")

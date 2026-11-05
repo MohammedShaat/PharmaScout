@@ -38,7 +38,7 @@ struct PharmaciesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: PharmacyDestination.self) { destination in
                 switch destination {
                 case .details(let pharmacy):
@@ -76,7 +76,7 @@ struct PharmaciesScreen: View {
     private var pharmacyListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            isEmpty: vm.nearbyPharmacies.isEmpty,
+            showMessage: vm.nearbyPharmacies.isEmpty,
             emptyMessage: "Couldn't find nearby pharmacies") {
                 // MARK: - Pharmacies list
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {

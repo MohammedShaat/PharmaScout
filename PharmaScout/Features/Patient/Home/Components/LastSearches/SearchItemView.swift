@@ -12,7 +12,7 @@ struct SearchItemView: View {
     
     var body: some View {
         HStack {
-            pillIcon
+            PillIconView()
 
             content
 
@@ -24,14 +24,6 @@ struct SearchItemView: View {
         .foregroundStyle(.theme.textPrimary)
     }
 
-    private var pillIcon: some View {
-        Image(systemName: "pill")
-            .fontWeight(.medium)
-            .padding(DesignSystem.Spacing.medium)
-            .background(.theme.disabledBackground)
-            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
-    }
-    
     private var content: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
             Text(search.drugs.map(\.genericName), format: .list(type: .and))

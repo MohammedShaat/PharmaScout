@@ -8,8 +8,9 @@
 import Foundation
 
 struct MockSearchRequestService: SearchRequestService {
-    func createSearchRequest(request: SearchRequest) async throws {
+    func createSearchRequest(request: SearchRequest) async throws -> String {
         try? await Task.sleep(for: .seconds(2))
+        return Search.samples[0].id
     }
     
     func getNumberOfActiveSearchs(userId: String) async throws -> Int {

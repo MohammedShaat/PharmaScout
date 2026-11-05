@@ -48,7 +48,7 @@ struct RecentSearchesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: SearchDetailRoute.self) { route in
                 SearchDetailScreen(
                     searchRequestService: searchRequestService,
@@ -89,7 +89,7 @@ struct RecentSearchesScreen: View {
     private var searchListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            isEmpty: vm.searches.isEmpty,
+            showMessage: vm.searches.isEmpty,
             emptyMessage: "There is no searches") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.searches) { search in

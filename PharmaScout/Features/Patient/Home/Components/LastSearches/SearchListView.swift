@@ -24,7 +24,7 @@ struct SearchListView: View {
     private var list: some View {
         LoadingContentView(
             LoadingState: loadingState,
-            isEmpty: searches.isEmpty,
+            showMessage: searches.isEmpty,
             emptyMessage: "There is no searches, start a one") {
                 VStack(spacing: 0) {
                     ForEach(searches) { search in
@@ -63,6 +63,5 @@ struct SearchListView: View {
             loadingState: LoadingState()
         )
             .padding()
-            .customNavBarVisibility(false)
     }
 }

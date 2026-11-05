@@ -44,7 +44,7 @@ struct OwnerApplicationDetailScreen: View {
     private var applicationDetailSection: some View {
         LoadingContentView(
             LoadingState: vm.ownerApplicationLoadingState,
-            isEmpty: vm.ownerApplication == nil,
+            showMessage: vm.ownerApplication == nil,
             emptyMessage: "Couldn't load the application") {
                 if let ownerApplication = vm.ownerApplication {
                     VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {

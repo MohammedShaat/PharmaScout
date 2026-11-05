@@ -29,7 +29,7 @@ struct AdminPharmaciesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: PharmacyApplicationDetailRoute.self) { route in
                 PharmacyApplicationDetailScreen(
                     pharmacyService: pharmacyService,
@@ -68,7 +68,7 @@ struct AdminPharmaciesScreen: View {
     private var pharmacyApplicationListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            isEmpty: vm.pharmacyApplications.isEmpty,
+            showMessage: vm.pharmacyApplications.isEmpty,
             emptyMessage: "No applications") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.pharmacyApplications) { pharmacyApplication in

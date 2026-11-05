@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct CustomNavStackNavBarVisibilityPreferenceKey: PreferenceKey {
-    static var defaultValue: Bool = true
+    static var defaultValue: NavBarStyle = .standard
     
-    static func reduce(value: inout Bool, nextValue: () -> Bool) {
+    static func reduce(value: inout NavBarStyle, nextValue: () -> NavBarStyle) {
         value = nextValue()
     }
 }

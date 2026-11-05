@@ -7,45 +7,38 @@
 
 import SwiftUI
 
-struct SectionHeaderView<Icon: View>: View {
+struct SectionHeaderView<Content: View>: View {
     let title: String
-    let actionName: String
-    var isActionDisabled: Bool = false
-    @ViewBuilder let icon: Icon
-    var onActionTapped: (() -> Void)?
+    var content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content = { EmptyView() }) {
+        self.title = title
+        self.content = content()
+    }
     
     var body: some View {
-        HStack {
-            Text(title)
-                .font(.title3)
-                .fontWeight(.bold)
-            
-            Spacer()
-            
-            HStack(spacing: DesignSystem.Spacing.xSmall) {
-                Text(actionName)
-                    .fontWeight(.medium)
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            HStack {
+                Text(title.uppercased())
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.theme.textSecondary)
                 
-                icon
+                Spacer()
             }
-            .font(.subheadline)
-            .clickable(isDisabled: isActionDisabled, action: onActionTapped)
+            .foregroundStyle(.theme.textPrimary)
+            .frame(maxWidth: .infinity)
             
+            content
         }
-        .foregroundStyle(.theme.textPrimary)
-        .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
     VStack(spacing: 100) {
-        SectionHeaderView(title: "Recent rows", actionName: "Seee all") {
-            Image(systemName: "chevron.right")
-        }
+        SectionHeaderView(title: "Recent rows")
         
-        SectionHeaderView(title: "Contacts", actionName: "Edit") {
-            Image(systemName: "pencil")
-        }
+        SectionHeaderView(title: "Contacts")
     }
         .padding()
 }

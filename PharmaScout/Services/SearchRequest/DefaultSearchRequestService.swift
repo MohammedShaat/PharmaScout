@@ -12,14 +12,16 @@ class DefaultSearchRequestService: SearchRequestService {
     private let supabase = SupabaseManager.shared.client
     private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
-    func createSearchRequest(request: SearchRequest) async throws {
+    func createSearchRequest(request: SearchRequest) async throws -> String {
         let createSeachFunc = SupabaseManager.Database.Functions.CreateSearch.self
         
         do {
-            try await supabase
+            let searchId: String = try await supabase
                 .rpc(createSeachFunc.name, params: request)
                 .execute()
                 .value
+            
+            return searchId
             
         } catch {
             throw SupabaseErrorMapper.mapDatabseError(error)

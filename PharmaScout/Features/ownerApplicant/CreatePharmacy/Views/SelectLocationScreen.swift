@@ -47,7 +47,7 @@ struct SelectLocationScreen: View {
             .padding(.top)
             
         }
-//        .customNavBarVisibility(false)
+//        .customNavBarVisibility(.root)
         .task {
             vm.requestLocationPermission()
             await vm.observeSuggestionsStream()
@@ -99,7 +99,7 @@ struct SelectLocationScreen: View {
             
             LoadingContentView(
                 LoadingState: vm.suggestionsLoadingState,
-                isEmpty: vm.suggestions.isEmpty,
+                showMessage: vm.suggestions.isEmpty,
                 emptyMessage: vm.searchText.isEmpty ? "" : "Couldn't find such a place. Try another one") {
                     ForEach(vm.suggestions) { suggestion in
                         Button(suggestion.title) {

@@ -15,7 +15,7 @@ struct ActiveSearchesView: View {
     var body: some View {
         LoadingContentView(
             LoadingState: loadingState,
-            isEmpty: activeSearches.isEmpty,
+            showMessage: activeSearches.isEmpty,
             emptyMessage: "No active searches") {
                 VStack {
                     Text("Searching nearby pharamcies")

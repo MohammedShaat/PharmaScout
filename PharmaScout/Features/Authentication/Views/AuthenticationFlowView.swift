@@ -47,7 +47,7 @@ struct AuthenticationFlowView: View {
                         .transition(.move(edge: .trailing))
                 }
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: AuthenticationRoute.self) { route in
                 screen(for: route)
             }

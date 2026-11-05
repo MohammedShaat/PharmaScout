@@ -152,7 +152,6 @@ struct SignUpScreen: View {
             appleAuthService: MockAppleAuthService.sample,
             onSignInTapped: {}
         )
-        .customNavBarVisibility(true)
     }
 }
 	
