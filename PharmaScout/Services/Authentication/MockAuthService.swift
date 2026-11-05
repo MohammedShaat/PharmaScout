@@ -16,7 +16,9 @@ struct MockAuthService: AuthService {
     
     func signIn(email: String, password: String) async throws {}
     
-    func signOut() async throws {}
+    func signOut() async throws {
+        try? await Task.sleep(for: .seconds(2))
+    }
     
     func sendPasswordResetRequest(email: String, redirectTo url: URL?) async throws {}
     

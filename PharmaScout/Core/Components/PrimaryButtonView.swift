@@ -11,14 +11,15 @@ struct PrimaryButtonView: View {
     let title: String
     var isDisabled: Bool = false
     var isLoading: Bool = false
+    var bgColor: Color = .theme.primary
     var action: (() -> Void)? = nil
     
     var body: some View {
         Group {
             if isDisabled || isLoading {
-                PrimaryButtonLabelView(title: title, isDisabled: isDisabled, isLoading: isLoading)
+                PrimaryButtonLabelView(title: title, isDisabled: isDisabled, isLoading: isLoading, bgColor: bgColor)
             } else {
-                PrimaryButtonLabelView(title: title)
+                PrimaryButtonLabelView(title: title, bgColor: bgColor)
                     .clickable(action: action)
             }
         }

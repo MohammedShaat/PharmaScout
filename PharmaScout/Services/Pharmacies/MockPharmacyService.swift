@@ -35,7 +35,7 @@ struct MockPharmacyService: PharmacyService {
     func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour] {
         try? await Task.sleep(for: .seconds(2))
        
-        return []
+        return WorkingHour.samples
     }
     
     func getPharmacy(_ params: GetPharmacyDetailsParams) async throws -> Pharmacy {

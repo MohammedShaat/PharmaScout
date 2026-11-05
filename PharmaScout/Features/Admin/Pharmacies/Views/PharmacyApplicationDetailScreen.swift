@@ -69,26 +69,26 @@ struct PharmacyApplicationDetailScreen: View {
         VStack{
             LoadingContentView(
                 LoadingState: vm.pharmacyApplicationLoadingState,
-                isEmpty: vm.pharmacyApplication == nil,
+                showMessage: vm.pharmacyApplication == nil,
                 emptyMessage: "") {
                     pharmacyApplicationView
                 }
             
             LoadingContentView(
                 LoadingState: vm.contactLoadingState,
-                isEmpty: vm.contacts.isEmpty,
+                showMessage: vm.contacts.isEmpty,
                 emptyMessage: "There is no contact info"
             ) {
-                PharmacyContactView(contacts: vm.contacts)
+                PharmacyContactListView(contacts: vm.contacts)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
             LoadingContentView(
                 LoadingState: vm.workingHoursLoadingState,
-                isEmpty: vm.workingHours.isEmpty,
+                showMessage: vm.workingHours.isEmpty,
                 emptyMessage: "There is no working hours info"
             ) {
-                PharmacyWorkingHoursView(workingHours: vm.workingHours)
+                PharmacyWorkingHourListView(workingHours: vm.workingHours)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             

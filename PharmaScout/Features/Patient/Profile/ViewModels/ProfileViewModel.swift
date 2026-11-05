@@ -14,13 +14,16 @@ class ProfileViewModel {
     private let pushTokenCoordinator: PushTokenCoordinator
     private let reauthCoordinator: ReauthenticationCoordinator
     
+    var availableProviders: [AuthProvider]? { reauthCoordinator.availableProviders }
     var passwordInput: String = ""
     var isPasswordValid: Bool { Validation.isPasswordValid(passwordInput) }
-    
-    var availableProviders: [AuthProvider]? { reauthCoordinator.availableProviders }
     var awaitingPassword: Bool { reauthCoordinator.awaitingPassword }
 
-    var loadingState = LoadingState()
+    var logoutLoadingState = LoadingState()
+    var deletionLoadingState = LoadingState()
+    var isLoading: Bool {
+        logoutLoadingState.status != .idle || deletionLoadingState.status != .idle
+    }
     
     init(
         authService: AuthService,
@@ -37,22 +40,22 @@ class ProfileViewModel {
     }
     
     func logout() async {
-        loadingState.startLoading()
-        defer { loadingState.stopLoading() }
+        logoutLoadingState.startLoading()
+        defer { logoutLoadingState.stopLoading() }
         
         do {
             await pushTokenCoordinator.willSignOut()
             try await authService.signOut()
             
         } catch {
-            loadingState.fail(error)
+            logoutLoadingState.fail(error)
             print("Failed to sign out\n", error)
         }
     }
     
     func deleteAccount(viewController vc: UIViewController) async {
-        loadingState.startLoading()
-        defer { loadingState.stopLoading() }
+        deletionLoadingState.startLoading()
+        defer { deletionLoadingState.stopLoading() }
         
         do {
             let providers: [AuthProvider] = try await authService.getProviders()
@@ -60,7 +63,7 @@ class ProfileViewModel {
             try await authService.deleteAccount(reauth: reauth)
             try await authService.clearLocalSession()
         } catch {
-            loadingState.fail(error)
+            deletionLoadingState.fail(error)
             print("Failed to delete account\n", error)
         }
     }

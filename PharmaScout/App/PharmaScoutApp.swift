@@ -14,6 +14,7 @@ struct PharmaScoutApp: App {
     private let appleAuthService: OAuthService
     private let drugService: DrugService = DefaultDrugService()
     private let searchRequestService: SearchRequestService = DefaultSearchRequestService()
+//    private let searchRequestService: SearchRequestService = MockSearchRequestService()
     private let locationService: LocationService = DefaultLocationService()
     private let pharmacySerivce: PharmacyService = DefaultPharmacyService()
     private let directionsService: DirectionsService = DefaultDirectionsService()

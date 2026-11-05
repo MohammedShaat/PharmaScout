@@ -135,6 +135,5 @@ struct SignInScreen: View {
             onSignUpTapped: {},
             onForgotPasswordTapped: {}
         )
-        .customNavBarVisibility(true)
     }
 }

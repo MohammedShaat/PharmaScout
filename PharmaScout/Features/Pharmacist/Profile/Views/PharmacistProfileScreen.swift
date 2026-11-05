@@ -59,7 +59,7 @@ struct PharmacistProfileScreen: View {
                 deleteAccount
             }
             .customNavTitle(user.fullName ?? "")
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .errorAlert(title: "Failed", loadingState: $vm.loadingState)
             .alert("Delete Account?", isPresented: $showingDeleteAccountConfirmation) {
                 Button("Delete Account", role: .destructive) {

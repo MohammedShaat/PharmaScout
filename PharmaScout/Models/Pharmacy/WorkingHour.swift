@@ -24,6 +24,18 @@ enum DayOfWeek: String, Codable, CaseIterable, Identifiable {
     case sunday
     
     var id: String { rawValue }
+    
+    var title: String {
+        switch self {
+        case .monday: "Monday"
+        case .tuesday: "Tuesday"
+        case .wednesday: "Wednesday"
+        case .thursday: "Thursday"
+        case .friday: "Friday"
+        case .saturday: "Saturday"
+        case .sunday: "Sunday"
+        }
+    }
 }
 
 

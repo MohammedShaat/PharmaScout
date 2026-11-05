@@ -11,6 +11,7 @@ struct PrimaryButtonLabelView: View {
     let title: String
     var isDisabled: Bool = false
     var isLoading: Bool = false
+    var bgColor: Color = .theme.primary
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.large) {
@@ -30,7 +31,7 @@ struct PrimaryButtonLabelView: View {
                 .frame(maxWidth: .infinity)
         }
         .padding()
-        .background(isDisabled ? .theme.disabledBackground : .theme.primary)
+        .background(isDisabled ? .theme.disabledBackground : bgColor)
         .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
         .opacity(isLoading ? 0.89 : 1)
     }

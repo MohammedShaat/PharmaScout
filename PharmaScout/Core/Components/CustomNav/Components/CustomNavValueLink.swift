@@ -31,6 +31,19 @@ extension View {
             }
         }
     }
+    
+    func customNavigationDestination<C: View>(
+        isPresented: Binding<Bool>,
+        @ViewBuilder destination: @escaping () -> C
+    ) -> some View {
+        navigationDestination(isPresented: isPresented) {
+            CustomNavView {
+                destination()
+                    .toolbarVisibility(.hidden, for: .navigationBar)
+            }
+
+        }
+    }
 }
 
 

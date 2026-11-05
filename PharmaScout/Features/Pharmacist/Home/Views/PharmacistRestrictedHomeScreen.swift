@@ -29,13 +29,13 @@ struct PharmacistRestrictedHomeScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
         }
     }
     
     
     private var headerSection: some View {
-        GreetingHeaderView(user: user, hasUnreadNotifications: vm.hasUnreadNotifications)
+        GreetingHeaderView(user: user)
     }
     
     private var isOwner: Bool { role == .owner }

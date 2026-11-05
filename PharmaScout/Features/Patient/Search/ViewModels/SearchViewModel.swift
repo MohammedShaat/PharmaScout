@@ -36,7 +36,6 @@ class SearchViewModel {
     private(set) var numberOfActiveSearchsLoadingState: LoadingState = LoadingState()
     var requestLoadingState: LoadingState = LoadingState()
     var showNoPharmaciesMessage: Bool = false
-    var showSuccessMessage: Bool = false
     
     private var hasStarted: Bool = false
 
@@ -48,6 +47,10 @@ class SearchViewModel {
         self.userId = userId
         self.searchRequestService = searchRequestService
         self.locationService = locationService
+    }
+    
+    func requestLocationPermission() {
+        locationService.requestPermission()
     }
 
     func addDrug(selectedDrug: SelectedDrug) {
@@ -76,13 +79,11 @@ class SearchViewModel {
         hasStarted = true
     }
     
-    func startSearch() async {
-        guard canStartSearch else { return }
+    func startSearch() async -> SubmittedSearch? {
+        guard canStartSearch else { return nil }
         
         requestLoadingState.startLoading()
         defer { requestLoadingState.stopLoading() }
-        
-        locationService.requestPermission()
         
         do {
             let coordinate = try locationService.getCurrentLocation()
@@ -96,19 +97,22 @@ class SearchViewModel {
                 drugs: selectedDrugs.map { SearchItemRequest(from: $0) },
             )
             
-            try await searchRequestService.createSearchRequest(request: request)
-            
-            showSuccessMessage = true
+            let searchId = try await searchRequestService.createSearchRequest(request: request)
+
+            let snapshot = SubmittedSearch(id: searchId, distanceMeters: distanceMeters, drugs: selectedDrugs)
             clear()
+            return snapshot
 
         } catch {
             requestLoadingState.fail(error)
             print("Failed to create search\n", error)
+            return nil
         }
     }
     
     private func clear() {
         selectedDrugs.removeAll()
+        distanceMeters = AppConstants.Search.defaultSearchDistanceMeters
     }
     
     func listenToChanges() async {

@@ -36,6 +36,13 @@ enum FulfilmentMode: String, CaseIterable, Codable, Identifiable {
     case multiPharmacy = "multi_pharmacy"
     
     var id: Self { self }
+    
+    var title: String {
+        switch self {
+        case .singlePharmacy: "Single pharmacy"
+        case .multiPharmacy: "Multi pharmacy"
+        }
+    }
 }
 
 enum SearchStatus: String, Codable {
@@ -44,6 +51,16 @@ enum SearchStatus: String, Codable {
     case fulfilled = "fulfilled"
     case unfulfilled = "unfulfilled"
     case awaitingContinuation = "awaiting_continuation"
+    
+    var title: String {
+        switch self {
+        case .pending: "Pending"
+        case .partiallyFulfilled: "Partially Fulfilled"
+        case .fulfilled: "Fulfilled"
+        case .unfulfilled: "Unfulfilled"
+        case .awaitingContinuation: "Awaiting Continuation"
+        }
+    }
 }
 
 enum SearchFilter: String, Codable, CaseIterable, Identifiable {

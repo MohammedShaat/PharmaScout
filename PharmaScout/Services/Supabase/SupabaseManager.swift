@@ -91,7 +91,7 @@ extension SupabaseManager {
                 }
             }
             
-            enum PharmacyContact {
+            enum PharmacyContacts {
                 static let name = "pharmacy_contact"
                 
                 enum Column {

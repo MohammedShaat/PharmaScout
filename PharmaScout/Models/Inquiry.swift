@@ -24,6 +24,14 @@ enum InquiryResponse: String, Codable, CaseIterable {
     case available = "available"
     case unavailable = "unavailable"
     case substitute = "substitute"
+    
+    var title: String {
+        switch self {
+        case .available: "Available"
+        case .unavailable: "Unavailable"
+        case .substitute: "Substitute"
+        }
+    }
 }
 
 enum InquiryStatus: String, Codable {

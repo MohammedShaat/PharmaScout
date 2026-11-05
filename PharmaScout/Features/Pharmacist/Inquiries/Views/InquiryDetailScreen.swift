@@ -18,6 +18,9 @@ struct InquiryDetailScreen: View {
     @State private var vm: InquiryDetailViewModel
     @State private var responseTask: Task<Void, Never>?
     
+    @State private var showingDrugSelection: Bool = false
+    @State private var selectedDrugToEdit: SelectedDrug?
+    
     init(
         inquiryService: InquiryService,
         drugService: DrugService,
@@ -42,23 +45,22 @@ struct InquiryDetailScreen: View {
             }
             .padding(DesignSystem.Spacing.xLarge)
         }
-        .customNavigationDestination(for: SearchRoute.self) { route in
+        .sheet(isPresented: $showingDrugSelection) {
             if let inquiry = vm.inquiry {
-                switch route {
-                case .addDrug:
-                    DrugSelectionScreen(
-                        drugService: drugService,
-                        selectedFormulationIds: [inquiry.drugFormulation.id]) { selectedDrug in
-                            vm.onSubstituteSelected(selectedDrug)
-                        }
-                    
-                case .editDrug(let selectedDrug):
-                    DrugSelectionScreen(
-                        drugService: drugService,
-                        editingSelectedDrug: selectedDrug,
-                        selectedFormulationIds: [inquiry.drugFormulation.id]
-                    )
-                }
+                DrugSelectionScreen(
+                    drugService: drugService,
+                    selectedFormulationIds: [inquiry.drugFormulation.id]) { selectedDrug in
+                        vm.onSubstituteSelected(selectedDrug)
+                    }
+            }
+        }
+        .sheet(item: $selectedDrugToEdit) { selectedDrug in
+            if let inquiry = vm.inquiry {
+                DrugSelectionScreen(
+                    drugService: drugService,
+                    editingSelectedDrug: selectedDrug,
+                    selectedFormulationIds: [inquiry.drugFormulation.id]
+                )
             }
         }
         .refreshable(action: vm.refresh)
@@ -72,7 +74,7 @@ struct InquiryDetailScreen: View {
     private var infoSection: some View {
         LoadingContentView(
             LoadingState: vm.inquiryLoadingState,
-            isEmpty: vm.inquiry == nil,
+            showMessage: vm.inquiry == nil,
             emptyMessage: "") {
                 if let inquiry = vm.inquiry {
                     VStack {
@@ -100,7 +102,7 @@ struct InquiryDetailScreen: View {
     private var responseSection: some View {
         LoadingContentView(
             LoadingState: vm.editEligibilityLoadingState,
-            isEmpty: vm.editEligibilityLoadingState.error != nil,
+            showMessage: vm.editEligibilityLoadingState.error != nil,
             emptyMessage: "") {
                 if vm.canCanResponse {
                     VStack(spacing: DesignSystem.Spacing.xxLarge) {
@@ -119,18 +121,20 @@ struct InquiryDetailScreen: View {
                         // MARK: - Substitute search
                         if vm.response == .substitute {
                             if vm.substituteSelectedDrug == nil {
-                                CustomNavValueLink(value: SearchRoute.addDrug) {
-                                    Text("Choose a substitute medicine")
-                                        .foregroundStyle(.theme.textPrimary)
-                                }
+                                Text("Choose a substitute medicine")
+                                    .foregroundStyle(.theme.textPrimary)
+                                    .clickable {
+                                        showingDrugSelection = true
+                                    }
                             }
                             
                             if let selectedDrug = vm.substituteSelectedDrug {
-                                CustomNavValueLink(value: SearchRoute.editDrug(selectedDrug)) {
-                                    VStack {
-                                        Text(selectedDrug.genericDrug.genericName)
-                                        Text(selectedDrug.formulation.title)
-                                    }
+                                VStack {
+                                    Text(selectedDrug.genericDrug.genericName)
+                                    Text(selectedDrug.formulation.title)
+                                }
+                                .clickable {
+                                    selectedDrugToEdit = selectedDrug
                                 }
                             }
                         }

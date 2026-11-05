@@ -24,7 +24,7 @@ struct PharmacyListView: View {
     private var list: some View {
         LoadingContentView(
             LoadingState: loadingState,
-            isEmpty: pharmacies.isEmpty,
+            showMessage: pharmacies.isEmpty,
             emptyMessage: "Could not find nearby pharmacies") {
                 VStack(spacing: DesignSystem.Spacing.large) {
                     ForEach(pharmacies) { pharmacy in
@@ -48,7 +48,6 @@ struct PharmacyListView: View {
                 loadingState: LoadingState()
             )
             .padding()
-            .customNavBarVisibility(false)
         }
     }
 }

@@ -8,8 +8,9 @@
 import Foundation
 
 struct MockSearchRequestService: SearchRequestService {
-    func createSearchRequest(request: SearchRequest) async throws {
+    func createSearchRequest(request: SearchRequest) async throws -> String {
         try? await Task.sleep(for: .seconds(2))
+        return Search.samples[0].id
     }
     
     func getNumberOfActiveSearchs(userId: String) async throws -> Int {
@@ -41,7 +42,7 @@ struct MockSearchRequestService: SearchRequestService {
     }
     
     func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail] {
-        try? await Task.sleep(for: .seconds(2))
+//        try? await Task.sleep(for: .seconds(2))
         
         guard let drugIds = Search.samples.first(where: { $0.id == params.searchId })?.drugs.map(\.id) else {
             return []

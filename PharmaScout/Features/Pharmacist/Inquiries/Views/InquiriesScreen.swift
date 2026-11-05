@@ -53,7 +53,7 @@ struct InquiriesScreen: View {
                 )
                 .id(route.inquiryId)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refresh)
             .task(id: vm.searchText) {
                 await vm.onSearchTextChanged()
@@ -93,7 +93,7 @@ struct InquiriesScreen: View {
     private var inquiryListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            isEmpty: vm.inquiries.isEmpty,
+            showMessage: vm.inquiries.isEmpty,
             emptyMessage: "No inquiries yet") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.inquiries) { inquiry in

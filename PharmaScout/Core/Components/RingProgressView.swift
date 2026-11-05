@@ -16,30 +16,43 @@ struct RingProgressView: View {
     private let strokeWidth: Double = 3
     
     var body: some View {
-        Circle()
-            .stroke(lineWidth: strokeWidth)
-            .fill(.theme.disabledContent.opacity(0.5))
-            .overlay {
-                Circle()
-                    .trim(to: 0.3)
-                    .stroke(lineWidth: strokeWidth)
-                    .fill(trimColor)
-                    .rotationEffect(.degrees(animate && isActive ? 360 : 0))
-                    .animation(
-                        .easeInOut(duration: 0.6)
-                        .repeatForever(autoreverses: true),
-                        value: animate
-                    )
-            }
-            .frame(maxWidth: size)
-            .onAppear {
-                animate.toggle()
-            }
+        ZStack {
+            Circle()
+                .stroke(
+                    .theme.disabledContent.opacity(0.5),
+                    style: .init(lineWidth: strokeWidth)
+                )
+                .overlay {
+                    Circle()
+                        .trim(to: 0.3)
+                        .stroke(
+                            trimColor,
+                            style: .init(lineWidth: strokeWidth)
+                        )
+                        .rotationEffect(.degrees(animate && isActive ? 360 : 0))
+                        .animation(
+                            .easeInOut(duration: 0.6)
+                            .repeatForever(autoreverses: true),
+                            value: animate
+                        )
+                }
+        }
+        .frame(width: size, height: size)
+        .onAppear {
+            animate = true
+        }
     }
 }
 
 #Preview {
-    RingProgressView()
-        .padding()
-        .background(.theme.primary)
+    ScrollView {
+        VStack {
+            Text("Text")
+            
+            RingProgressView()
+                .padding()
+                .background(.theme.primary)
+                .frame(maxWidth: .infinity)
+        }
+    }
 }

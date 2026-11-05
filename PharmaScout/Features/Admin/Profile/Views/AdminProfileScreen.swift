@@ -35,7 +35,7 @@ struct AdminProfileScreen: View {
                 logout
             }
             .customNavTitle(user.fullName ?? "")
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .onDisappear {
                 task?.cancel()
             }
