@@ -42,7 +42,7 @@ struct JoinCodeScreen: View {
     private var detailSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            isEmpty: vm.joinCode == nil,
+            showMessage: vm.joinCode == nil,
             emptyMessage: "") {
                 if let joinCode = vm.joinCode {
                     InvitationCodeView(

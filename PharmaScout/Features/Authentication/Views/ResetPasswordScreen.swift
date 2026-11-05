@@ -29,7 +29,7 @@ struct ResetPasswordScreen: View {
             
             signInSection
         }
-        .customNavBarVisibility(false)
+        .customNavBarVisibility(.root)
         .padding(.horizontal, DesignSystem.Spacing.xxLarge)
         .errorAlert(title: "Password Reset Failed", loadingState: $vm.passwordResetLoadingState)
         .sheet(isPresented: $vm.showPasswordUpdated) {

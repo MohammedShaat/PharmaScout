@@ -24,8 +24,6 @@ class SearchDetailViewModel {
     private(set) var minDistanceMeters: Double?
     private(set) var maxDistanceMeters: Double?
     
-    private(set) var showExpandRadius: Bool = false
-
     private(set) var searchLoadingState = LoadingState()
     private(set) var detailLoadingState = LoadingState()
     private(set) var distanceConfigsLoadingState = LoadingState()
@@ -89,7 +87,6 @@ class SearchDetailViewModel {
             
             if pharmacyCount == 0 {
                 continueSearchLoadingState.fail(SearchError.noPharmaciesWithinRadius)
-                showExpandRadius = true
             }
             
             await getSearch(refresh: true)
@@ -178,9 +175,5 @@ class SearchDetailViewModel {
             detailLoadingState.fail(error)
             print("Failed to get location\n", error)
         }
-    }
-    
-    func onShowExpandTapped() {
-        showExpandRadius = true
     }
 }

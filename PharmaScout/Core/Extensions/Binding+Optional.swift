@@ -22,4 +22,15 @@ extension Binding where Value == Bool {
            }
        )
     }
+    
+    init<T>(optionalValue: Binding<T?>) {
+        self.init(
+           get: {
+               optionalValue.wrappedValue != nil
+           },
+           set: { isPresented in
+               if !isPresented { optionalValue.wrappedValue = nil }
+           }
+       )
+    }
 }

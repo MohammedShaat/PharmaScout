@@ -51,7 +51,7 @@ struct CreatePharmacyScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavTitle("Create Pharmacy")
             .customNavigationDestination(for: CreatePharmacyRoute.self) { route in
                 switch route {
@@ -128,7 +128,7 @@ struct CreatePharmacyScreen: View {
                 path.append(CreatePharmacyRoute.createOrEditWorkingHours)
             }
             
-            PharmacyWorkingHoursView(workingHours: vm.workingHours)
+            PharmacyWorkingHourListView(workingHours: vm.workingHours)
         }
     }
     
@@ -138,7 +138,7 @@ struct CreatePharmacyScreen: View {
                 path.append(CreatePharmacyRoute.createOrEditContacts)
             }
             
-            PharmacyContactView(contacts: vm.contacts)
+            PharmacyContactListView(contacts: vm.contacts)
         }
     }
     

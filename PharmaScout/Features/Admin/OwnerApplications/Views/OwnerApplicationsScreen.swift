@@ -29,7 +29,7 @@ struct OwnerApplicationsScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: OwnerApplicationDetailRoute.self) { route in
                 OwnerApplicationDetailScreen(
                     ownerApplicationService: ownerApplicationService,
@@ -68,7 +68,7 @@ struct OwnerApplicationsScreen: View {
     private var applicationListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            isEmpty: vm.applications.isEmpty,
+            showMessage: vm.applications.isEmpty,
             emptyMessage: "No applications") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.applications) { application in

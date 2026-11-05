@@ -8,7 +8,7 @@
 import Foundation
 
 protocol SearchRequestService {
-    func createSearchRequest(request: SearchRequest) async throws
+    func createSearchRequest(request: SearchRequest) async throws -> String
     
     func getNumberOfActiveSearchs(userId: String) async throws -> Int
     

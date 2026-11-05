@@ -10,8 +10,8 @@ import SwiftUI
 struct CustomNavView<Content: View>: View {
     let content: Content
     
-    @State private var title: String = ""
-    @State private var showNavBar: Bool = true
+    @State private var title: String?
+    @State private var navBarStyle: NavBarStyle = .standard
     @State private var showBackButton: Bool = true
     
     init(@ViewBuilder contet: () -> Content) {
@@ -22,9 +22,9 @@ struct CustomNavView<Content: View>: View {
         ZStack {
             Color.theme.background.ignoresSafeArea()
             
-            VStack {
-                if showNavBar {
-                    CustomeNavBarView(title: title, showBackButton: showBackButton)
+            VStack(spacing: 0) {
+                if navBarStyle != .hidden {
+                    CustomeNavBarView(title: title, showBackButton: showBackButton, style: navBarStyle)
                 }
                 
                 VStack {
@@ -34,7 +34,7 @@ struct CustomNavView<Content: View>: View {
             }
         }
         .onPreferenceChange(CustomNavStackNavBarVisibilityPreferenceKey.self) { newValue in
-            showNavBar = newValue
+            navBarStyle = newValue
         }
         .onPreferenceChange(CustomNavStackBackButtonVisibilityPreferenceKey.self) { newValue in
             showBackButton = newValue
@@ -46,7 +46,7 @@ struct CustomNavView<Content: View>: View {
 }
 
 extension View {
-    func customNavBarVisibility(_ visibility: Bool) -> some View {
+    func customNavBarVisibility(_ visibility: NavBarStyle) -> some View {
         preference(key: CustomNavStackNavBarVisibilityPreferenceKey.self, value: visibility)
     }
     
@@ -59,10 +59,16 @@ extension View {
     }
 }
 
+enum NavBarStyle {
+    case root
+    case standard
+    case hidden
+}
+
 #Preview {
     CustomNavView {
         Text("Home Screen")
         .customNavTitle("Inline Title")
-//            .customNavBarVisibility(false)
+//            .customNavBarVisibility(.root)
     }
 }

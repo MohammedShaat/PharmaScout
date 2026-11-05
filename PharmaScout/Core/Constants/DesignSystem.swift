@@ -27,4 +27,9 @@ enum DesignSystem {
     enum Distance {
         static let step: Double = 1_000
     }
+    
+    enum DrugFormatting {
+        /// Separates active ingredients/components of a combination drug, e.g. "Amoxicillin + Clavulanate"
+        static let separator = " + "
+    }
 }

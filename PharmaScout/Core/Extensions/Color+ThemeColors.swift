@@ -33,6 +33,22 @@ struct ThemeColors {
     let borderFocused = Color("borderFocused")
     let disabledBackground = Color("disabledBackground")
     let disabledContent = Color("disabledContent")
+    let mintTint = Color("mintTint")
+    let yellow = Color("yellowBrand")
+    let goldenBrown = Color("goldenBrown")
+    let goldenBrownBackground = Color("goldenBrownBackground")
+    let green = Color("greenBrand")
+    let greenBackground = Color("greenBackground")
+    let red = Color("redBrand")
+    let redBackground = Color("redBackground")
+    let blue = Color("blueBrand")
+    let blueBackground = Color("blueBackground")
+    let brightBlue = Color("brightBlue")
+    let white = Color("whiteBrand")
+    let amber = Color("amber")
+    let goldenYellow = Color("goldenYellow")
+    let mutedLavender = Color("mutedLavender")
+    
     
     // Text
     let textPrimary = Color("textPrimary")
