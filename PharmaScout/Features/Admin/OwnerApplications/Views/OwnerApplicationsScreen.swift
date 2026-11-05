@@ -29,7 +29,7 @@ struct OwnerApplicationsScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: OwnerApplicationDetailRoute.self) { route in
                 OwnerApplicationDetailScreen(
                     ownerApplicationService: ownerApplicationService,

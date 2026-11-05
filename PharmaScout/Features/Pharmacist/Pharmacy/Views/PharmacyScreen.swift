@@ -49,7 +49,7 @@ struct PharmacyScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavTitle(vm.pharmacy?.name ?? "")
             .customNavigationDestination(for: PharmacyRoute.self) { route in
                 if let pharmacy = vm.pharmacy {

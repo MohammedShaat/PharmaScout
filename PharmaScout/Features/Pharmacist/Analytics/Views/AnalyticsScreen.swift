@@ -37,7 +37,7 @@ struct AnalyticsScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadAnalyticsIfNeeded)
             .onDisappear {

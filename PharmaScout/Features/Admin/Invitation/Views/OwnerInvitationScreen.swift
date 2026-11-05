@@ -44,7 +44,7 @@ struct OwnerInvitationScreen: View {
                     }
                 }
             }
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .padding(DesignSystem.Spacing.xLarge)
             .onDisappear {
                 task?.cancel()

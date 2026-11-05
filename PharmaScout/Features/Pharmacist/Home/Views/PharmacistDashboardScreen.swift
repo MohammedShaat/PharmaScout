@@ -40,7 +40,7 @@ struct PharmacistDashboardScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refreshData)
             .onAppear(perform: vm.loadDataIfNeeded)
             .task {

@@ -15,7 +15,7 @@ struct MockSearchRequestService: SearchRequestService {
     func getNumberOfActiveSearchs(userId: String) async throws -> Int {
         try? await Task.sleep(for: .seconds(2))
         
-        return 3
+        return 0
     }
     
     func getSearches(_ params: GetSearchesParams) async throws -> [Search] {

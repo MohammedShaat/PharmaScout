@@ -10,29 +10,32 @@ import SwiftUI
 struct CustomeNavBarView: View {
     var title: String? = nil
     var showBackButton: Bool = true
+    var style: NavBarStyle = .standard
     
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        HStack {
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "chevron.left")
-                    .padding(.horizontal, DesignSystem.Spacing.xLarge)
-                    .font(.title2)
-                    .foregroundStyle(.theme.textPrimary)
-                    .background(.red.opacity(0.001))
+        HStack(spacing: 0) {
+            if style == .standard {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(systemName: "chevron.left")
+                        .font(.title2)
+                        .foregroundStyle(.theme.textPrimary)
+                        .background(.red.opacity(0.001))
+                }
+                .buttonStyle(.plain)
+    
+                Spacer()
             }
-            .buttonStyle(.plain)
-            .opacity(showBackButton ? 1 : 0)
-            
-            Spacer()
             
             if let title{
                 Text(title)
+                    .foregroundStyle(.theme.textPrimary)
+                    .font(style == .root ? .largeTitle : .body)
+                    .fontWeight(style == .root ? .bold : .semibold)
                     .multilineTextAlignment(.center)
-                    .padding()
             }
             
             Spacer()
@@ -43,6 +46,8 @@ struct CustomeNavBarView: View {
                 .background(.red.opacity(0.001))
                 .opacity(0)
         }
+        .padding(.horizontal, DesignSystem.Spacing.large)
+        .padding(.vertical, DesignSystem.Spacing.small)
     }
 }
 

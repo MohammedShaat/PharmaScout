@@ -38,7 +38,7 @@ struct PharmaciesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: PharmacyDestination.self) { destination in
                 switch destination {
                 case .details(let pharmacy):

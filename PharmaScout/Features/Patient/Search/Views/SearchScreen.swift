@@ -11,6 +11,8 @@ struct SearchScreen: View {
     private let drugService: DrugService
     
     @State private var vm: SearchViewModel
+    @State private var path = NavigationPath()
+    @State private var searchTask: Task<Void, Never>?
     
     init(
         userId: String,
@@ -28,100 +30,42 @@ struct SearchScreen: View {
     }
     
     var body: some View {
-        CustomNavStack {
-            ScrollView {
-                VStack(spacing: DesignSystem.Spacing.large) {
+        CustomNavStack(path: $path) {
+            CenteredScrollView {
+                VStack(spacing: 0) {
                     LoadingContentView(
                         LoadingState: vm.numberOfActiveSearchsLoadingState,
                         isEmpty: vm.hasReachedSearchLimit,
                         emptyMessage: "You've reached the request limit") {
-                                // MARK: - Reach search request limit
-//                                if vm.hasReachedSearchLimit {
-//                                    VStack(spacing: DesignSystem.Spacing.large) {
-//                                        Text("You've reached the request limit")
-//                                            .font(.largeTitle)
-//                                        
-//                                        Text("You have to wait until some of your current requests finishes")
-//                                        
-//                                        Text("Pull down to refresh")
-//                                    }
-//                                }
-                                    // MARK: - First search nav
-                                    if vm.selectedDrugs.isEmpty {
-                                        CustomNavValueLink(value: SearchRoute.addDrug) {
-                                            Text("Choose a medicine to start")
-                                                .padding(DesignSystem.Spacing.medium)
-                                                .frame(maxWidth: .infinity)
-                                                .background(.theme.disabledBackground)
-                                        }
-                                    }
-                                    
-                                    // MARK: - Selected drugs list
-                                    VStack(spacing: DesignSystem.Spacing.large) {
-                                        ForEach(vm.selectedDrugs) { selectedDrug in
-                                            CustomNavValueLink(value: SearchRoute.editDrug(selectedDrug)) {
-                                                selectedDrugItem(selectedDrug: selectedDrug)
-                                            }
-                                        }
-                                    }
-                                    
-                            if vm.selectedDrugs.isNotEmpty {
-                                // MARK: - Add more drugs
-                                if vm.canAddDrug {
-                                    CustomNavValueLink(value: SearchRoute.addDrug) {
-                                        Text("Add another medicine?")
-                                            .foregroundStyle(.theme.primary)
-                                            .frame(maxWidth: .infinity, alignment: .trailing)
-                                    }
+                            if vm.selectedDrugs.isEmpty {
+                                EmptySearchView {
+                                    path.append(SearchRoute.addDrug)
                                 }
-                                
-                                // MARK: - fulfilment + substitue
-                                VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
-                                    
-                                    // Substitue
-                                    Toggle(isOn: $vm.acceptSubstitutes) {
-                                        Text("Accept substitutes")
-                                    }
-                                    
-                                    // Fulfilment mode
-                                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                                        Text("How should we find them?")
-                                        
-                                        Picker(selection: $vm.fulfilmentMode) {
-                                            ForEach(FulfilmentMode.allCases) { mode in
-                                                Text(mode.rawValue)
-                                            }
-                                        } label: {
-                                            Text("")
-                                        }
-                                        .pickerStyle(.segmented)
-                                        
-                                    }
-                                    
-                                    // Distance
-                                    DistanceSliderView(
-                                        distance: $vm.distanceMeters,
-                                        minDistanceMeters: vm.minDistanceMeters,
-                                        maxDistanceMeters: vm.maxDistanceMeters,
-                                        label: "Distance to search within",
-                                        step: 1000
-                                    )
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                
-                                // MARK: - Start search
-                                if vm.canStartSearch {
-                                    PrimaryButtonView(title: "Start search", isLoading: vm.requestLoadingState.status != .idle) {
-                                        Task {
+                            } else {
+                                ConfiguredSearchView(
+                                    selectedDrugs: vm.selectedDrugs,
+                                    canAdd: vm.canAddDrug,
+                                    onAddTapped: { path.append(SearchRoute.addDrug) },
+                                    onCancelTapped:  { id in vm.cancelDrug(id: id) },
+                                    acceptSubstitutes: $vm.acceptSubstitutes,
+                                    fulfilmentMode: $vm.fulfilmentMode,
+                                    distanceMeters: $vm.distanceMeters,
+                                    minDistance: vm.minDistanceMeters,
+                                    maxDistance: vm.maxDistanceMeters,
+                                    isCreatingSearchRequest: vm.requestLoadingState.status != .idle,
+                                    canStartSearch: vm.canStartSearch) {
+                                        searchTask?.cancel()
+                                        searchTask = Task {
                                             await vm.startSearch()
                                         }
                                     }
-                                }
                             }
                         }
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
+            .customNavBarVisibility(.root)
+            .customNavTitle("Search")
             .errorAlert(title: "Search Failed", loadingState: $vm.requestLoadingState)
             .sheet(isPresented: $vm.showSuccessMessage) {
                 MidSheetView(title: "Your request has been submitted successfully") {
@@ -135,7 +79,7 @@ struct SearchScreen: View {
                     Text("Expand the distance to search further")
                 }
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: SearchRoute.self) { route in
                 switch route {
                 case .addDrug:
@@ -154,6 +98,9 @@ struct SearchScreen: View {
                     )
                 }
             }
+            .onDisappear {
+                searchTask?.cancel()
+            }
             .refreshable(action: vm.refresh)
             .task {
                 await vm.getNumberOfActiveSearchs()
@@ -162,21 +109,6 @@ struct SearchScreen: View {
         }
     }
     
-    private func selectedDrugItem(selectedDrug: SelectedDrug) -> some View {
-        HStack {
-            VStack(spacing: DesignSystem.Spacing.medium ) {
-                Text(selectedDrug.genericDrug.genericName)
-                Text(selectedDrug.formulation.title)
-            }
-            Spacer()
-            Image(systemName: "xmark")
-                .padding(DesignSystem.Spacing.small)
-                .background(.theme.background.opacity(0.001))
-                .clickable {
-                    vm.cancelDrug(id: selectedDrug.id)
-                }
-        }
-    }
 }
 
 enum SearchRoute: Hashable {

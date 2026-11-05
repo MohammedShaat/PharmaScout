@@ -101,9 +101,8 @@ struct SearchDetailScreen: View {
                         if vm.showExpandRadius {
                             DistanceSliderView(
                                 distance: $vm.distanceMeters,
-                                minDistanceMeters: minDistanceMeters,
-                                maxDistanceMeters: maxDistanceMeters,
-                                label: "Expand search radius to"
+                                minDistance: minDistanceMeters,
+                                maxDistance: maxDistanceMeters,
                             )
                         } else {
                             Text("Expand search distance?")

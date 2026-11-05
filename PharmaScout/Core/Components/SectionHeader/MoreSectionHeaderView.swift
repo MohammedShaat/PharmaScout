@@ -12,7 +12,7 @@ struct MoreSectionHeaderView: View {
     var onActionTapped: (() -> Void)?
     
     var body: some View {
-        SectionHeaderView(title: title, actionName: "See all") {
+        SectionHeaderWithActionView(title: title, actionName: "See all") {
             Image(systemName: "chevron.right")
         } onActionTapped: {
             onActionTapped?()

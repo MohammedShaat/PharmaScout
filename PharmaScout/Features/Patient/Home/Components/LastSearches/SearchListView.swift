@@ -63,6 +63,5 @@ struct SearchListView: View {
             loadingState: LoadingState()
         )
             .padding()
-            .customNavBarVisibility(false)
     }
 }

@@ -29,7 +29,7 @@ struct AdminPharmaciesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: PharmacyApplicationDetailRoute.self) { route in
                 PharmacyApplicationDetailScreen(
                     pharmacyService: pharmacyService,

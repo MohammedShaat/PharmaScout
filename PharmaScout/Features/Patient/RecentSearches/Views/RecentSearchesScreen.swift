@@ -48,7 +48,7 @@ struct RecentSearchesScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavigationDestination(for: SearchDetailRoute.self) { route in
                 SearchDetailScreen(
                     searchRequestService: searchRequestService,

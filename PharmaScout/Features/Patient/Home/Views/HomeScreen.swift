@@ -50,7 +50,7 @@ struct HomeScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadDataIfNeeded)
             .task(vm.listenToSearchesChanges)

@@ -29,7 +29,7 @@ struct PharmacistRestrictedHomeScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
         }
     }
     

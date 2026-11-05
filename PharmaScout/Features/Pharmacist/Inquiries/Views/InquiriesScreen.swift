@@ -53,7 +53,7 @@ struct InquiriesScreen: View {
                 )
                 .id(route.inquiryId)
             }
-            .customNavBarVisibility(false)
+            .customNavBarVisibility(.root)
             .refreshable(action: vm.refresh)
             .task(id: vm.searchText) {
                 await vm.onSearchTextChanged()

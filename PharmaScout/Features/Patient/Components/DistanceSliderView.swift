@@ -2,43 +2,48 @@
 //  DistanceSliderView.swift
 //  PharmaScout
 //
-//  Created by Mohammed on 10/15/26.
+//  Created by Mohammed on 11/7/26.
 //
 
 import SwiftUI
 
 struct DistanceSliderView: View {
     @Binding var distance: Double
-    let minDistanceMeters: Double
-    let maxDistanceMeters: Double
-    let label: String
-    var step: Double = DesignSystem.Distance.step
+    let minDistance: Double
+    let maxDistance: Double
     
     var body: some View {
-        VStack {
-            Text("\(label) \(distance.formattedDistance)")
-            
-            
-            Slider(value: $distance, in: minDistanceMeters...maxDistanceMeters, step: step) {
-                Text("\(label) \(distance.formattedDistance)")
-                    .foregroundStyle(.theme.primary)
-            } minimumValueLabel: {
-                Text(minDistanceMeters.formattedDistance)
-            } maximumValueLabel: {
-                Text(maxDistanceMeters.formattedDistance)
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            HStack {
+                Text("Pharmacies within")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.theme.textSecondary)
+                Spacer()
+                Text(distance.formattedDistance)
+                    .font(.title2)
+                    .fontWeight(.heavy)
+                    .foregroundStyle(.theme.textPrimary)
             }
+            
+            Slider(value: $distance, in: minDistance...maxDistance, step: 1_000)
+                .tint(.theme.primary)
+
+            HStack {
+                Text(minDistance.formattedDistance)
+                Spacer()
+                Text(maxDistance.formattedDistance)
+            }
+            .font(.footnote)
+            .foregroundStyle(.theme.textSecondary)
         }
+        .padding(DesignSystem.Spacing.large)
+        .roundedBackground()
     }
 }
 
 #Preview {
-    @State @Previewable var distance: Double = 40_000
+    @State @Previewable var distance = 5_000.0
     
-    DistanceSliderView(
-        distance: $distance,
-        minDistanceMeters: 1_000,
-        maxDistanceMeters: 100_000,
-        label: "Distance to search within",
-        step: 1_000
-    )
+    DistanceSliderView(distance: $distance, minDistance: 1_000, maxDistance: 5_000)
 }

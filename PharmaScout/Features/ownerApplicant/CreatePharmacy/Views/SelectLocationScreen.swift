@@ -47,7 +47,7 @@ struct SelectLocationScreen: View {
             .padding(.top)
             
         }
-//        .customNavBarVisibility(false)
+//        .customNavBarVisibility(.root)
         .task {
             vm.requestLocationPermission()
             await vm.observeSuggestionsStream()

@@ -13,7 +13,7 @@ struct EditSectionHeaderView: View {
     var onActionTapped: (() -> Void)?
     
     var body: some View {
-        SectionHeaderView(title: title, actionName: "Edit", isActionDisabled: isActionDisabled) {
+        SectionHeaderWithActionView(title: title, actionName: "Edit", isActionDisabled: isActionDisabled) {
             Image(systemName: "pencil")
         } onActionTapped: {
             onActionTapped?()

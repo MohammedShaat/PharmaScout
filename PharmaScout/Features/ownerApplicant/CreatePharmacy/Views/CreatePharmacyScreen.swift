@@ -51,7 +51,7 @@ struct CreatePharmacyScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customBackButtonVisibility(false)
+            .customNavBarVisibility(.root)
             .customNavTitle("Create Pharmacy")
             .customNavigationDestination(for: CreatePharmacyRoute.self) { route in
                 switch route {

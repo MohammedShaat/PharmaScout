@@ -48,7 +48,6 @@ struct PharmacyListView: View {
                 loadingState: LoadingState()
             )
             .padding()
-            .customNavBarVisibility(false)
         }
     }
 }
