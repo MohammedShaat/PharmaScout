@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PharmacyContactView: View {
+struct PharmacyContactListView: View {
     let contacts: [PharmacyContact]
     
     var body: some View {
@@ -24,5 +24,9 @@ struct PharmacyContactView: View {
 }
 
 #Preview {
-    PharmacyContactView(contacts: PharmacyContact.samples)
+    ZStack {
+        Color.theme.background.ignoresSafeArea()
+        
+        PharmacyContactListView(contacts: PharmacyContact.samples)
+    }
 }

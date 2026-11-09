@@ -39,6 +39,7 @@ struct ThemeColors {
     let goldenBrownBackground = Color("goldenBrownBackground")
     let green = Color("greenBrand")
     let greenBackground = Color("greenBackground")
+    let onGreen = Color("onGreen")
     let red = Color("redBrand")
     let redBackground = Color("redBackground")
     let blue = Color("blueBrand")

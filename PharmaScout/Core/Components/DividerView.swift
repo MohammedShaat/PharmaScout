@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct DividerView: View {
+    var color: Color = .theme.disabledBackground
+    
     var body: some View {
         Rectangle()
-            .fill(.theme.disabledBackground)
+            .fill(color)
             .frame(height: 1)
     }
 }

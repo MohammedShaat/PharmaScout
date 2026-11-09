@@ -128,7 +128,7 @@ struct CreatePharmacyScreen: View {
                 path.append(CreatePharmacyRoute.createOrEditWorkingHours)
             }
             
-            PharmacyWorkingHoursView(workingHours: vm.workingHours)
+            PharmacyWorkingHourListView(workingHours: vm.workingHours)
         }
     }
     
@@ -138,7 +138,7 @@ struct CreatePharmacyScreen: View {
                 path.append(CreatePharmacyRoute.createOrEditContacts)
             }
             
-            PharmacyContactView(contacts: vm.contacts)
+            PharmacyContactListView(contacts: vm.contacts)
         }
     }
     

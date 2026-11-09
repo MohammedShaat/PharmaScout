@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct PharmacyWorkingHoursView: View {
+struct PharmacyWorkingHourListView: View {
     let workingHours: [WorkingHour]
     
     var body: some View {
@@ -35,6 +35,6 @@ struct PharmacyWorkingHoursView: View {
 #Preview {
     let workingHours = Array(WorkingHour.samples.prefix(7))
     
-    PharmacyWorkingHoursView(workingHours: workingHours)
+    PharmacyWorkingHourListView(workingHours: workingHours)
         .padding()
 }

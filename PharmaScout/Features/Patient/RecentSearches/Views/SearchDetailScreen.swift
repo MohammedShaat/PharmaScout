@@ -37,20 +37,23 @@ struct SearchDetailScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: DesignSystem.Spacing.large) {
-                
-                searchSection
-                
-                drugDetailsSection
-                
-                if vm.search?.status == .awaitingContinuation {
-                    continuationSection
+        VStack(spacing: 0) {
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.large) {
+                    searchSummarySection
+                    
+                    drugDetailsSection
                 }
+                .padding(DesignSystem.Spacing.xLarge)
             }
-            .padding(DesignSystem.Spacing.xLarge)
+            .refreshable(action: vm.refresh)
+            
+            if vm.search?.status == .awaitingContinuation {
+                continuationSection
+            }
         }
-        .refreshable(action: vm.refresh)
+        .ignoresSafeArea(edges: [.bottom])
+        .customNavTitle("Search Details")
         .onAppear {
             vm.loadSearchAndDetailIfNeeded()
         }
@@ -60,18 +63,13 @@ struct SearchDetailScreen: View {
         .task(vm.listenToChanges)
     }
     
-    private var searchSection: some View {
+    private var searchSummarySection: some View {
         LoadingContentView(
             LoadingState: vm.searchLoadingState,
             showMessage: vm.search == nil,
-            emptyMessage: "") {
+            emptyMessage: "No search found") {
                 if let search = vm.search {
-                    VStack(alignment: .leading) {
-                        Text("Accept substitute: \(search.acceptSubstitute.description)")
-                        Text("Fulfilment mode: \(search.fulfilmentMode.rawValue)")
-                        Text("Status: \(search.status.rawValue)")
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    SearchSummaryView(search: search)
                 }
             }
     }
@@ -80,109 +78,79 @@ struct SearchDetailScreen: View {
         LoadingContentView(
             LoadingState: vm.detailLoadingState,
             showMessage: vm.searchDrugDetails.isEmpty,
-            emptyMessage: "There is no details") {
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(vm.searchDrugDetails) { searchDrugDetail in
-                        searchDrugDetailItem(searchDrugDetail)
+            emptyMessage: "No results found") {
+                VStack(spacing: DesignSystem.Spacing.large) {
+                    Text("Drugs detail")
+                        .font(.title3)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.theme.textPrimary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                        ForEach(vm.searchDrugDetails) { searchDrugDetail in
+                            SearchDrugDetailView(
+                                searchDrugDetail: searchDrugDetail,
+                                onPharmacyTapped: {
+                                    patientTabViewModel.navigateToPharmacyDetailScreen(for: $0)
+                                }
+                            )
+                        }
                     }
                 }
+                .padding(.vertical, DesignSystem.Spacing.large)
             }
     }
     
     private var continuationSection: some View {
         LoadingContentView(
             LoadingState: vm.distanceConfigsLoadingState,
-            showMessage: vm.maxDistanceMeters == nil && vm.minDistanceMeters != nil,
-            emptyMessage: "") {
-                if let minDistanceMeters = vm.minDistanceMeters,
-                   let maxDistanceMeters = vm.maxDistanceMeters {
-                    
-                    VStack {
-                        if vm.showExpandRadius {
-                            DistanceSliderView(
-                                distance: $vm.distanceMeters,
-                                minDistance: minDistanceMeters,
-                                maxDistance: maxDistanceMeters,
-                            )
-                        } else {
-                            Text("Expand search distance?")
-                                .foregroundStyle(.theme.textPrimary)
-                                .clickable(action: vm.onShowExpandTapped)
-                        }
-                        
-                        if let error = vm.continueSearchLoadingState.error {
-                            Text(error.errorDescription)
-                        }
-                        
-                        PrimaryButtonView(
-                            title: "Continue Search",
-                            isLoading: vm.continueSearchLoadingState.status != .idle
-                        ) {
-                            continueSearchTask?.cancel()
-                            continueSearchTask = Task {
-                                await vm.continueSearch()
-                            }
+            showMessage: vm.maxDistanceMeters == nil && vm.minDistanceMeters == nil,
+            emptyMessage: "",
+            showIcon: false
+        ) {
+            if let minDistanceMeters = vm.minDistanceMeters,
+               let maxDistanceMeters = vm.maxDistanceMeters {
+                ContinuationView(
+                    distanceMeters: $vm.distanceMeters,
+                    minDistanceMeters: minDistanceMeters,
+                    maxDistanceMeters: maxDistanceMeters,
+                    search: vm.search,
+                    continueSearchLoadingState: vm.continueSearchLoadingState,
+                    onContinueSearchTapped: {
+                        continueSearchTask?.cancel()
+                        continueSearchTask = Task {
+                            await vm.continueSearch()
                         }
                     }
-                    .padding(DesignSystem.Spacing.xxxLarge)
-                }
-            }
-    }
-    
-    private func searchDrugDetailItem(_ searchDrugDetail: SearchDrugDetail) -> some View {
-        VStack(alignment: .leading) {
-            Text(searchDrugDetail.genericName)
-            Text(searchDrugDetail.drugFormulation.title)
-            
-            HStack {
-                Spacer()
-                
-                // Still pending
-                if searchDrugDetail.status == .pending {
-                    Text("Waiting")
-                    
-                } else {
-                    // There is reponse from a pharmacy
-                    if let response = searchDrugDetail.response {
-                        VStack {
-                            Text(response.pharmacyResponse.rawValue)
-                            
-                            Text(response.pharmacy.name)
-                                .clickable {
-                                    patientTabViewModel.navigateToPharmacyDetailScreen(for: response.pharmacy)
-                                }
-                        }
-                        
-                    // No response
-                    } else {
-                        Text("No response")
-                    }
-                }
-                
-            }
-            
-            if searchDrugDetail.response?.pharmacyResponse == .substitute,
-               let response = searchDrugDetail.response,
-               let substituteGenericName = response.substituteGenericName,
-               let substituteFormulation = response.substituteDrugFormulation {
-                Text(substituteGenericName)
-                Text(substituteFormulation.title)
+                )
             }
         }
-        .background(.gray.opacity(0.3))
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .frame(minHeight: 150)
+        .frame(maxWidth: .infinity)
+        .padding([.horizontal, .top], DesignSystem.Spacing.large)
+        .padding(.bottom, DesignSystem.Spacing.xxLarge)
+        .background(.theme.surface)
+        .clipShape(
+            UnevenRoundedRectangle(
+                topLeadingRadius: DesignSystem.CornerRadius.large,
+                topTrailingRadius: DesignSystem.CornerRadius.large
+            )
+        )
+        .shadow(radius: 5, y: -3)
     }
 }
 
 #Preview {
-    let search = Search.samples[0]
+    let search = Search.samples[3]
     
-    SearchDetailScreen(
-        searchRequestService: MockSearchRequestService.sample,
-        locationService: MockLocationService.sample,
-        appConfigService: MockAppConfigService.sample,
-        patientTabViewModel: PatientTabViewModel.sample,
-        searchId: search.id,
-        search: search
-    )
+    CustomNavStack {
+        SearchDetailScreen(
+            searchRequestService: MockSearchRequestService.sample,
+            locationService: MockLocationService.sample,
+            appConfigService: MockAppConfigService.sample,
+            patientTabViewModel: PatientTabViewModel.sample,
+            searchId: search.id,
+            search: search
+        )
+    }
 }

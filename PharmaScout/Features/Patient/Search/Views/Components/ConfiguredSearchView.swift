@@ -111,6 +111,8 @@ struct ConfiguredSearchView: View {
     private var distanceSection: some View {
         SectionHeaderView(title: "Maximum distance") {
             DistanceSliderView(distance: $distanceMeters, minDistance: minDistance, maxDistance: maxDistance)
+                .padding(DesignSystem.Spacing.large)
+                .roundedBackground()
         }
     }
 

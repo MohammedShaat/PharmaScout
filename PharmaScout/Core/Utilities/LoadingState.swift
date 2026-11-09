@@ -12,6 +12,7 @@ struct LoadingState {
     private(set) var status: State = .idle
     var pagination: Pagination
     private(set) var error: AppError?
+    private(set)var hasStarted: Bool = false
     
     init(pageSize: Int) {
         pagination = .init(pageSize: pageSize)
@@ -24,6 +25,7 @@ struct LoadingState {
             status = pagination.page != 0 ? .loadingMore : .loading
         }
         clearError()
+        if !hasStarted { hasStarted = true }
     }
     
     mutating func stopLoading() {

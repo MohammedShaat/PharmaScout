@@ -10,25 +10,8 @@ import SwiftUI
 struct SearchView: View {
     let search: Search
     
-    private var mainColor: Color {
-        switch search.status {
-        case .fulfilled: .theme.green
-        case .awaitingContinuation: .theme.goldenBrown
-        case .unfulfilled: .theme.red
-        case .pending: .theme.blue
-        default: .theme.primary
-        }
-    }
-    
-    private var surfaceColor: Color {
-        switch search.status {
-        case .fulfilled: .theme.greenBackground
-        case .awaitingContinuation: .theme.goldenBrownBackground
-        case .unfulfilled: .theme.redBackground
-        case .pending: .theme.blueBackground
-        default: .theme.disabledBackground
-        }
-    }
+    private var mainColor: Color { search.status.color }
+    private var surfaceColor: Color { search.status.surfaceColor }
     
     var body: some View {
         CustomNavValueLink(value: SearchDetailRoute(searchId: search.id, search: search)) {
@@ -51,23 +34,8 @@ struct SearchView: View {
     
     private var statusSection: some View {
         HStack {
-            HStack {
-                switch search.status {
-                case .fulfilled: Image(systemName: "checkmark.circle")
-                case .awaitingContinuation: Image(systemName: "arrow.right.circle")
-                case .partiallyFulfilled: Image(systemName: "circle.lefthalf.filled")
-                case .unfulfilled: Image(systemName: "xmark.circle")
-                case .pending: Image(systemName: "clock")
-                }
-                
-                Text(search.status.title)
-                    .font(.subheadline)
-                    .fontWeight(.bold)
-            }
-            .foregroundStyle(mainColor)
-            .padding(.horizontal, DesignSystem.Spacing.medium)
-            .padding(.vertical, DesignSystem.Spacing.small)
-            .roundedBackground(background: surfaceColor)
+            SearchStatusView(status: search.status)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
             
@@ -107,7 +75,7 @@ struct SearchView: View {
                 ProgressView(
                     value: Double(search.fulfilledDrugsCount),
                     total: Double(search.drugsCount),
-                    color: mainColor
+                    color: mainColor,
                 )
             }
         } else {

@@ -37,8 +37,6 @@ struct DistanceSliderView: View {
             .font(.footnote)
             .foregroundStyle(.theme.textSecondary)
         }
-        .padding(DesignSystem.Spacing.large)
-        .roundedBackground()
     }
 }
 

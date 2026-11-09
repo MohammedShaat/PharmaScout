@@ -79,7 +79,7 @@ struct PharmacyApplicationDetailScreen: View {
                 showMessage: vm.contacts.isEmpty,
                 emptyMessage: "There is no contact info"
             ) {
-                PharmacyContactView(contacts: vm.contacts)
+                PharmacyContactListView(contacts: vm.contacts)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             
@@ -88,7 +88,7 @@ struct PharmacyApplicationDetailScreen: View {
                 showMessage: vm.workingHours.isEmpty,
                 emptyMessage: "There is no working hours info"
             ) {
-                PharmacyWorkingHoursView(workingHours: vm.workingHours)
+                PharmacyWorkingHourListView(workingHours: vm.workingHours)
                     .frame(maxWidth: .infinity, alignment: .leading)
             }
             

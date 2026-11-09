@@ -42,8 +42,12 @@ struct PharmaciesScreen: View {
             .customNavigationDestination(for: PharmacyDestination.self) { destination in
                 switch destination {
                 case .details(let pharmacy):
-                    PharmacyDetailScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
-                        .id(pharmacy.id)
+                    PharmacyDetailScreen(
+                        pharmacyService: pharmacyService,
+                        pharmacy: pharmacy,
+                        onSeeLocationTapped: { path.wrappedValue.append(PharmacyDestination.map(pharmacy)) }
+                    )
+                    .id(pharmacy.id)
                     
                 case .map(let pharmacy):
                     if let userCoordinate = vm.userCoordinate {
@@ -76,7 +80,7 @@ struct PharmaciesScreen: View {
     private var pharmacyListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
-            showMessage: vm.nearbyPharmacies.isEmpty,
+            showMessage: vm.nearbyPharmacies.isEmpty && !vm.canExpandRadius,
             emptyMessage: "Couldn't find nearby pharmacies") {
                 // MARK: - Pharmacies list
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
@@ -89,24 +93,23 @@ struct PharmaciesScreen: View {
                                 }
                             }
                         
-                        if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id  {
-                            
-                            if vm.loadingState.status == .loadingMore {
-                                RingProgressView()
-                                
-                            // MARK: Search further
-                            } else if vm.canExpandRadius {
-                                Text("Search further than \(vm.radiusMeters.meterToKilometer.formatted(.number))km?")
-                                    .foregroundStyle(.theme.textPrimary)
-                                    .font(.headline)
-                                    .clickable {
-                                        nearbyPharmaciesTask?.cancel()
-                                        nearbyPharmaciesTask = Task {
-                                            await vm.searchFurther()
-                                        }
-                                    }
-                            }
+                        if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id
+                            && vm.loadingState.status == .loadingMore {
+                            RingProgressView()
                         }
+                    }
+
+                    // MARK: Search further
+                    if vm.canExpandRadius && vm.loadingState.status == .idle {
+                        Text("Search further than \(vm.radiusMeters.meterToKilometer.formatted(.number))km?")
+                            .foregroundStyle(.theme.textPrimary)
+                            .font(.headline)
+                            .clickable {
+                                nearbyPharmaciesTask?.cancel()
+                                nearbyPharmaciesTask = Task {
+                                    await vm.searchFurther()
+                                }
+                            }
                     }
                 }
             }

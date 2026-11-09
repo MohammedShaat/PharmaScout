@@ -68,7 +68,7 @@ extension Search {
             acceptSubstitute: false,
             drugsCount: 2,
             fulfilledDrugsCount: 1,
-            status: .pending,
+            status: .awaitingContinuation,
             drugs: [
                 SearchDrug(id: "item-007", genericName: "Metformin", strength: "500 mg"),
                 SearchDrug(id: "item-008", genericName: "Atorvastatin", strength: "20 mg")

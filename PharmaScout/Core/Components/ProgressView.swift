@@ -11,6 +11,7 @@ struct ProgressView: View {
     let value: Double
     let total: Double
     var color: Color = .theme.primary
+    var height: Double = 6
     
     private var percentage: Double { value / total }
     @State private var fullWidth: Double = 0
@@ -18,7 +19,7 @@ struct ProgressView: View {
     var body: some View {
         RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
             .fill(.theme.disabledBackground)
-            .frame(height: 6)
+            .frame(height: height)
             .readFrame { fullWidth = $0.size.width}
             .overlay(alignment: .leading) {
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)

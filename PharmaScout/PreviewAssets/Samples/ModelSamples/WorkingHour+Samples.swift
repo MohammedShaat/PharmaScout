@@ -7,19 +7,25 @@
 
 import Foundation
 
+private let open = Calendar.current.date(bySetting: .hour, value: 8, of: .now)!
+private let close = Calendar.current.date(bySetting: .hour, value: 22, of: .now)!
+
 extension WorkingHour {
-    static let samples = Pharmacy.samples.map { pharmacy in
-        (1...7).map { index in
-            let opensAt = Calendar.current.date(bySetting: .hour, value: 8, of: .now)!
-            let closesAt = Calendar.current.date(bySetting: .hour, value: 22, of: .now)!
-            
-            return WorkingHour(
-                id: UUID().uuidString,
-                day: .init(from: index),
-                opensAt: opensAt,
-                closesAt: closesAt
-            )
-        }
-    }
-    .flatMap { $0 }
+    static let samples = (1...7).map { index in
+        
+        
+        return WorkingHour(
+            id: UUID().uuidString,
+            day: .init(from: index),
+            opensAt: open,
+            closesAt: close
+        )
+    } + [
+        WorkingHour(
+            id: UUID().uuidString,
+            day: .init(from: 1),
+            opensAt: open,
+            closesAt: close
+        )
+    ]
 }

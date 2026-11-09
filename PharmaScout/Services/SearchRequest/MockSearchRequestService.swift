@@ -42,7 +42,7 @@ struct MockSearchRequestService: SearchRequestService {
     }
     
     func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail] {
-        try? await Task.sleep(for: .seconds(2))
+//        try? await Task.sleep(for: .seconds(2))
         
         guard let drugIds = Search.samples.first(where: { $0.id == params.searchId })?.drugs.map(\.id) else {
             return []

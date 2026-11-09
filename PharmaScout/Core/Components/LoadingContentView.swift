@@ -12,6 +12,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
     let showMessage: Bool
     let emptyTitle: String
     let emptyMessage: String
+    let showIcon: Bool
     @ViewBuilder let emptyIcon: Icon
     @ViewBuilder let content: Content
     
@@ -20,6 +21,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
         showMessage: Bool,
         emptyTitle: String = "Couldn't find results",
         emptyMessage: String,
+        showIcon: Bool = true,
         @ViewBuilder emptyIcon: () -> Icon = { EmptyView() },
         @ViewBuilder content: () -> Content
     ) {
@@ -27,6 +29,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
         self.showMessage = showMessage
         self.emptyTitle = emptyTitle
         self.emptyMessage = emptyMessage
+        self.showIcon = showIcon
         self.emptyIcon = emptyIcon()
         self.content = content()
     }
@@ -39,7 +42,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
         case .idle, .loadingMore, .refreshing:
             if !showMessage {
                 content
-            } else {
+            } else if LoadingState.hasStarted {
                 errorOrEmpty
             }
         }
