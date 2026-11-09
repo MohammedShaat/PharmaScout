@@ -40,15 +40,21 @@ struct RecentSearchesScreen: View {
     
     var body: some View {
         CustomNavStack(path: path) {
-            ScrollView {
-                VStack(spacing: DesignSystem.Spacing.large) {
-                    filterSection
+            VStack(spacing: 0) {
+                filterSection
+                    .padding(.vertical, DesignSystem.Spacing.medium)
+
+                ScrollView {
+                    VStack(spacing: DesignSystem.Spacing.large) {
+                        searchListSection
+                    }
                     
-                    searchListSection
                 }
-                .padding(DesignSystem.Spacing.xLarge)
+                .refreshable(action: vm.refresh)
             }
+            .padding(.horizontal, DesignSystem.Spacing.xLarge)
             .customNavBarVisibility(.root)
+            .customNavTitle("Recent searches")
             .customNavigationDestination(for: SearchDetailRoute.self) { route in
                 SearchDetailScreen(
                     searchRequestService: searchRequestService,
@@ -63,7 +69,6 @@ struct RecentSearchesScreen: View {
             .onDisappear {
                 searchesTask?.cancel()
             }
-            .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadSearchesIfNeeded)
             .onChange(of: vm.filter) {
                 searchesTask?.cancel()
@@ -76,56 +81,42 @@ struct RecentSearchesScreen: View {
     }
     
     private var filterSection: some View {
-        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
-            Picker("Status", selection: $vm.filter) {
-                ForEach(SearchFilter.allCases) { status in
-                    Text(status.title)
-                        .tag(status)
-                }
+        FilterView(
+            selection: $vm.filter,
+            title: vm.filter.title,
+            pickerTitle: "Status",
+            options: SearchFilter.allCases,
+            content: { status in
+                Text(status.title)
             }
-        }
+        )
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private var searchListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
             showMessage: vm.searches.isEmpty,
-            emptyMessage: "There is no searches") {
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(vm.searches) { search in
-                        searchItemView(search)
-                            .onAppear {
-                                if search.id == vm.searches.last?.id {
-                                    searchesTask?.cancel()
-                                    searchesTask = Task {
-                                        await vm.loadMore()
-                                    }
+            emptyTitle: "No recent searches",
+            emptyMessage: "Your recent medicine searches will appear here once you start searching."
+        ) {
+            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                ForEach(vm.searches) { search in
+                    SearchView(search: search)
+                        .onAppear {
+                            if search.id == vm.searches.last?.id {
+                                searchesTask?.cancel()
+                                searchesTask = Task {
+                                    await vm.loadMore()
                                 }
                             }
-                        
-                        if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
-                            RingProgressView()
                         }
+                    
+                    if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
+                        RingProgressView()
                     }
                 }
             }
-    }
-    
-    private func searchItemView(_ search: Search) -> some View {
-        CustomNavValueLink(value: SearchDetailRoute(searchId: search.id, search: search)) {
-            VStack(alignment: .leading) {
-                VStack(alignment: .leading) {
-                    ForEach(search.drugs) { searchDrug in
-                        Text("\(searchDrug.genericName) - \(searchDrug.strength)")
-                    }
-                }
-                HStack {
-                    Spacer()
-                    Text(search.status.rawValue)
-                }
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.gray.opacity(0.3))
         }
     }
 }
