@@ -30,6 +30,7 @@ struct Hour: Identifiable {
     }
 }
 
+@MainActor
 func workingDayFromWorkingHour(_ workingHours: [WorkingHour]) -> [WorkingDay] {
     let workingHoursDic = Dictionary(grouping: workingHours) { workingHour in
         workingHour.day

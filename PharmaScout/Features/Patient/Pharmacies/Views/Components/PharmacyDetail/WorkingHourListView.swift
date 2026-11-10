@@ -26,7 +26,7 @@ struct WorkingHourListView: View {
                     Text("Today")
                         .font(.caption)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.theme.onGreen)
+                        .foregroundStyle(.theme.white)
                         .padding(.horizontal, DesignSystem.Spacing.small)
                         .padding(.vertical, DesignSystem.Spacing.xSmall)
                         .roundedBackground(background: .theme.secondaryStrong)

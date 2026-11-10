@@ -30,15 +30,20 @@ struct PharmaciesScreen: View {
     
     var body: some View {
         CustomNavStack(path: path) {
-            ScrollView {
-                VStack(spacing: DesignSystem.Spacing.large) {
-                    filterSection
-                    
-                    pharmacyListSection
+            VStack(spacing: 0) {
+                filterSection
+                    .padding(.vertical, DesignSystem.Spacing.medium)
+
+                ScrollView {
+                    VStack(spacing: 0) {
+                        pharmacyListSection
+                    }
                 }
-                .padding(DesignSystem.Spacing.xLarge)
+                .refreshable(action: vm.refresh)
             }
+            .padding(.horizontal, DesignSystem.Spacing.xLarge)
             .customNavBarVisibility(.root)
+            .customNavTitle("Recent searches")
             .customNavigationDestination(for: PharmacyDestination.self) { destination in
                 switch destination {
                 case .details(let pharmacy):
@@ -55,7 +60,6 @@ struct PharmaciesScreen: View {
                     }
                 }
             }
-            .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadNearbyPharmaciesIfNeeded)
             .onChange(of: vm.filter) {
                 nearbyPharmaciesTask?.cancel()
@@ -67,33 +71,36 @@ struct PharmaciesScreen: View {
     }
     
     private var filterSection: some View {
-        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
-            Picker("Status", selection: $vm.filter) {
-                ForEach(PharmacyFilter.allCases) { status in
-                    Text(status.title)
-                        .tag(status)
-                }
+        FilterView(
+            selection: $vm.filter,
+            title: vm.filter.title,
+            pickerTitle: "Status",
+            options: PharmacyFilter.allCases,
+            content: { status in
+                Text(status.title)
             }
-        }
+        )
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private var pharmacyListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
             showMessage: vm.nearbyPharmacies.isEmpty && !vm.canExpandRadius,
-            emptyMessage: "Couldn't find nearby pharmacies") {
+            emptyTitle: "No nearby pharmacies found",
+            emptyMessage: "There are none within \(vm.radiusMeters.formattedDistance) of you."
+        ) {
                 // MARK: - Pharmacies list
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.nearbyPharmacies) { nearbyPharmacy in
-                        
                         nearbyPharmacyItem(pharmacy: nearbyPharmacy)
                             .task(id: nearbyPharmacy.id) {
-                                if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id {
+                                if nearbyPharmacy.isLast(vm.nearbyPharmacies) {
                                     await vm.loadMore()
                                 }
                             }
                         
-                        if nearbyPharmacy.id == vm.nearbyPharmacies.last?.id
+                        if nearbyPharmacy.isLast(vm.nearbyPharmacies)
                             && vm.loadingState.status == .loadingMore {
                             RingProgressView()
                         }
@@ -101,9 +108,14 @@ struct PharmaciesScreen: View {
 
                     // MARK: Search further
                     if vm.canExpandRadius && vm.loadingState.status == .idle {
-                        Text("Search further than \(vm.radiusMeters.meterToKilometer.formatted(.number))km?")
-                            .foregroundStyle(.theme.textPrimary)
+                        Text("Search further than \(vm.radiusMeters.formattedDistance)?")
                             .font(.headline)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.theme.green)
+                            .capsuleBackground(
+                                verticalPadding: DesignSystem.Spacing.medium,
+                                horizontalPadding: DesignSystem.Spacing.large,
+                            )
                             .clickable {
                                 nearbyPharmaciesTask?.cancel()
                                 nearbyPharmaciesTask = Task {

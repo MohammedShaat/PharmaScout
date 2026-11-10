@@ -11,6 +11,7 @@ struct PharmacyDetailScreen: View {
     let pharmacy: Pharmacy
     let onSeeLocationTapped: (() -> Void)?
     @State private var vm: PharmacyDetailViewModel
+    @Environment(\.openURL) private var openURL
     
     init(
         pharmacyService: PharmacyService,
@@ -69,6 +70,9 @@ struct PharmacyDetailScreen: View {
                     isLoadingMore: false
                 ) { contact in
                     PharmacyContactView(contact: contact)
+                        .clickable {
+                            handleContactTap(contact)
+                        }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
@@ -106,6 +110,11 @@ struct PharmacyDetailScreen: View {
                 .padding(.horizontal, DesignSystem.Spacing.medium)
             }
         }
+    }
+    
+    private func handleContactTap(_ contact: PharmacyContact) {
+        guard let url = contact.makeURL() else { return }
+        openURL(url)
     }
 }
 

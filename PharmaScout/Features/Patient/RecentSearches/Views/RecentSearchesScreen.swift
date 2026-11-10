@@ -104,7 +104,7 @@ struct RecentSearchesScreen: View {
                 ForEach(vm.searches) { search in
                     SearchView(search: search)
                         .onAppear {
-                            if search.id == vm.searches.last?.id {
+                            if search.isLast(vm.searches) {
                                 searchesTask?.cancel()
                                 searchesTask = Task {
                                     await vm.loadMore()
@@ -112,7 +112,7 @@ struct RecentSearchesScreen: View {
                             }
                         }
                     
-                    if search.id == vm.searches.last?.id && vm.loadingState.status == .loadingMore {
+                    if search.isLast(vm.searches) && vm.loadingState.status == .loadingMore {
                         RingProgressView()
                     }
                 }

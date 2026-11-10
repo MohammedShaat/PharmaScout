@@ -13,9 +13,6 @@ struct PharmacyCardView: View {
     let isOpen: Bool
     var rate: Double?
     var responseRate: Int?
-    private var statusColor: Color {
-        isOpen ? .theme.success : .theme.error
-    }
     
     var body: some View {
         HStack {
@@ -49,7 +46,6 @@ struct PharmacyCardView: View {
     
     private var content: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
-            // MARK: Title and work hour
             HStack {
                 Text(name)
                     .font(.headline)
@@ -57,48 +53,22 @@ struct PharmacyCardView: View {
                 Spacer()
                 workStatus
             }
-
-            // MARK: Details (rating, distance, ...)
-            HStack(spacing: DesignSystem.Spacing.xSmall) {
-                
-                // MARK: Rating
-                if let rate {
-                    HStack(spacing: DesignSystem.Spacing.xSmall) {
-                        Image(systemName: "star.fill")
-                            .foregroundStyle(.yellow)
-                            .font(.caption)
-                        
-                        Text(rate, format: .number)
-                            .foregroundStyle(.theme.textLabel)
-                            .fontWeight(.medium)
-                    }
-                    
-                    Text(" · ")
-                }
-                
-                Text(distance.formattedDistance)
-                
-                // MARK: replies
-                if let responseRate {
-                    Text(" · ")
-                    
-                    Text("\(responseRate)% replies")
-                }
-            }
-            .foregroundStyle(.theme.textSecondary)
-            .font(.callout)
+            
+            Text(distance.formattedDistance)
+                .foregroundStyle(.theme.textSecondary)
+                .font(.callout)
         }
     }
 
     private var workStatus: some View {
-        Text(isOpen ? "Open" : "Close")
-            .foregroundStyle(statusColor)
+        Text(isOpen ? "Open" : "Closed")
+            .foregroundStyle(isOpen ? .theme.green : .theme.textSecondary)
             .font(.callout)
             .fontWeight(.semibold)
+            .padding(.vertical, DesignSystem.Spacing.xSmall)
             .padding(.horizontal, DesignSystem.Spacing.medium)
-            .padding(.vertical, DesignSystem.Spacing.small)
-            .background(statusColor.opacity(0.15))
-            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
+            .background(isOpen ? .theme.greenBackground : .theme.disabledBackground)
+            .clipShape(.capsule)
     }
 }
 

@@ -9,6 +9,8 @@ import Foundation
 
 struct MockDirectionsSrevice: DirectionsService {
     func calculateRoute(from source: Coordinate, to destination: Coordinate) async throws -> MapRoute {
-        try await DefaultDirectionsService().calculateRoute(from: source, to: destination)
+        try? await Task.sleep(for: .seconds(2))
+        
+        return try await DefaultDirectionsService().calculateRoute(from: source, to: destination)
     }
 }

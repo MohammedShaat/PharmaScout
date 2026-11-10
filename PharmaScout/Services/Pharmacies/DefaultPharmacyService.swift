@@ -32,7 +32,7 @@ class DefaultPharmacyService: PharmacyService {
     
     func getContactInfo(for pharmacyId: String) async throws -> [PharmacyContact] {
         
-        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
         let columns = pharmacyContactTable.Column.self
         do {
             let contacts: [PharmacyContact] = try await supabase
@@ -123,7 +123,7 @@ class DefaultPharmacyService: PharmacyService {
     }
     
     func createOrUpdateContacts(contacts: [PharmacyContact]) async throws {
-        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
         
         do {
             try await supabase
@@ -137,7 +137,7 @@ class DefaultPharmacyService: PharmacyService {
     }
     
     func deleteContacts(ids: [String]) async throws {
-        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
         let columns = pharmacyContactTable.Column.self
         
         do {
@@ -367,7 +367,7 @@ extension DefaultPharmacyService {
     }
     
     func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
-        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContact.self
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
         let columns = pharmacyContactTable.Column.self
         let hub = realtimeHub(
             for: "\(pharmacyContactTable.name)-\(pharmacyId)",
