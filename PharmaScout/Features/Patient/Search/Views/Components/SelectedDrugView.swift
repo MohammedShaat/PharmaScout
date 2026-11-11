@@ -14,6 +14,8 @@ struct SelectedDrugView: View {
     var body: some View {
         HStack {
             PillIconView()
+                .font(.system(size: 17))
+                .fontWeight(.medium)
                 .foregroundStyle(.theme.textPrimary)
             
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {

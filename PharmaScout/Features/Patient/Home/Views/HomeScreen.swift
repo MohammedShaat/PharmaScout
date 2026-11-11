@@ -50,7 +50,7 @@ struct HomeScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(.root)
+            .customNavBarVisibility(.hidden)
             .refreshable(action: vm.refresh)
             .onAppear(perform: vm.loadDataIfNeeded)
             .task(vm.listenToSearchesChanges)
@@ -58,7 +58,7 @@ struct HomeScreen: View {
     }
     
     private var headerSection: some View {
-        GreetingHeaderView(user: user, hasUnreadNotifications: vm.hasUnreadNotifications)
+        GreetingHeaderView(user: user)
     }
     
     private var searchSection: some View {

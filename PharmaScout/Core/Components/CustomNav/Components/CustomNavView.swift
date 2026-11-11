@@ -23,7 +23,9 @@ struct CustomNavView<Content: View>: View {
             Color.theme.background.ignoresSafeArea()
             
             VStack(spacing: 0) {
-                CustomeNavBarView(title: title, showBackButton: showBackButton, style: navBarStyle)
+                if navBarStyle != .hidden {
+                    CustomeNavBarView(title: title, showBackButton: showBackButton, style: navBarStyle)
+                }
                 
                 VStack {
                     content
@@ -60,6 +62,7 @@ extension View {
 enum NavBarStyle {
     case root
     case standard
+    case hidden
 }
 
 #Preview {

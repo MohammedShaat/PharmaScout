@@ -17,7 +17,7 @@ struct SectionHeaderWithActionView<Icon: View>: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.subheadline)
+                .font(.title3)
                 .fontWeight(.bold)
                 .foregroundStyle(.theme.textSecondary)
             
@@ -25,11 +25,11 @@ struct SectionHeaderWithActionView<Icon: View>: View {
             
             HStack(spacing: DesignSystem.Spacing.small) {
                 icon
-                    .font(.headline)
 
                 Text(actionName)
                     .fontWeight(.semibold)
             }
+            .font(.callout)
             .clickable(isDisabled: isActionDisabled, action: onActionTapped)
             
         }

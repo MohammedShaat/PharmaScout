@@ -45,6 +45,9 @@ struct ThemeColors {
     let blueBackground = Color("blueBackground")
     let brightBlue = Color("brightBlue")
     let white = Color("whiteBrand")
+    let amber = Color("amber")
+    let goldenYellow = Color("goldenYellow")
+    let mutedLavender = Color("mutedLavender")
     
     
     // Text

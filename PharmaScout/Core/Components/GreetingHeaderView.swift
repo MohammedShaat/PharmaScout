@@ -9,16 +9,21 @@ import SwiftUI
 
 struct GreetingHeaderView: View {
     let user: AppUser?
-    let hasUnreadNotifications: Bool
+    
+    private var timeOfDay: TimeOfDay { Date.now.timeOfDay }
     
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
-                Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
-                    .foregroundStyle(.theme.textSecondary)
+                HStack(spacing: DesignSystem.Spacing.xSmall) {
+                    timeIcon
+                    	
+                    Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
+                        .foregroundStyle(.theme.textSecondary)
+                }
                 
                 HStack(spacing: 0) {
-                    Text("Good \(Date.now.timeOfDay)")
+                    Text("Good \(timeOfDay.title)")
                     
                     if let firstName = user?.firstName {
                         Text(", \(firstName)")
@@ -31,17 +36,31 @@ struct GreetingHeaderView: View {
             }
             
             Spacer()
-            
-            BellView(hasUnreadNotifications: hasUnreadNotifications)
-                .clickable()
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+    
+    @ViewBuilder
+    private var timeIcon: some View {
+        switch timeOfDay {
+        case .morning:
+            Image(systemName: "sunrise.fill")
+                .foregroundStyle(.theme.amber)
+            
+        case .afternoon:
+                Image(systemName: "sun.max.fill")
+                .foregroundStyle(.theme.goldenYellow)
+            
+        case .evening:
+            Image(systemName: "moon.stars.fill")
+                .foregroundStyle(.theme.mutedLavender)
+        }
     }
 }
 
 #Preview {
     VStack {
-        GreetingHeaderView(user: .samples[0], hasUnreadNotifications: true)
+        GreetingHeaderView(user: .samples[0])
             .padding()
         Spacer()
     }

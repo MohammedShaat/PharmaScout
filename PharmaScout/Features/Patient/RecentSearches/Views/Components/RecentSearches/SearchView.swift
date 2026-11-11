@@ -1,4 +1,4 @@
-//
+		//
 //  SearchView.swift
 //  PharmaScout
 //
@@ -35,6 +35,8 @@ struct SearchView: View {
     private var statusSection: some View {
         HStack {
             SearchStatusView(status: search.status)
+                .font(.subheadline)
+                .fontWeight(.bold)	
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()

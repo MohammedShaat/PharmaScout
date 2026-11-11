@@ -21,13 +21,9 @@ struct SearchStatusView: View {
             }
             
             Text(status.title)
-                .font(.subheadline)
-                .fontWeight(.bold)
         }
         .foregroundStyle(status.color)
-        .padding(.horizontal, DesignSystem.Spacing.medium)
-        .padding(.vertical, DesignSystem.Spacing.small)
-        .roundedBackground(background: status.surfaceColor)
+        .capsuleBackground(background: status.surfaceColor)
     }
 }
 

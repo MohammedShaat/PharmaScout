@@ -144,7 +144,7 @@ extension Search {
             fulfilmentMode: .singlePharmacy,
             acceptSubstitute: false,
             drugsCount: 2,
-            fulfilledDrugsCount: 0,
+            fulfilledDrugsCount: 1,
             status: .pending,
             drugs: [
                 SearchDrug(id: "item-019", genericName: "Cetirizine", strength: "10 mg"),
@@ -236,7 +236,7 @@ extension Search {
             fulfilmentMode: .singlePharmacy,
             acceptSubstitute: false,
             drugsCount: 3,
-            fulfilledDrugsCount: 0,
+            fulfilledDrugsCount: 2,
             status: .pending,
             drugs: [
                 SearchDrug(id: "item-033", genericName: "Insulin Glargine", strength: "100 units/mL"),

@@ -16,50 +16,81 @@ struct ActiveSearchesView: View {
         LoadingContentView(
             LoadingState: loadingState,
             showMessage: activeSearches.isEmpty,
-            emptyMessage: "No active searches") {
-                VStack {
-                    Text("Searching nearby pharamcies")
-                        .foregroundStyle(.theme.success)
-                    
-                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                        ForEach(activeSearches) { search in
-                            activeSearchItem(search)
-                                .clickable {
-                                    onItemTapped?(search)
-                                }
-                        }
+            emptyTitle: "No active searches",
+            emptyMessage: "You don't have any active searches at the moment. Start a new search to find nearby pharmacies.",
+            showIcon: false
+        ) {
+            VStack {
+                label
+                
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
+                    ForEach(activeSearches) { search in
+                        activeSearchItem(search)
+                            .clickable {
+                                onItemTapped?(search)
+                            }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .padding(.horizontal, DesignSystem.Spacing.large)
+        }
+    }
+    
+    private var label: some View {
+        HStack(spacing: DesignSystem.Spacing.small) {
+            Image(systemName: "circle.fill")
+                .font(.caption2)
+            
+            Text("Searching nearby pharamcies")
+                .font(.subheadline)
+                .fontWeight(.bold)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            Spacer()
+            Text("\(activeSearches.count) Active")
+                .font(.footnote)
+                .foregroundStyle(.theme.textSecondary)
+        }
+        .foregroundStyle(.theme.green)
     }
     
     private func activeSearchItem(_ search: Search) -> some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             Text(search.drugs.map(\.genericName), format: .list(type: .and))
-                .font(.headline)
+                .fontWeight(.bold)
                 .lineLimit(1)
+                .disclosureIndicator()
             
-            let percentage = Double(search.fulfilledDrugsCount) / Double(search.drugsCount)
-            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                .fill(.theme.disabledBackground)
-                .frame(height: 4)
-                .overlay(alignment: .leading) {
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.large)
-                        .fill(.theme.success)
-                        .containerRelativeFrame(.horizontal, alignment: .leading) { width, _ in
-                            width * percentage
-                        }
+            VStack(spacing: DesignSystem.Spacing.small) {
+                ProgressView(
+                    value: Double(search.fulfilledDrugsCount),
+                    total: Double(search.drugsCount),
+                    color: search.status.color,
+                )
+                
+                HStack(spacing: 0) {
+                    Text("\(search.fulfilledDrugsCount) of \(search.drugsCount) fulfilled")
+                        .foregroundStyle(search.fulfilledDrugsCount == 0 ? .theme.textSecondary : .theme.textPrimary)
+                    Spacer()
+                    SearchStatusView(status: search.status)
+                        .font(.footnote)
+                        .fontWeight(.semibold)
                 }
+            }
         }
-        .padding(DesignSystem.Spacing.small)
-        .background(.theme.primary.opacity(0.2))
+        .padding(DesignSystem.Spacing.large)
+        .roundedBackground()
     }
 }
 
 #Preview {
-    ActiveSearchesView(
-        activeSearches: Search.samples.filter { $0.status == .pending },
-        loadingState: LoadingState()
-    )
+    ZStack {
+        Color.theme.background.ignoresSafeArea()
+        
+        ActiveSearchesView(
+            activeSearches: Search.samples.filter { $0.status == .pending },
+            loadingState: LoadingState()
+        )
+    }
 }

@@ -51,14 +51,16 @@ struct LoadingContentView<Content: View, Icon: View>: View {
     private var errorOrEmpty: some View {
         VStack(spacing: 0) {
             // Icon
-            Group {
-                if LoadingState.error != nil {
-                    errorIcon
-                } else {
-                    emptyIconTemplate
+            if showIcon {
+                Group {
+                    if LoadingState.error != nil {
+                        errorIcon
+                    } else {
+                        emptyIconTemplate
+                    }
                 }
+                .padding(.vertical, DesignSystem.Spacing.xLarge)
             }
-            .padding(.vertical, DesignSystem.Spacing.xLarge)
             
             // Title & message
             VStack(spacing: DesignSystem.Spacing.medium) {

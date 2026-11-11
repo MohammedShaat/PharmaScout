@@ -8,16 +8,13 @@
 import Foundation
 
 extension Date {
-    var timeOfDay: String {
+    var timeOfDay: TimeOfDay {
         let hour = Calendar.current.component(.hour, from: self)
 
-        let time =
-            switch hour {
-            case 5..<12: "morning"
-            case 12..<18: "afternoon"
-            default: "evening"
-            }
-
-        return time
+        return switch hour {
+        case 5..<12: .morning
+        case 12..<18: .afternoon
+        default: .evening
+        }
     }
 }

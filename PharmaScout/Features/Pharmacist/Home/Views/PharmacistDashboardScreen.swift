@@ -51,7 +51,7 @@ struct PharmacistDashboardScreen: View {
     
     
     private var headerSection: some View {
-        GreetingHeaderView(user: user, hasUnreadNotifications: vm.hasUnreadNotifications)
+        GreetingHeaderView(user: user)
     }
     
     private var recentPendingInquiries: some View {

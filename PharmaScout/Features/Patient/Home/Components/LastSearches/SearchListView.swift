@@ -25,32 +25,18 @@ struct SearchListView: View {
         LoadingContentView(
             LoadingState: loadingState,
             showMessage: searches.isEmpty,
-            emptyMessage: "There is no searches, start a one") {
-                VStack(spacing: 0) {
-                    ForEach(searches) { search in
-                        VStack(spacing: 0) {
-                            SearchItemView(search: search)
-                                .padding(DesignSystem.Spacing.medium)
-                                .background(.theme.background.opacity(0.001))
-                                .clickable {
-                                    onSearchTapped?(search)
-                                }
-                            
-                            if search.id != searches.last?.id {
-                                Rectangle()
-                                    .fill(.theme.borderFilled)
-                                    .frame(height: 1)
-                            }
+            emptyTitle: "No completed searches yet",
+            emptyMessage: "Your completed searches will appear here.") {
+                CustomList(
+                    items: searches,
+                    isLoadingMore: false
+                ) { search in
+                    HomeSearchRowView(search: search)
+                        .disclosureIndicator()
+                        .clickable {
+                            onSearchTapped?(search)
                         }
-                    }
                 }
-                .background(.theme.surface)
-                .overlay {
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                        .stroke(lineWidth: 2)
-                        .fill(.theme.borderFilled)
-                }
-                .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
             }
     }
     

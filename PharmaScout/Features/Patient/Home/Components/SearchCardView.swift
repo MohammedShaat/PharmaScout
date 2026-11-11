@@ -12,10 +12,10 @@ struct SearchCardView: View {
     @State private var size: CGSize = .zero
     
     var body: some View {
-        VStack(spacing: DesignSystem.Spacing.large) {
+        VStack(spacing: DesignSystem.Spacing.medium) {
             prompt
             
-            searchField
+            searchButton
         }
         .padding(DesignSystem.Spacing.large)
         .background(alignment: .topTrailing) { cornerCircle }
@@ -48,25 +48,16 @@ struct SearchCardView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var searchField: some View {
-        HStack(spacing: DesignSystem.Spacing.large) {
-            
-            Image(systemName: "magnifyingglass")
-                .padding(DesignSystem.Spacing.medium)
-                .background(.surface.opacity(0.0001))
-                .clickable(action: onSearchFieldCliced)
-            
-            Text("Search for a medicine")
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.vertical, DesignSystem.Spacing.medium)
-                .background(.surface.opacity(0.0001))
-                .clickable(action: onSearchFieldCliced)
-            
-        }
-        .foregroundStyle(.theme.textSecondary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(.theme.surface)
-        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
+    private var searchButton: some View {
+        Image(systemName: "magnifyingglass")
+            .font(.system(size: 25))
+            .fontWeight(.semibold)
+            .foregroundStyle(.theme.textPrimary)
+            .padding(DesignSystem.Spacing.small)
+            .background(.theme.onPrimary)
+            .clipShape(.circle)
+            .clickable(action: onSearchFieldCliced)
+            .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private var cornerCircle: some View {
