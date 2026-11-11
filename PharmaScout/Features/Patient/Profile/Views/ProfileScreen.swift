@@ -32,7 +32,6 @@ struct ProfileScreen: View {
             if !isPresented { vm.onPasswordConfirmed(submit: false) }
         }
     }
-    @State private var isPasswordHidden: Bool = true
     
     init(
         user: AppUser,
@@ -59,18 +58,25 @@ struct ProfileScreen: View {
     
     var body: some View {
         CustomNavStack {
-            Form {
-                joinPharmacy
+            VStack(spacing: DesignSystem.Spacing.xLarge) {
+                UserBasicInfoView(user: user)
+                    .padding( DesignSystem.Spacing.large)
+                    .roundedBackground()
                 
-                becomePharmacyOwner
+                pharmacySection
                 
-                logout
+                sessionSection
+                
+                DividerView()
                 
                 deleteAccount
+                
+                Spacer()
             }
-            .customNavTitle(user.fullName ?? "")
+            .padding(.horizontal, DesignSystem.Spacing.large)
             .customNavBarVisibility(.root)
-            .errorAlert(title: "Failed", loadingState: $vm.loadingState)
+            .customNavTitle("Profile")
+            .errorAlert(title: "Failed", loadingState: vm.logoutLoadingState.error != nil ? $vm.logoutLoadingState : $vm.deletionLoadingState)
             .alert("Delete Account?", isPresented: $showingDeleteAccountConfirmation) {
                 Button("Delete Account", role: .destructive) {
                     task?.cancel()
@@ -83,21 +89,13 @@ struct ProfileScreen: View {
                 
                 Button("Cancel", role: .cancel) {}
             } message: {
-                Text(
-                    "Your account will be permanently deleted. This action cannot be undone."
-                )
+                Text("Your account will be permanently deleted. This action cannot be undone.")
             }
-            .sheet(
-                isPresented: showingProvidersSheet,
-                onDismiss: { vm.onProviderPicked(nil) }
-            ) {
+            .sheet(isPresented: showingProvidersSheet, onDismiss: { vm.onProviderPicked(nil) }) {
                 providersView
                     .presentationDetents([.medium])
             }
-            .sheet(
-                isPresented: showingPasswordSheet,
-                onDismiss: { vm.onPasswordConfirmed(submit: false) }
-            ) {
+            .sheet(isPresented: showingPasswordSheet, onDismiss: { vm.onPasswordConfirmed(submit: false) }) {
                 passwordView
                     .presentationDetents([.medium])
             }
@@ -116,81 +114,94 @@ struct ProfileScreen: View {
         }
     }
     
-    @ViewBuilder
-    private var joinPharmacy: some View {
-        CustomNavValueLink(value: ProfileRoute.joinPharmacy) {
-            Text("Join a pharmacy")
-        }
-    }
-    
-    @ViewBuilder
-    private var becomePharmacyOwner: some View {
-        CustomNavValueLink(value: ProfileRoute.becomePharmacyOwner) {
-            Text("Become a pharmacy owner")
-        }
-    }
-    
-    private var logout: some View {
-        Button("Log out") {
-            task?.cancel()
-            task = Task {
-                await vm.logout()
+    private var pharmacySection: some View {
+        ProfileSectionView(sectionTitle: "For pharmacies") {
+            VStack(spacing: DesignSystem.Spacing.medium) {
+                // Join pharmacy
+                CustomNavValueLink(value: ProfileRoute.joinPharmacy) {
+                    ProfileSectionRowView(
+                        title: "Join a pharmacy",
+                        description: "Work at an existing pharmacy",
+                        systemName: "person.badge.plus.fill",
+                    )
+                    .disclosureIndicator()
+                }
+                
+                DividerView()
+                
+                // Become pharmacy owner
+                CustomNavValueLink(value: ProfileRoute.becomePharmacyOwner) {
+                    ProfileSectionRowView(
+                        title: "Become a pharmacy owner",
+                        description: "Register a new pharmacy",
+                        systemName: "building.2.crop.circle",
+                    )
+                    .disclosureIndicator()
+                }
             }
+            .padding(DesignSystem.Spacing.medium)
+            .roundedBackground()
         }
-        .disabled(vm.loadingState.status != .idle)
+    }
+    
+    
+    private var sessionSection: some View {
+        ProfileSectionView(sectionTitle: "Session") {
+            ProfileSectionRowView(
+                title: "Log out",
+                systemName: "rectangle.portrait.and.arrow.right",
+                isLoading: vm.logoutLoadingState.status != .idle
+            )
+            .clickable(isDisabled: vm.isLoading) {
+                task?.cancel()
+                task = Task {
+                    await vm.logout()
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(DesignSystem.Spacing.medium)
+            .roundedBackground()
+        }
     }
     
     private var deleteAccount: some View {
-        Button("Delete account", role: .destructive) {
+        ProfileSectionRowView(
+            title: "Delete account",
+            systemName: "trash",
+            color: .theme.red,
+            isLoading: vm.deletionLoadingState.status != .idle
+        )
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(DesignSystem.Spacing.medium)
+        .roundedBackground()
+        .clickable(isDisabled: vm.isLoading) {
             showingDeleteAccountConfirmation = true
         }
-        .disabled(vm.loadingState.status != .idle)
     }
     
     private var providersView: some View {
-        VStack {
-            ForEach(vm.availableProviders ?? []) { provider in
-                switch provider {
-                case .google:
-                    GoogleSignInButtonView {
-                        vm.onProviderPicked(provider)
-                    }
-                    
-                case .email:
-                    Button {
-                        vm.onProviderPicked(provider)
-                    } label: {
-                        Text("Password")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    
-                case .apple:
-                    EmptyView()
-                }
-            }
-            
-            Button("Cancel", role: .cancel) {
-                vm.onProviderPicked(nil)
-            }
-            .padding(.vertical, DesignSystem.Spacing.large)
-        }
+        AuthProvidersView(
+            providers: vm.availableProviders ?? [],
+            onContinueInWithGoogleTapped: { vm.onProviderPicked($0) },
+            onPasswordTapped: { vm.onProviderPicked($0) },
+            onCancelTapped: { vm.onProviderPicked(nil) }
+        )
+        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .padding(.vertical, DesignSystem.Spacing.xxLarge)
+        .background(.theme.background)
     }
     
     private var passwordView: some View {
-        VStack {
-            LabeledSecureFieldView(title: $vm.passwordInput, label: "Account password", isInputHidden: $isPasswordHidden)
-            
-            HStack {
-                PrimaryButtonView(title: "Delete Account", isDisabled: !vm.isPasswordValid) {
-                    vm.onPasswordConfirmed(submit: true)
-                }
-                
-                PrimaryButtonView(title: "Cancel") {
-                    vm.onPasswordConfirmed(submit: false)
-                }
-            }
-        }
+        AuthPasswordView(
+            password: $vm.passwordInput,
+            isDisabled: !vm.isPasswordValid,
+            isLoading: vm.deletionLoadingState.status != .idle && !vm.awaitingPassword,
+            onDeleteTapped: { vm.onPasswordConfirmed(submit: true) },
+            onCancelTapped: { vm.onPasswordConfirmed(submit: false) }
+        )
+        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .padding(.vertical, DesignSystem.Spacing.xxLarge)
+        .background(.theme.background)
     }
 }
 
