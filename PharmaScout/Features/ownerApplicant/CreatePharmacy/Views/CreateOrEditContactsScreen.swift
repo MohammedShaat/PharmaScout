@@ -57,7 +57,7 @@ struct CreateOrEditContactsScreen: View {
     }
     
     private func contactItemView(_ contact: Binding<PharmacyContact>) -> some View {
-        ContactView(contact: contact)
+        ContactEditView(contact: contact)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     

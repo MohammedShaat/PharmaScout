@@ -58,7 +58,7 @@ struct HomeScreen: View {
     }
     
     private var headerSection: some View {
-        GreetingHeaderView(user: user)
+        GreetingHeaderView(firstName: user.firstName)
     }
     
     private var searchSection: some View {

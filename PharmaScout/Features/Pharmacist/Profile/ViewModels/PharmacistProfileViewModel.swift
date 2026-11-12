@@ -9,44 +9,12 @@ import Foundation
 
 @Observable
 class PharmacistProfileViewModel {
-    private let authService: AuthService
-    private let pushTokenCoordinator: PushTokenCoordinator
     private let pharmacyService: PharmacyService
     
     var loadingState = LoadingState()
     
-    init(authService: AuthService, pushTokenCoordinator: PushTokenCoordinator, pharmacyService: PharmacyService) {
-        self.authService = authService
-        self.pushTokenCoordinator = pushTokenCoordinator
+    init(pharmacyService: PharmacyService) {
         self.pharmacyService = pharmacyService
-    }
-    
-    func logout() async {
-        loadingState.startLoading()
-        defer { loadingState.stopLoading() }
-        
-        do {
-            await pushTokenCoordinator.willSignOut()
-            try await authService.signOut()
-            
-        } catch {
-            loadingState.fail(error)
-            print("Failed to sign out\n", error)
-        }
-    }
-    
-    func deleteAccount() async {
-        loadingState.startLoading()
-        defer { loadingState.stopLoading() }
-        
-        do {
-            await pushTokenCoordinator.willSignOut()
-            try await authService.deleteAccount(reauth: nil)
-            
-        } catch {
-            loadingState.fail(error)
-            print("Failed to delete account\n", error)
-        }
     }
     
     func closePharmacy() async {

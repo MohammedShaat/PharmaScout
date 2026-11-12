@@ -7,25 +7,20 @@
 
 import Foundation
 
-struct UpdatePharmacyStaffRequest: Codable {
-    let staffMembers: [UpdatePharmacyStaffMember]
+struct ManagePharmacyStaffMemberRequest: Codable {
+    let staffId: String
+    let action: PharmacyStaffAction
     
     enum CodingKeys: String, CodingKey {
-        case staffMembers = "p_staff_members"
+        case staffId = "p_staff_id"
+        case action = "p_action"
     }
 }
 
-struct UpdatePharmacyStaffMember: Codable {
-    let id: String
-    let role: PharmacyStaffRole
-    let status: PharmacyStaffStatus
-}
-
-
-extension UpdatePharmacyStaffMember {
-    init(from pharmacyStaffMember: PharmacyStaffMember) {
-        self.id = pharmacyStaffMember.id
-        self.role = pharmacyStaffMember.role
-        self.status = pharmacyStaffMember.status
-    }
+enum PharmacyStaffAction: String, Codable {
+    case approve = "approve"
+    case reject = "reject"
+    case suspend = "suspend"
+    case reactivate = "reactivate"
+    case delete = "delete"
 }

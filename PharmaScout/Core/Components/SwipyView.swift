@@ -20,7 +20,7 @@ struct SwipyView<Content: View>: View {
                 leading: DesignSystem.Spacing.xSmall,
                 trailing: DesignSystem.Spacing.xSmall
             ),
-            swipeBehavior: .straight
+            swipeBehavior: .soft
         ) { model in
             content
             

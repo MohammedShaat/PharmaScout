@@ -21,24 +21,27 @@ struct AnalyticsScreen: View {
     
     var body: some View {
         CustomNavStack {
-            ScrollView {
-                VStack {
-                    analyticsTypeSection
-                    
-                    periodSegmentSection
-                    
-                    switch vm.analyticsType {
-                    case .pharmacySearch:
-                        pharmacySearchAnalyticsSection
-                        
-                    case .regional:
-                        drugDemandListSection(vm.regionalDrugDemands, loadingState: vm.regionalAnalyticsLoadingState)
+            VStack(spacing: DesignSystem.Spacing.large) {
+                analyticsTypeSection
+
+                periodSegmentSection
+
+                ScrollView {
+                    VStack {
+                        switch vm.analyticsType {
+                        case .pharmacySearch:
+                            pharmacyAnalyticsSection
+                            
+                        case .regional:
+                            regionalAnalyticsSection
+                        }
                     }
                 }
-                .padding(DesignSystem.Spacing.xLarge)
+                .refreshable(action: vm.refresh)
             }
+            .padding(.horizontal, DesignSystem.Spacing.xLarge)
             .customNavBarVisibility(.root)
-            .refreshable(action: vm.refresh)
+            .customNavTitle("Analytics")
             .onAppear(perform: vm.loadAnalyticsIfNeeded)
             .onDisappear {
                 analyticsTask?.cancel()
@@ -59,91 +62,70 @@ struct AnalyticsScreen: View {
     }
     
     private var analyticsTypeSection: some View {
-        Menu(vm.analyticsType.title, systemImage: "chart.bar") {
-            Picker("Analytics type", selection: $vm.analyticsType) {
-                ForEach(AnalyticsType.allCases) { type in
-                    Text(type.title)
-                        .tag(type)
-                }
-            }
+        FilterView(
+            selection: $vm.analyticsType,
+            label: vm.analyticsType.title,
+            pickerTitle: "Type",
+            options: AnalyticsType.allCases,
+            icon: { Image(systemName: "chart.bar") }
+        ) { type in
+            Text(type.title)
         }
+        .font(.subheadline)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private var periodSegmentSection: some View {
-        Picker("Period", selection: $vm.period) {
-            ForEach(AnalyticsPeriod.allCases) { period in
+        CustomSegmentPickerView(
+            selection: $vm.period,
+            options: AnalyticsPeriod.allCases) { period in
                 Text(period.title)
-                    .tag(period)
             }
-        }
-        .pickerStyle(.segmented)
-        .padding(.vertical, DesignSystem.Spacing.large)
     }
     
     @ViewBuilder
-    private var pharmacySearchAnalyticsSection: some View {
+    private var pharmacyAnalyticsSection: some View {
         LoadingContentView(
             LoadingState: vm.pharmacyAnalyticsLoadingState,
             showMessage: vm.pharmacySearchAnalytics == nil,
-            emptyMessage: "No pharmacy search analytics") {
-                if let pharmacySearchAnalytics = vm.pharmacySearchAnalytics {
-                    VStack(spacing: DesignSystem.Spacing.large) {
-                        HStack {
-                            Text("Total drugs requested")
-                            Spacer()
-                            Text("\(pharmacySearchAnalytics.totalDrugsRequested)")
-                        }
-                        
-                        HStack {
-                            Text("Total drugs answered")
-                            Spacer()
-                            Text("\(pharmacySearchAnalytics.totalDrugsAnswered)")
-                        }
-                        
-                        HStack {
-                            Text("Total drugs answered available")
-                            Spacer()
-                            Text("\(pharmacySearchAnalytics.totalDrugsAnsweredAvailable)")
-                        }
-                    }
-                    
-                    drugDemandListSection(pharmacySearchAnalytics.drugDemands, loadingState: vm.pharmacyAnalyticsLoadingState)
-                        .padding(.vertical, DesignSystem.Spacing.xLarge)
-                }
+            emptyTitle: "No pharmacy search analytics",
+            emptyMessage: "Requests sent to your pharmacy will be counted here. Try a longer period."
+        ) {
+            if let pharmacySearchAnalytics = vm.pharmacySearchAnalytics {
+                PharmacyAnalyticsView(
+                    pharmacySearchAnalytics: pharmacySearchAnalytics,
+                    loadingState: vm.pharmacyAnalyticsLoadingState,
+                    period: vm.period
+                )
             }
+        }
     }
     
-    private func drugDemandListSection(_ drugDemands: [DrugDemand], loadingState: LoadingState) -> some View {
+    private var regionalAnalyticsSection: some View {
         LoadingContentView(
-            LoadingState: loadingState,
-            showMessage: drugDemands.isEmpty,
-            emptyMessage: "There is no analytics") {
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(drugDemands) { drugDemand in
-                        drugDemandItem(drugDemand)
-                    }
+            LoadingState: vm.regionalAnalyticsLoadingState,
+            showMessage: vm.regionalDrugDemands.isEmpty,
+            emptyTitle: "There is no analytics",
+            emptyMessage: ""
+        ) {
+            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
+                    Text("Most searched in your region")
+                        .font(.title3)
+                        .fontWeight(.heavy)
+                        .foregroundStyle(.theme.textPrimary)
+                    
+                    Text("Medicines patients in your region searched for")
+                        .font(.subheadline)
+                        .foregroundStyle(.theme.textSecondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                ForEach(vm.regionalDrugDemands) { drugDemand in
+                    DrugDemandView(drugDemand: drugDemand)
                 }
             }
-    }
-    
-    private func drugDemandItem(_ drugDemand: DrugDemand) -> some View {
-        HStack {
-            VStack(alignment: .leading) {
-                Text(drugDemand.genericName)
-                    .font(.headline)
-                Text(drugDemand.drugFormulation.strength)
-            }
-            
-            Spacer()
-            
-            VStack(alignment: .trailing) {
-                Text("\(drugDemand.patientCount)")
-                    .font(.headline)
-                Text("Patient\(drugDemand.patientCount > 1 ? "s" : "")")
-            }
-        }	
-        .background(.gray.opacity(0.3))
-        .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
 }
 

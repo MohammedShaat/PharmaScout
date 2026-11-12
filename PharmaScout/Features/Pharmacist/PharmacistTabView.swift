@@ -17,6 +17,8 @@ struct PharmacistTabView: View {
     private let pharmacyService: PharmacyService
     private let analyticsService: AnalyticsService
     private let pushTokenCoordinator: PushTokenCoordinator
+    private let appleReauthenticationService: AppleReauthenticationService
+    private let googleReauthenticationService: GoogleReauthenticationService
     
     @State private var vm: PharmacistTabViewModel
     
@@ -26,10 +28,12 @@ struct PharmacistTabView: View {
         staffMembership: StaffMembership,
         authService: AuthService,
         inquiryService: InquiryService,
-    drugService: DrugService,
+        drugService: DrugService,
         pharmacyService: PharmacyService,
         analyticsService: AnalyticsService,
-        pushTokenCoordinator: PushTokenCoordinator
+        pushTokenCoordinator: PushTokenCoordinator,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService
     ) {
         self.user = user
         self.router = router
@@ -40,6 +44,8 @@ struct PharmacistTabView: View {
         self.pharmacyService = pharmacyService
         self.analyticsService = analyticsService
         self.pushTokenCoordinator = pushTokenCoordinator
+        self.appleReauthenticationService = appleReauthenticationService
+        self.googleReauthenticationService = googleReauthenticationService
         
         let viewModel = PharmacistTabViewModel(staffMembership: staffMembership)
         self._vm = State(wrappedValue: viewModel)
@@ -71,7 +77,7 @@ struct PharmacistTabView: View {
             
             if vm.access.canAccess(.profile) {
                 Tab("Profile", image: tabImage(.profile), value: .profile) {
-                    PharmacistProfileScreen(user: user, pharmacistAccess: vm.access, authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacyService, pharmacyId: staffMembership.pharmacyId)
+                    PharmacistProfileScreen(user: user, pharmacistAccess: vm.access, authService: authService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService, pharmacyService: pharmacyService, pharmacyId: staffMembership.pharmacyId)
                 }
             }
         }
@@ -115,6 +121,8 @@ struct PharmacistTabView: View {
         drugService: MockDrugService.sample,
         pharmacyService: MockPharmacyService.sample,
         analyticsService: MockAnalyticsService.sample,
-        pushTokenCoordinator: .sample
+        pushTokenCoordinator: .sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample
     )
 }

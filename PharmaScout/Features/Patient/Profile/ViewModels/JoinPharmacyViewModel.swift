@@ -19,7 +19,7 @@ class JoinPharmacyViewModel {
         code.trimmed.count == codeLength
     }
     private(set) var codeSentSuccessfully: Bool = false
-    private(set) var pharmacyId: String?
+    private(set) var staffMemeberId: String?
     
     private(set) var requestLoadingState = LoadingState()
     private(set) var authSessionLoadingState = LoadingState()
@@ -40,7 +40,7 @@ class JoinPharmacyViewModel {
         defer { requestLoadingState.stopLoading() }
         
         do {
-            pharmacyId = try await pharmacyService.joinPharmacy(code: code)
+            staffMemeberId = try await pharmacyService.joinPharmacy(code: code)
             codeSentSuccessfully = true
             
         } catch {

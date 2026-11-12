@@ -29,31 +29,8 @@ struct UserBasicInfoView: View {
     }
     
     private var initialLetters: some View {
-        Circle()
-            .fill(.theme.mintTint)
+        UserProfileImageView(fullName: user.fullName)
             .frame(width: 80)
-            .overlay {
-                if let fullName = user.fullName {
-                    Text(initials(from: fullName))
-                        .font(.system(size: 36))
-                        .fontWeight(.heavy)
-                        .foregroundStyle(.theme.textPrimary)
-                } else {
-                    Image(systemName: "person.crop.circle")
-                        .font(.system(size: 60))
-                        .padding(DesignSystem.Spacing.small)
-                        .foregroundStyle(.theme.textPrimary)
-                }
-            }
-    }
-    
-    func initials(from fullName: String) -> String {
-        fullName
-            .split(separator: " ")
-            .compactMap(\.first)
-            .map(String.init)
-            .joined()
-            .uppercased()
     }
 }
 

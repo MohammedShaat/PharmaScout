@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 
 @Observable
-class ProfileViewModel {
+class AccountActionsViewModel {
     private let authService: AuthService
     private let pushTokenCoordinator: PushTokenCoordinator
     private let reauthCoordinator: ReauthenticationCoordinator

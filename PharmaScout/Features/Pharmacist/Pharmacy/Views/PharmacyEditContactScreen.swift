@@ -24,17 +24,23 @@ struct PharmacyEditContactScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            contactListSection
-            
-            addNewContactSection
-            
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            ScrollView {
+                SwipeHintView()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                contactListSection
+                
+                addNewContactSection
+            }
+
             if let error = vm.loadingState.error {
-                Text(error.errorDescription)
+                ErrorView(title: "Couldn't update contacts", description: error.errorDescription)
             }
             
-            buttonSection
+            saveButton
         }
+        .customNavTitle("Contact")
         .padding(DesignSystem.Spacing.xLarge)
         .scrollDisabled(isSwipingAnItem)
         .onDisappear {
@@ -43,11 +49,13 @@ struct PharmacyEditContactScreen: View {
     }
     
     private var contactListSection: some View {
-        VStack(spacing: DesignSystem.Spacing.xxLarge) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             ForEach($vm.contacts) { $contact in
                 SwipyView(
                     isSwipingAnItem: $isSwipingAnItem) {
-                        contactItemView($contact)
+                        ContactEditView(contact: $contact)
+                            .padding(DesignSystem.Spacing.large)
+                            .roundedBackground()
                     } onDeleteTapped: {
                         vm.deleteContact(contact)
                     }
@@ -56,16 +64,11 @@ struct PharmacyEditContactScreen: View {
     }
     
     private var addNewContactSection: some View {
-        ActionPromptView(actionTitle: "Add new Contact", action: vm.addContact)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+        SecondaryButtonView(title: "Add contact", systemName: "plus", action: vm.addContact)
+            .padding(DesignSystem.Spacing.large)
     }
     
-    private func contactItemView(_ contact: Binding<PharmacyContact>) -> some View {
-        ContactView(contact: contact)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    
-    private var buttonSection: some View {
+    private var saveButton: some View {
         PrimaryButtonView(
             title: "Save",
             isDisabled: !vm.canUpdate,
@@ -84,9 +87,11 @@ struct PharmacyEditContactScreen: View {
     let pharmacy = Pharmacy.samples[0]
     let contacts = PharmacyContact.samples.filter { $0.pharmacyId == pharmacy.id }
     
-    PharmacyEditContactScreen(
-        pharmacyService: MockPharmacyService.sample,
-        pharmacy: pharmacy,
-        contacts: contacts
-    )
+    CustomNavStack {
+        PharmacyEditContactScreen(
+            pharmacyService: MockPharmacyService.sample,
+            pharmacy: pharmacy,
+            contacts: contacts
+        )
+    }
 }

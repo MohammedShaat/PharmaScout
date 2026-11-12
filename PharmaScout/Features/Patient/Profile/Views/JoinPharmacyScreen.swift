@@ -20,73 +20,44 @@ struct JoinPharmacyScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                if vm.codeSentSuccessfully {
-                    successSection
-                    
-                } else {
-                    instructionAndInputSection
-                    
-                    errorSection
-                    
-                    sendButtonSection
-                }
-            }
-            .padding(DesignSystem.Spacing.xLarge)
-            .onDisappear {
-                sendTask?.cancel()
-            }
-        }
-    }
-    
-    private var successSection: some View {
-        VStack {
-            Text("Request has been sent successfully")
-                .font(.title)
-                .foregroundStyle(.theme.textPrimary)
-                .multilineTextAlignment(.center)
-            
-            if let pharmacyId = vm.pharmacyId {
-                Text("Pharmacy ID: \(pharmacyId)")
+        ZStack {
+            if vm.codeSentSuccessfully {
+                CodeRequestSuccessView(
+                    subtitle: "The pharmacy owner will review your request. We’ll take you to your request status.",
+                    copyableTitle: "Your membership ID",
+                    copyableValue: vm.staffMemeberId
+                )
+                
+            } else {
+                CodeEntryView(
+                    title: "Ownership codes are issued personally. Ask the PharmaScout team for yours.",
+                    subtitle: "Ask the pharmacy owner for their join code. They can find it in their Profile.",
+                    code: $vm.code,
+                    codeLength: vm.codeLength,
+                    loadingState: vm.requestLoadingState,
+                    canSend: vm.canSend,
+                    onSendTapped:  {
+                        sendTask?.cancel()
+                        sendTask = Task {
+                            await vm.sendRequest()
+                        }
+                    }
+                )
             }
         }
-    }
-    
-    private var instructionAndInputSection: some View {
-        InvitationCodeEntryView(
-            title: "Enter the code to send membership request",
-            code: $vm.code,
-            codeLength: vm.codeLength
-        )
-        .padding(.vertical, DesignSystem.Spacing.xxLarge)
-    }
-    
-    @ViewBuilder
-    private var errorSection: some View {
-        if let error = vm.requestLoadingState.error {
-            Text(error.errorDescription)
-                .padding(.vertical, DesignSystem.Spacing.large)
+        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .customNavTitle("Join a pharmacy")
+        .onDisappear {
+            sendTask?.cancel()
         }
-    }
-    
-    private var sendButtonSection: some View  {
-        PrimaryButtonView(
-            title: "Send",
-            isDisabled: !vm.canSend,
-            isLoading: vm.requestLoadingState.status != .idle) {
-                sendTask?.cancel()
-                sendTask = Task {
-                    await vm.sendRequest()
-                }
-            }
-            .padding(.vertical, DesignSystem.Spacing.large)
     }
 }
 
 #Preview {
-    JoinPharmacyScreen(
-        authService: MockAuthService.sample,
-        pharmacyService: MockPharmacyService.sample
-    )
+    CustomNavStack {
+        JoinPharmacyScreen(
+            authService: MockAuthService.sample,
+            pharmacyService: MockPharmacyService.sample
+        )
+    }
 }

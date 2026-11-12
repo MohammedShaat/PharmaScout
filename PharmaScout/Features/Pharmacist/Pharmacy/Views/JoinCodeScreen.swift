@@ -20,17 +20,21 @@ struct JoinCodeScreen: View {
     }
     
     var body: some View {
-        VStack {
-            Spacer()
-            
-            detailSection
-            
-            Spacer()
-            
-            regenerateSection
-            
-            Spacer()
-        }
+        CodeGenerationView(
+            title: "Your join code",
+            subtitle: "share this \(vm.codeLength)-character code with staff members who want to join your pharmacy.",
+            systemName: "person.badge.plus",
+            invitationCode: vm.joinCode,
+            codeLength: vm.codeLength,
+            loadingState: vm.loadingState,
+            shareLinkSubject: "Pharmacy Join Code",
+            shareLinkMessage: "Use this code to join our pharmacy.",
+            leakMessage: "Regenerate it and the old one stops working.",
+            onGenerateTapped: generateCode,
+            onRegenerateTapped: generateCode
+        )
+        .padding(DesignSystem.Spacing.xLarge)
+        .customNavTitle("Invite a pharmacist")
         .onAppear {
             vm.getOrGenerateCodeIfNeeded()
         }
@@ -39,37 +43,19 @@ struct JoinCodeScreen: View {
         }
     }
     
-    private var detailSection: some View {
-        LoadingContentView(
-            LoadingState: vm.loadingState,
-            showMessage: vm.joinCode == nil,
-            emptyMessage: "") {
-                if let joinCode = vm.joinCode {
-                    InvitationCodeView(
-                        title: "Share this 6-character code with staff members who want to join your pharmacy.",
-                        invitationCode: joinCode,
-                        shareLinkSubject: "Pharmacy Join Code",
-                        shareLinkMessage: "Use this code to join our pharmacy."
-                    )
-                }
-            }
-    }
-    
-    private var regenerateSection: some View {
-        Text("Regenerate Code")
-            .foregroundStyle(.theme.textPrimary)
-            .clickable(isDisabled: vm.loadingState.status != .idle) {
-                generateCodeTask?.cancel()
-                generateCodeTask = Task {
-                    await vm.regenerateCode()
-                }
-            }
+    private func generateCode() {
+        generateCodeTask?.cancel()
+        generateCodeTask = Task {
+            await vm.regenerateCode()
+        }
     }
 }
 
 #Preview {
-    JoinCodeScreen(
-        pharmacyService: MockPharmacyService.sample,
-        pharmacyId: Pharmacy.samples[0].id
-    )
+    CustomNavStack {
+        JoinCodeScreen(
+            pharmacyService: MockPharmacyService.sample,
+            pharmacyId: Pharmacy.samples[0].id
+        )
+    }
 }

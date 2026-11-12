@@ -11,6 +11,8 @@ import Foundation
 class OwnerInvitationViewModel {
     private let ownerApplicationService: OwnerApplicationService
     
+    let codeLength: Int  = AppConstants.Pharmacy.ownerApplicationCodeLength
+    
     private(set) var invitationCode: InvitaionCode?
     private(set) var codeLoadingState = LoadingState()
     

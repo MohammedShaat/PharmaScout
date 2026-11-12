@@ -40,7 +40,7 @@ struct PharmacistDashboardScreen: View {
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
-            .customNavBarVisibility(.root)
+            .customNavBarVisibility(.hidden)
             .refreshable(action: vm.refreshData)
             .onAppear(perform: vm.loadDataIfNeeded)
             .task {
@@ -51,7 +51,7 @@ struct PharmacistDashboardScreen: View {
     
     
     private var headerSection: some View {
-        GreetingHeaderView(user: user)
+        GreetingHeaderView(firstName: user.firstName, isPharmacist: true)
     }
     
     private var recentPendingInquiries: some View {
@@ -63,39 +63,61 @@ struct PharmacistDashboardScreen: View {
             LoadingContentView(
                 LoadingState: vm.latestPendingInquiriesLoadingState,
                 showMessage: vm.latestPendingInquiries.isEmpty,
-                emptyMessage: "No pending Inquiries") {
-                    VStack(spacing: DesignSystem.Spacing.large) {
-                        ForEach(vm.latestPendingInquiries) { inquiry in
-                            InquiryView(inquiry)
-                                .clickable {
-                                    pharmacistTabViewModel.navigateToInquiryDetailScreenBy(inquiry)
-                                }
-                        }
+                emptyTitle: "No pending inquiries",
+                emptyMessage: "You're all caught up. New requests will appear here."
+            ) {
+                VStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(vm.latestPendingInquiries) { inquiry in
+                        DashboardPendingInquiryView(inquiry: inquiry)
+                            .padding(DesignSystem.Spacing.large)
+                            .roundedBackground(showBorder: true, borderColor: InquiryStatus.pending.color)
+                            .clickable {
+                                pharmacistTabViewModel.navigateToInquiryDetailScreenBy(inquiry)
+                            }
                     }
                 }
+            }
         }
     }
     
     private var todayActivitySection: some View {
-        VStack {
-            HStack {
-                Text("Today's activity")
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.theme.textPrimary)
-                Spacer()
-            }
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            Text("Today's activity")
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundStyle(.theme.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
                 LoadingState: vm.todaysInquiriesCountLoadingState,
                 showMessage: vm.allTodaysInquiriesCount == 0,
-                emptyMessage: "No inquiries today") {
-                    VStack(alignment: .leading) {
-                        Text("^[\(vm.allTodaysInquiriesCount) inquiry](inflect: true)")
-                        Text("\(vm.answeredTodaysInquiriesCount) answered")
+                emptyTitle: "No inquiries today",
+                emptyMessage: ""
+            ) {
+                HStack(spacing: DesignSystem.Spacing.medium) {
+                    Group {
+                        statisticCard(title: "Answered", count: vm.answeredTodaysInquiriesCount)
+                        
+                        statisticCard(title: "Received", count: vm.allTodaysInquiriesCount)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(DesignSystem.Spacing.large)
+                    .roundedBackground()
                 }
+            }
+        }
+    }
+    
+    private func statisticCard(title: String, count: Int) -> some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundStyle(.theme.textPrimary)
+            
+            Text("\(count)")
+                .font(.largeTitle)
+                .fontWeight(.heavy)
+                .foregroundStyle(.theme.textPrimary)
         }
     }
 }

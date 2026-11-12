@@ -57,7 +57,7 @@ struct CreateOrEditWorkingHoursScreen: View {
     }
     
     private func workingHourItemView(_ workingHour: Binding<WorkingHour>) -> some View {
-        WorkingHourView(workingHour: workingHour)
+        WorkingHourEditView(workingHour: workingHour)
             .frame(maxWidth: .infinity, alignment: .leading)
     }
     

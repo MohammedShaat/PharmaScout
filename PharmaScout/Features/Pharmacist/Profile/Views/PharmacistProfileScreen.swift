@@ -14,9 +14,9 @@ struct PharmacistProfileScreen: View {
     private let pharmacyService: PharmacyService
     private let pharmacyId: String
     
+    @State private var accountVM: AccountActionsViewModel
     @State private var vm: PharmacistProfileViewModel
     @State private var task: Task<Void, Never>?
-    @State private var showingDeleteAccountConfirmation: Bool = false
     @State private var showingClosePharmacyConfirmation: Bool = false
     
     private var canManageStaff: Bool { pharmacistAccess.can(.manageStaff) }
@@ -28,6 +28,8 @@ struct PharmacistProfileScreen: View {
         pharmacistAccess: PharmacistAccess,
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService,
         pharmacyService: PharmacyService,
         pharmacyId: String
     ) {
@@ -37,44 +39,35 @@ struct PharmacistProfileScreen: View {
         self.pharmacyService = pharmacyService
         self.pharmacyId = pharmacyId
         
-        let viewModel = PharmacistProfileViewModel(
+        let accountViewModel = AccountActionsViewModel(
             authService: authService,
             pushTokenCoordinator: pushTokenCoordinator,
-            pharmacyService: pharmacyService
+            appleReauthenticationService: appleReauthenticationService,
+            googleReauthenticationService: googleReauthenticationService
         )
-        self._vm = State(initialValue: viewModel)
+        self._accountVM = State(initialValue: accountViewModel)
+        
+        let viewModel = PharmacistProfileViewModel(pharmacyService: pharmacyService)
+        self._vm = State(wrappedValue: viewModel)
     }
     
     var body: some View {
         CustomNavStack {
-            Form {
-                if canManageStaff { invite }
+            VStack(spacing: DesignSystem.Spacing.xLarge) {
+                UserBasicInfoView(user: user)
+                    .padding( DesignSystem.Spacing.large)
+                    .roundedBackground()
                 
-                if canClosePharmacy{ closePharmacy }
+                pharmacySection
                 
-                if canJoinAnotherPharmacy{ joinAnotherPharmacy }
+                AccountSectionView(accountVM: $accountVM)
                 
-                logout
-                
-                deleteAccount
+                Spacer()
             }
+            .padding(.horizontal, DesignSystem.Spacing.large)
             .customNavTitle(user.fullName ?? "")
             .customNavBarVisibility(.root)
             .errorAlert(title: "Failed", loadingState: $vm.loadingState)
-            .alert("Delete Account?", isPresented: $showingDeleteAccountConfirmation) {
-                Button("Delete Account", role: .destructive) {
-                    task?.cancel()
-                    task = Task {
-                        await vm.deleteAccount()
-                    }
-                }
-                
-                Button("Cancel", role: .cancel) {}
-            } message: {
-                Text(
-                    "Your account will be permanently deleted. This action cannot be undone."
-                )
-            }
             .alert("Close Pharmacy?", isPresented: $showingClosePharmacyConfirmation) {
                 Button("Close Pharmacy", role: .destructive) {
                     task?.cancel()
@@ -104,42 +97,49 @@ struct PharmacistProfileScreen: View {
         }
     }
     
-    private var logout: some View {
-        Button("Log out") {
-            task?.cancel()
-            task = Task {
-                await vm.logout()
+    @ViewBuilder
+    private var pharmacySection: some View {
+        if canManageStaff || canJoinAnotherPharmacy || canClosePharmacy {
+            ProfileSectionView(sectionTitle: "Pharmacy") {
+                // Invite a pharmacist
+                if canManageStaff {
+                    CustomNavValueLink(value: PharmacistProfileRoute.joinCode) {
+                        ProfileSectionRowView(
+                            title: "Invite a pharmacist",
+                            description: "Share a join code so a colleague can request to join your pharmacy",
+                            systemName: "person.badge.plus.fill",
+                        )
+                        .disclosureIndicator()
+                    }
+                }
+                
+                // Become pharmacy owner
+                if canJoinAnotherPharmacy {
+                    CustomNavValueLink(value: PharmacistProfileRoute.joinAnotherPharmacy) {
+                        ProfileSectionRowView(
+                            title: "Join another pharmacy",
+                            description: "Work with more than one pharmacy",
+                            systemName: "building.2.crop.circle",
+                        )
+                        .disclosureIndicator()
+                    }
+                }
+                
+                // Close pharmacy
+                if canClosePharmacy {
+                    ProfileSectionRowView(
+                        title: "Close pharmacy",
+                        systemName: "house.slash",
+                        color: .theme.red,
+                        isLoading: accountVM.deletionLoadingState.status != .idle
+                    )
+                    .clickable(isDisabled: vm.loadingState.status != .idle) {
+                        showingClosePharmacyConfirmation = true
+                    }
+                }
             }
         }
-        .disabled(vm.loadingState.status != .idle)
     }
-    
-    private var deleteAccount: some View {
-        Button("Delete account", role: .destructive) {
-            showingDeleteAccountConfirmation = true
-        }
-        .disabled(vm.loadingState.status != .idle)
-    }
-    
-    private var invite: some View {
-        CustomNavValueLink(value: PharmacistProfileRoute.joinCode) {
-            Text("Invite a pharmacist?")
-        }
-    }
-    
-    private var joinAnotherPharmacy: some View {
-        CustomNavValueLink(value: PharmacistProfileRoute.joinAnotherPharmacy) {
-            Text("Join another pharmacy")
-        }
-    }
-    
-    private var closePharmacy: some View {
-        Button("Close pharmacy") {
-            showingClosePharmacyConfirmation = true
-        }
-        .disabled(vm.loadingState.status != .idle)
-    }
-    
 }
 
 enum PharmacistProfileRoute {
@@ -153,6 +153,8 @@ enum PharmacistProfileRoute {
         pharmacistAccess: .full(role: .owner),
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample,
         pharmacyService: MockPharmacyService.sample,
         pharmacyId: Pharmacy.samples[0].id
     )

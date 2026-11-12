@@ -18,37 +18,32 @@ struct OwnerInvitationScreen: View {
     
     var body: some View {
         CustomNavStack {
-            VStack {
-                
-                LoadingContentView(
-                    LoadingState: vm.codeLoadingState,
-                    showMessage: vm.invitationCode == nil,
-                    emptyMessage: "") {
-                        if let invitationCode = vm.invitationCode {
-                            InvitationCodeView(
-                                title: "Share this 6-character code with the person applying to become a pharmacy owner.",
-                                invitationCode: invitationCode,
-                                shareLinkSubject: "Pharmacy Owner Invitation Code",
-                                shareLinkMessage: "Use this code to apply to become a pharmacy owner on PharmaScout."
-                            )
-                        }
-                    }
-                
-                PrimaryButtonView(
-                    title: "Generate code",
-                    isDisabled: vm.codeLoadingState.status != .idle
-                ) {
-                    task?.cancel()
-                    task = Task {
-                        await vm.generateCode()
-                    }
-                }
-            }
+            CodeGenerationView(
+                title: "Pharmacy owner code",
+                subtitle: "Share this \(vm.codeLength)-character code with a pharmacy owner so they can submit their pharmacy application.",
+                systemName: "building.2.crop.circle",
+                invitationCode: vm.invitationCode,
+                codeLength: vm.codeLength,
+                loadingState: vm.codeLoadingState,
+                shareLinkSubject: "PharmaScout Pharmacy Owner Code",
+                shareLinkMessage: "Use this code to apply as a pharmacy owner on PharmaScout.",
+                leakMessage: "Revoke it from its details screen.",
+                onGenerateTapped: generateCode,
+                onRegenerateTapped: generateCode
+            )
             .customNavBarVisibility(.root)
+            .customNavTitle("Invite owner")
             .padding(DesignSystem.Spacing.xLarge)
             .onDisappear {
                 task?.cancel()
             }
+        }
+    }
+    
+    private func generateCode() {
+        task?.cancel()
+        task = Task {
+            await vm.generateCode()
         }
     }
 }
