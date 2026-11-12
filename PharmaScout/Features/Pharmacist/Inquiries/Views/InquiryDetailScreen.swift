@@ -45,6 +45,7 @@ struct InquiryDetailScreen: View {
             }
             .padding(DesignSystem.Spacing.xLarge)
         }
+        .customNavTitle("Inquiry Details")
         .sheet(isPresented: $showingDrugSelection) {
             if let inquiry = vm.inquiry {
                 DrugSelectionScreen(
@@ -75,91 +76,64 @@ struct InquiryDetailScreen: View {
         LoadingContentView(
             LoadingState: vm.inquiryLoadingState,
             showMessage: vm.inquiry == nil,
-            emptyMessage: "") {
-                if let inquiry = vm.inquiry {
-                    VStack {
-                        Text("\(inquiry.genericName) \(inquiry.drugFormulation.title)")
-                        
-                        HStack {
-                            Text("Status: \(inquiry.status.rawValue)")
-                                .foregroundStyle(inquiry.status == .answered ? .theme.success : .theme.textTertiary)
-                            Spacer()
-                            Text("Response: \(inquiry.response?.rawValue ?? "no response")")
-                        }
-                        
-                        VStack(alignment: .leading) {
-                            Text("Sent: \(inquiry.createdAt.formattedDateTime)")
-                            
-                            if let respondedAt = inquiry.respondedAt {
-                                Text("Responded: \(respondedAt.formattedDateTime)")
-                            }
-                        }
-                    }
-                }
+            emptyTitle: "Couldn't fetch the inquiry details",
+            emptyMessage: ""
+        ) {
+            if let inquiry = vm.inquiry {
+                InquiryDetailInfoView(inquiry: inquiry)
             }
+        }
     }
     
     private var responseSection: some View {
         LoadingContentView(
             LoadingState: vm.editEligibilityLoadingState,
             showMessage: vm.editEligibilityLoadingState.error != nil,
-            emptyMessage: "") {
-                if vm.canCanResponse {
-                    VStack(spacing: DesignSystem.Spacing.xxLarge) {
-                        // MARK: - Response options
-                        Picker(selection: $vm.response) {
-                            ForEach(InquiryResponse.allCases, id: \.self) { response in
-                                Text(response.rawValue)
-                                    .tag(response)
-                            }
-                        } label: {
-                            Text("Respond with")
-                        }
-                        .pickerStyle(.segmented)
-                        
-                        
-                        // MARK: - Substitute search
-                        if vm.response == .substitute {
-                            if vm.substituteSelectedDrug == nil {
-                                Text("Choose a substitute medicine")
-                                    .foregroundStyle(.theme.textPrimary)
-                                    .clickable {
-                                        showingDrugSelection = true
-                                    }
-                            }
+            emptyTitle: "Couldn't check if you can respond",
+            emptyMessage: ""
+        ) {
+            if vm.canCanResponse {
+                VStack(spacing: DesignSystem.Spacing.xxLarge) {
+                    InquiryResponseFlowView(
+                        response: vm.response,
+                        onResponseChanged: { vm.response = $0 },
+                        substituteSelectedDrug: vm.substituteSelectedDrug,
+                        onChooseSubstituteTapped: { showingDrugSelection = true },
+                        onSubstituteSelectedDrugTapped: { selectedDrugToEdit = vm.substituteSelectedDrug }
+                    )
+                    
+                    // MARK: Response error
+                    if let responseError = vm.responseLoadingState.error {
+                        HStack(alignment: .top, spacing: DesignSystem.Spacing.medium) {
+                            Image(systemName: "exclamationmark.circle")
                             
-                            if let selectedDrug = vm.substituteSelectedDrug {
-                                VStack {
-                                    Text(selectedDrug.genericDrug.genericName)
-                                    Text(selectedDrug.formulation.title)
-                                }
-                                .clickable {
-                                    selectedDrugToEdit = selectedDrug
-                                }
+                            VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
+                                Text("Couldn't send your response.")
+                                Text(responseError.errorDescription)
                             }
                         }
-                        
-                        // MARK: - Response error
-                        if let responseError = vm.responseLoadingState.error {
-                            Text(responseError.errorDescription)
-                        }
-                        
-                        // MARK: - Response button
-                        if let inquiry = vm.inquiry{
-                            PrimaryButtonView(
-                                title: inquiry.status == .pending ? "Respond" : "Update",
-                                isDisabled: !vm.responseIsValid,
-                                isLoading: vm.responseLoadingState.status != .idle) {
-                                    responseTask?.cancel()
-                                    responseTask = Task {
-                                        await vm.sendResponse()
-                                    }
-                                }
-                        }
+                        .foregroundStyle(.theme.red)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(DesignSystem.Spacing.large)
+                        .roundedBackground(background: .theme.redBackground, radius: DesignSystem.Spacing.small)
                     }
-                    .padding(.vertical, DesignSystem.Spacing.large)
+                    
+                    // MARK: Response button
+                    if let inquiry = vm.inquiry{
+                        PrimaryButtonView(
+                            title: inquiry.status == .pending ? "Respond" : "Update",
+                            isDisabled: !vm.responseIsValid,
+                            isLoading: vm.responseLoadingState.status != .idle) {
+                                responseTask?.cancel()
+                                responseTask = Task {
+                                    await vm.sendResponse()
+                                }
+                            }
+                    }
                 }
+                .padding(.vertical, DesignSystem.Spacing.large)
             }
+        }
     }
 }
 

@@ -31,7 +31,7 @@ struct SearchFieldView: View {
         }
         .padding(.horizontal, DesignSystem.Spacing.medium)
         .padding(.vertical, DesignSystem.Spacing.xSmall)
-        .roundedBackground(background: .theme.disabledBackground, radius: DesignSystem.CornerRadius.small)
+        .roundedBackground(radius: DesignSystem.CornerRadius.small)
     }
 }
 

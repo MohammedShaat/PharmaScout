@@ -221,8 +221,8 @@ struct DrugSelectionScreen: View {
         Text("")
             .sheet(isPresented: .constant(true)) {
                 DrugSelectionScreen(drugService: MockDrugService.sample, selectedFormulationIds: []) { _ in
-                    
                 }
+                .background(.theme.background)
             }
     }
 }

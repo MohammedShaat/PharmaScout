@@ -34,16 +34,21 @@ struct InquiriesScreen: View {
     
     var body: some View {
         CustomNavStack(path: path) {
-            ScrollView {
-                VStack {
-                    filterSection
-                    
-                    searchSection
-                    
-                    inquiryListSection
+            VStack(spacing: 0) {
+                filterSection
+                
+                searchSection
+
+                ScrollView {
+                    VStack(spacing: 0) {
+                        inquiryListSection
+                    }
+                    .refreshable(action: vm.refresh)
                 }
-                .padding(DesignSystem.Spacing.xLarge)
             }
+            .padding(.horizontal, DesignSystem.Spacing.xLarge)
+            .customNavBarVisibility(.root)
+            .customNavTitle("Inquiries")
             .customNavigationDestination(for: InquiryDetailRoute.self) { route in
                 InquiryDetailScreen(
                     inquiryService: inquiryService,
@@ -53,8 +58,6 @@ struct InquiriesScreen: View {
                 )
                 .id(route.inquiryId)
             }
-            .customNavBarVisibility(.root)
-            .refreshable(action: vm.refresh)
             .task(id: vm.searchText) {
                 await vm.onSearchTextChanged()
             }
@@ -74,34 +77,35 @@ struct InquiriesScreen: View {
     }
     
     private var filterSection: some View {
-        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
-            Picker("Analytics type", selection: $vm.filter) {
-                ForEach(InquiryFilter.allCases) { status in
-                    Text(status.title)
-                        .tag(status)
-                }
-            }
+        FilterView(
+            selection: $vm.filter,
+            title: vm.filter.title,
+            pickerTitle: "Status",
+            options: InquiryFilter.allCases
+        ) { status in
+            Text(status.title)
         }
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private var searchSection: some View {
-        TextField("type here", text: $vm.searchText)
-            .padding()
-            .background(.theme.disabledBackground)
+        SearchFieldView(text: $vm.searchText, placehodler: "Filter by medicine name or formulation")
+            .padding(.vertical, DesignSystem.Spacing.large)
     }
     
     private var inquiryListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
             showMessage: vm.inquiries.isEmpty,
-            emptyMessage: "No inquiries yet") {
+            emptyTitle: "No inquiries",
+            emptyMessage: "") {
                 LazyVStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.inquiries) { inquiry in
                         CustomNavValueLink(value: InquiryDetailRoute(inquiryId: inquiry.id, inquiry: inquiry)) {
                             InquiryView(inquiry)
                         }
                         .onAppear {
-                            if inquiry.id == vm.inquiries.last?.id {
+                            if inquiry.isLast(vm.inquiries) {
                                 inquiriesTask?.cancel()
                                 inquiriesTask = Task {
                                     await vm.loadMore()
@@ -109,7 +113,7 @@ struct InquiriesScreen: View {
                             }
                         }
                         
-                        if inquiry.id == vm.inquiries.last?.id && vm.loadingState.status == .loadingMore {
+                        if inquiry.isLast(vm.inquiries) && vm.loadingState.status == .loadingMore {
                             RingProgressView()
                         }
                     }
