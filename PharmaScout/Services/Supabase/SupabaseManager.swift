@@ -339,12 +339,8 @@ extension SupabaseManager {
                 }
             }
             
-            enum updatePharmacyStaffMembers {
-                static let name = "update_pharmacy_staff_members"
-                
-                enum Params {
-                    static let staffMembers = "p_staff_members"
-                }
+            enum managePharmacyStaffMember {
+                static let name = "manage_pharmacy_staff_member"
             }
             
             enum generatePharmacyJoinCode {

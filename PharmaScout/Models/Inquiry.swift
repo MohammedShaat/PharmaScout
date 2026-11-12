@@ -20,10 +20,12 @@ struct Inquiry: nonisolated Codable, Identifiable, Hashable {
     let respondedAt: Date?
 }
 
-enum InquiryResponse: String, Codable, CaseIterable {
+enum InquiryResponse: String, Codable, CaseIterable, Identifiable {
     case available = "available"
     case unavailable = "unavailable"
     case substitute = "substitute"
+    
+    var id: String { rawValue }
     
     var title: String {
         switch self {
@@ -38,4 +40,12 @@ enum InquiryStatus: String, Codable {
     case pending = "pending"
     case answered = "answered"
     case expired = "expired"
+    
+    var title: String {
+        switch self {
+        case .pending: "pending"
+        case .answered: "answered"
+        case .expired: "expired"
+        }
+    }
 }

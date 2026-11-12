@@ -83,7 +83,7 @@ struct RecentSearchesScreen: View {
     private var filterSection: some View {
         FilterView(
             selection: $vm.filter,
-            title: vm.filter.title,
+            label: vm.filter.title,
             pickerTitle: "Status",
             options: SearchFilter.allCases,
             content: { status in

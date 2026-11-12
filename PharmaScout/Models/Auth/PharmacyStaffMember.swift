@@ -18,6 +18,13 @@ struct PharmacyStaffMember: Codable, Identifiable, Hashable {
 enum PharmacyStaffRole: String, Codable, CaseIterable, Hashable {
     case owner = "owner"
     case employee = "employee"
+    
+    var title: String {
+        switch self {
+        case .owner: "Owner"
+        case .employee: "Employee"
+        }
+    }
 }
 
 enum PharmacyStaffStatus: String, Codable, CaseIterable, Hashable {
@@ -25,4 +32,13 @@ enum PharmacyStaffStatus: String, Codable, CaseIterable, Hashable {
     case approved
     case rejected
     case suspended
+    
+    var title: String {
+        switch self {
+        case .pending: "Pending"
+        case .approved: "Approved"
+        case .rejected: "Rejected"
+        case .suspended: "Suspended"
+        }
+    }
 }

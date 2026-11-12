@@ -17,68 +17,41 @@ struct BecomePharmacyOwnerScreen: View {
     }
     
     var body: some View {
-        VStack {
+        ZStack {
             if vm.codeSentSuccessfully {
-                successSection
+                CodeRequestSuccessView(
+                    subtitle: "Your application is under review. We’ll take you to your application status.",
+                    copyableTitle: "Application ID",
+                    copyableValue: vm.applicationId
+                )
                 
             } else {
-                instructionAndInputSection
-                
-                errorSection
-                
-                sendButtonSection
+                CodeEntryView(
+                    title: "Enter the code to apply for pharmacy ownership",
+                    subtitle: "Ownership codes are issued personally. Ask the PharmaScout team for yours.",
+                    code: $vm.code,
+                    codeLength: vm.codeLength,
+                    loadingState: vm.requestLoadingState,
+                    canSend: vm.canSend,
+                    onSendTapped:  {
+                        task?.cancel()
+                        task = Task {
+                            await vm.sendRequest()
+                        }
+                    }
+                )
             }
         }
-        .padding(DesignSystem.Spacing.xLarge)
+        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .customNavTitle("Become a pharmacy owner")
         .onDisappear {
             task?.cancel()
         }
     }
-    
-    private var successSection: some View {
-        VStack {
-            Text("Request has been sent successfully")
-                .font(.title)
-                .foregroundStyle(.theme.textPrimary)
-                .multilineTextAlignment(.center)
-            
-            if let applicationId = vm.applicationId {
-                Text("Your application ID: \(applicationId)")
-            }
-        }
-    }
-    
-    private var instructionAndInputSection: some View {
-        InvitationCodeEntryView(
-            title: "Enter the code to apply for pharmacy ownership",
-            code: $vm.code,
-            codeLength: vm.codeLength
-        )
-        .padding(.vertical, DesignSystem.Spacing.xxLarge)
-    }
-    
-    @ViewBuilder
-    private var errorSection: some View {
-        if let error = vm.requestLoadingState.error {
-            Text(error.errorDescription)
-                .padding(.vertical, DesignSystem.Spacing.large)
-        }
-    }
-    
-    private var sendButtonSection: some View  {
-        PrimaryButtonView(
-            title: "Send",
-            isDisabled: !vm.canSend,
-            isLoading: vm.requestLoadingState.status != .idle) {
-                task?.cancel()
-                task = Task {
-                    await vm.sendRequest()
-                }
-            }
-            .padding(.vertical, DesignSystem.Spacing.large)
-    }
 }
 
 #Preview {
-    BecomePharmacyOwnerScreen(ownerApplicationService: MockOwnerApplicationService.sample)
+    CustomNavStack {
+        BecomePharmacyOwnerScreen(ownerApplicationService: MockOwnerApplicationService.sample)
+    }
 }

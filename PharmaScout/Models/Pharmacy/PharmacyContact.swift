@@ -19,4 +19,12 @@ enum ContactType: String, Codable, CaseIterable {
     case number = "number"
     case link = "link"
     case email = "email"
+    
+    var title: String {
+        switch self {
+        case .number: "Number"
+        case .link: "Link"
+        case .email: "Email"
+        }
+    }
 }

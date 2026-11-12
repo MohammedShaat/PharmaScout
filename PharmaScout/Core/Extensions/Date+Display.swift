@@ -15,5 +15,9 @@ extension Date {
     var formattedTime: String {
         formatted(date: .omitted, time: .shortened)
     }
+    
+    var dayMonth: String {
+        formatted(.dateTime.day().month())
+    }
 }
 

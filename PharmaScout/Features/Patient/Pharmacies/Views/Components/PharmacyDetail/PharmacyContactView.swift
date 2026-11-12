@@ -14,7 +14,7 @@ struct PharmacyContactView: View {
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.medium) {
-            contactIcon
+            contact.type.icon
                 .font(.system(size: 22))
                 .frame(width: 30, height: 30)
                 .foregroundStyle(.theme.green)
@@ -50,15 +50,16 @@ struct PharmacyContactView: View {
         }
 
     }
-    
-    private var contactIcon: some View {
-        switch contact.type {
+}
+
+extension ContactType {
+    var icon: some View {
+        switch self {
         case .number: Image(systemName: "phone")
         case .email: Image(systemName: "envelope")
         case .link: Image(systemName: "link")
         }
     }
-    
 }
 
 #Preview {

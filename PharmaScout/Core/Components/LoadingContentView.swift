@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LoadingContentView<Content: View, Icon: View>: View {
-    let LoadingState: LoadingState
+    let loadingState: LoadingState
     let showMessage: Bool
     let emptyTitle: String
     let emptyMessage: String
@@ -25,7 +25,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
         @ViewBuilder emptyIcon: () -> Icon = { EmptyView() },
         @ViewBuilder content: () -> Content
     ) {
-        self.LoadingState = LoadingState
+        self.loadingState = LoadingState
         self.showMessage = showMessage
         self.emptyTitle = emptyTitle
         self.emptyMessage = emptyMessage
@@ -35,14 +35,14 @@ struct LoadingContentView<Content: View, Icon: View>: View {
     }
     
     var body: some View {
-        switch LoadingState.status {
+        switch loadingState.status {
         case .loading:
-            RingProgressView()
+            RingProgressView(trimColor: .theme.secondary)
             
         case .idle, .loadingMore, .refreshing:
             if !showMessage {
                 content
-            } else if LoadingState.hasStarted {
+            } else if loadingState.hasStarted {
                 errorOrEmpty
             }
         }
@@ -53,7 +53,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
             // Icon
             if showIcon {
                 Group {
-                    if LoadingState.error != nil {
+                    if loadingState.error != nil {
                         errorIcon
                     } else {
                         emptyIconTemplate
@@ -64,7 +64,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
             
             // Title & message
             VStack(spacing: DesignSystem.Spacing.medium) {
-                let error = LoadingState.error
+                let error = loadingState.error
                 
                 Text(error != nil ? "Couldn't load" : emptyTitle)
                     .font(.title2)

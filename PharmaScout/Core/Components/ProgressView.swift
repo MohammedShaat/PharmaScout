@@ -37,3 +37,14 @@ struct ProgressView: View {
     }
         .padding(50)
 }
+
+
+extension ProgressView {
+    init(value: Int, total: Int, color: Color) {
+        self.init(value: Double(value), total: Double(total), color: color)
+    }
+    
+    init(value: Int, total: Int) {
+        self.init(value: value, total: total, color: .theme.primary)
+    }
+}

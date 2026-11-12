@@ -73,7 +73,7 @@ struct PharmaciesScreen: View {
     private var filterSection: some View {
         FilterView(
             selection: $vm.filter,
-            title: vm.filter.title,
+            label: vm.filter.title,
             pickerTitle: "Status",
             options: PharmacyFilter.allCases,
             content: { status in

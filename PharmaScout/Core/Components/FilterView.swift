@@ -7,12 +7,13 @@
 
 import SwiftUI
 
-struct FilterView<T: Hashable & Identifiable, Content: View>: View {
+struct FilterView<T: Hashable & Identifiable, Content: View, Icon: View>: View {
     @Binding var selection: T
-    let title: String
+    let label: String
     let pickerTitle: String
     let options: [T]
-    @ViewBuilder let content: (T) -> Content
+    let icon: Icon
+    let content: (T) -> Content
     
     var body: some View {
         Menu {
@@ -24,18 +25,22 @@ struct FilterView<T: Hashable & Identifiable, Content: View>: View {
             }
         } label: {
             HStack {
-                Image(systemName: "line.3.horizontal.decrease")
+                icon
                 
-                Text("Filter:")
+                Text("\(pickerTitle):")
                     .foregroundStyle(.theme.textSecondary)
                 
-                Text(title)
+                Text(label)
                     .foregroundStyle(.theme.textPrimary)
                     .fontWeight(.bold)
+                
+                Image(systemName: "chevron.down")
+                    .fontWeight(.regular)
+                    .font(.callout)
             }
             .foregroundStyle(.theme.textTertiary)
             .padding(DesignSystem.Spacing.large)
-            .roundedBackground()
+            .roundedBackground(showBorder: true, borderColor: .theme.primary)
         }
     }
 }
@@ -43,7 +48,42 @@ struct FilterView<T: Hashable & Identifiable, Content: View>: View {
 #Preview {
     @State @Previewable var filter: SearchFilter = .all
     
-    FilterView(selection: $filter, title: "Filter", pickerTitle: "Status", options: SearchFilter.allCases) { status in
+    FilterView(selection: $filter, label: "Filter", pickerTitle: "Status", options: SearchFilter.allCases) { status in
         Text(status.title)
+    }
+}
+
+extension FilterView {
+    init(
+        selection: Binding<T>,
+        label: String,
+        pickerTitle: String,
+        options: [T],
+        @ViewBuilder content: @escaping (T) -> Content
+    ) where Icon == Image {
+        self.init(
+            selection: selection,
+            label: label,
+            pickerTitle: pickerTitle,
+            options: options,
+            icon: Image(systemName: "line.3.horizontal.decrease"),
+            content: content,
+        )
+    }
+    
+    init(
+        selection: Binding<T>,
+        label: String,
+        pickerTitle: String,
+        options: [T],
+        @ViewBuilder icon: @escaping () -> Icon,
+        @ViewBuilder content: @escaping (T) -> Content
+    ) where Icon == Image {
+        self._selection = selection
+        self.label = label
+        self.pickerTitle = pickerTitle
+        self.options = options
+        self.icon = icon()
+        self.content = content
     }
 }

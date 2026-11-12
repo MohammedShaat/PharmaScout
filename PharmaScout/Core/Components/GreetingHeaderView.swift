@@ -8,34 +8,38 @@
 import SwiftUI
 
 struct GreetingHeaderView: View {
-    let user: AppUser?
+    let firstName: String?
+    let isPharmacist: Bool
     
     private var timeOfDay: TimeOfDay { Date.now.timeOfDay }
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
-                HStack(spacing: DesignSystem.Spacing.xSmall) {
-                    timeIcon
-                    	
-                    Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
-                        .foregroundStyle(.theme.textSecondary)
-                }
-                
-                HStack(spacing: 0) {
-                    Text("Good \(timeOfDay.title)")
-                    
-                    if let firstName = user?.firstName {
-                        Text(", \(firstName)")
-                    }
-                }
-                .lineLimit(1)
-                .foregroundStyle(.theme.textPrimary)
-                .font(.title3)
-                .fontWeight(.bold)
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xSmall) {
+            
+            if isPharmacist {
+                pharmacistLabel
+                    .frame(maxWidth: .infinity, alignment: .trailing)
             }
             
-            Spacer()
+            Label {
+                Text(Date.now, format: .dateTime.weekday(.wide).day().month(.wide))
+                    .foregroundStyle(.theme.textSecondary)
+            } icon: {
+                timeIcon
+            }
+            .font(.callout)
+            
+            HStack(spacing: 0) {
+                Text("Good \(timeOfDay.title)")
+                
+                if let firstName {
+                    Text(", \(firstName)")
+                }
+            }
+            .font(.title3)
+            .fontWeight(.bold)
+            .foregroundStyle(.theme.textPrimary)
+            
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -56,12 +60,35 @@ struct GreetingHeaderView: View {
                 .foregroundStyle(.theme.mutedLavender)
         }
     }
+    
+    private var pharmacistLabel: some View {
+        HStack(spacing: DesignSystem.Spacing.small) {
+            Image(systemName: "circle.fill")
+                .font(.caption2)
+                .foregroundStyle(.theme.green)
+            
+            Text("Pharmacist")
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundStyle(.theme.textPrimary)
+        }
+        .capsuleBackground(background: .theme.mintTint)
+    }
 }
 
 #Preview {
-    VStack {
-        GreetingHeaderView(user: .samples[0])
+    VStack (spacing: 50){
+        GreetingHeaderView(firstName: "Mohammed")
             .padding()
-        Spacer()
+        
+        GreetingHeaderView(firstName: "Mohammed", isPharmacist: true)
+            .padding()
+    }
+}
+
+
+extension GreetingHeaderView {
+    init(firstName: String?) {
+        self.init(firstName: firstName, isPharmacist: false)
     }
 }

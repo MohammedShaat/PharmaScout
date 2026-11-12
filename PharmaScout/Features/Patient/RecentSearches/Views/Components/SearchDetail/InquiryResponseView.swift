@@ -8,22 +8,31 @@
 import SwiftUI
 
 struct InquiryResponseView: View {
-    let response: InquiryResponse
+    let response: InquiryResponse?
     var title: String? = nil
     
     var body: some View {
         HStack {
-            switch response {
-            case .available: Image(systemName: "checkmark.circle")
-            case .unavailable: Image(systemName: "xmark.circle")
-            case .substitute: Image(systemName: "arrow.left.arrow.right")
-            }
+            InquiryResponseIconView(response: response)
             
-            Text(title ?? response.title)
+            Text(title ?? response?.title ?? "No response")
                 .font(.subheadline)
                 .fontWeight(.bold)
         }
-        .foregroundStyle(response.color)
+        .foregroundStyle(response?.color ?? .theme.textSecondary)
+    }
+}
+
+struct InquiryResponseIconView: View {
+    let response: InquiryResponse?
+    
+    var body: some View {
+        switch response {
+        case .available: Image(systemName: "checkmark.circle")
+        case .unavailable: Image(systemName: "xmark.circle")
+        case .substitute: Image(systemName: "arrow.left.arrow.right")
+        case nil: Image(systemName: "minus")
+        }
     }
 }
 
@@ -51,6 +60,7 @@ extension InquiryResponse {
             InquiryResponseView(response: .available)
             InquiryResponseView(response: .unavailable)
             InquiryResponseView(response: .substitute)
+            InquiryResponseView(response: nil)
         }
     }
 }
