@@ -20,7 +20,7 @@ struct SheetHeaderView: View {
             Text("Cancel")
                 .fontWeight(.medium)
                 .foregroundStyle(.theme.textPrimary)
-                .frame(maxWidth: .infinity, alignment: .trailing)
+                .frame(maxWidth: .infinity, alignment: .leading)
                 .clickable(action: onCancelTapped)
         }
     }

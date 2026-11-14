@@ -27,7 +27,7 @@ struct PharmacyEditAddressScreen: View {
             LabeledTextFieldView(title: $vm.address, label: "Address", placeholder: "Type your pharmacy's address")
             
             if let error = vm.loadingState.error {
-                Text(error.errorDescription)
+                ErrorView(title: "Couldn’t update the info", description: error.errorDescription)
             }
             
             PrimaryButtonView(
@@ -44,6 +44,7 @@ struct PharmacyEditAddressScreen: View {
             
             Spacer()
         }
+        .customNavTitle("Pharmacy Info")
         .padding(DesignSystem.Spacing.xLarge)
         .onDisappear {
             updateTask?.cancel()

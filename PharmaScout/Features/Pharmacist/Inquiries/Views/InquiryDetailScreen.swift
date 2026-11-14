@@ -104,18 +104,7 @@ struct InquiryDetailScreen: View {
                     
                     // MARK: Response error
                     if let responseError = vm.responseLoadingState.error {
-                        HStack(alignment: .top, spacing: DesignSystem.Spacing.medium) {
-                            Image(systemName: "exclamationmark.circle")
-                            
-                            VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
-                                Text("Couldn't send your response.")
-                                Text(responseError.errorDescription)
-                            }
-                        }
-                        .foregroundStyle(.theme.red)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(DesignSystem.Spacing.large)
-                        .roundedBackground(background: .theme.redBackground, radius: DesignSystem.Spacing.small)
+                        ErrorView(title: "Couldn't send your response.", description: responseError.errorDescription)
                     }
                     
                     // MARK: Response button

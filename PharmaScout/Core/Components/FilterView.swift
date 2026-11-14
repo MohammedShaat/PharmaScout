@@ -32,6 +32,10 @@ struct FilterView<T: Hashable & Identifiable, Content: View>: View {
                 Text(title)
                     .foregroundStyle(.theme.textPrimary)
                     .fontWeight(.bold)
+                
+                Image(systemName: "chevron.down")
+                    .fontWeight(.regular)
+                    .font(.callout)
             }
             .foregroundStyle(.theme.textTertiary)
             .padding(DesignSystem.Spacing.large)

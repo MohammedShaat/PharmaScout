@@ -11,66 +11,60 @@ import Foundation
 class PharmacyEditStaffViewModel {
     private let pharmacyService: PharmacyService
     private let pharmacy: Pharmacy
-    private let oldStaffMembers: [PharmacyStaffMember]
-    var staffMembers: [PharmacyStaffMember]
+    private(set) var staffMembers: [PharmacyStaffMember]
     
-    var deletedStaffMemberIds: [String] = []
-    
-    var canUpdate: Bool { isStaffValid() }
-    
-    private(set) var loadingState = LoadingState()
+    var loadingState = LoadingState()
+    var memberIdLoading: String?
     
     init(userId: String, pharmacyService: PharmacyService, pharmacy: Pharmacy, staffMembers: [PharmacyStaffMember]) {
         self.pharmacyService = pharmacyService
         self.pharmacy = pharmacy
         
-        let staffMembersExceptCurrentUser = staffMembers.filter { member in
-            member.userInfo.id != userId
-        }
-        self.oldStaffMembers = staffMembersExceptCurrentUser
-        self.staffMembers = staffMembersExceptCurrentUser
+        self.staffMembers = staffMembers
     }
     
-    func updateStaff(onSuccess: () -> Void) async {
-        guard canUpdate else {
-            print("Pharmacy working hours are invalid")
-            return
+    func updateMember(memberId: String, action: PharmacyStaffAction) async {
+        loadingState.startLoading()
+        memberIdLoading = memberId
+        defer {
+            loadingState.stopLoading()
+            memberIdLoading = nil
         }
         
-        loadingState.startLoading()
-        defer { loadingState.stopLoading() }
-        
         do {
-            let updateStaffRequest = UpdatePharmacyStaffRequest(
-                staffMembers: staffMembers.map(UpdatePharmacyStaffMember.init)
+            let updateStaffRequest = ManagePharmacyStaffMemberRequest(
+                staffId: memberId, action: action
             )
-            async let updateStaffMembers = pharmacyService.updateStaffMembers(request: updateStaffRequest)
-
-            async let deleteStaffMembers = pharmacyService.deleteStaffMembers(ids: deletedStaffMemberIds)
-            
-            _ = try await (updateStaffMembers, deleteStaffMembers)
-            
-            onSuccess()
+            try await pharmacyService.manageStaffMember(request: updateStaffRequest)
             
         } catch {
             loadingState.fail(error)
-            print("Failed to update pharmacy staff members\n", error)
+            print("Failed to update pharmacy staff member\n", error)
         }
     }
     
-    func addStaffMember() {
-        
+    func listenToStaffChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: true,
+                realtimeStream: { try await pharmacyService.subscribeToStaffChanges(for: pharmacy.id) },
+                trigger: { await loadStaff(refresh: true) }
+            )
+        } catch {
+            print("Failed to subscribe to staff hours changes\n", error)
+        }
     }
     
-    func deleteStaffMember(_ staffMember: PharmacyStaffMember) {
-        staffMembers.removeAll { $0.id == staffMember.id }
-        deletedStaffMemberIds.append(staffMember.id)
+    private func loadStaff(refresh: Bool = false) async {
+        loadingState.startLoading(refresh: refresh)
+        defer { loadingState.stopLoading() }
+        
+        do {
+            staffMembers = try await pharmacyService.getStaff(for: pharmacy.id)
+
+        } catch {
+            loadingState.fail(error)
+            print("Failed to get pharmacy staff\n", error)
+        }
     }
 }
-
-extension PharmacyEditStaffViewModel {
-    private func isStaffValid() -> Bool {
-        Set(oldStaffMembers) != Set(staffMembers)
-    }
-}
-

@@ -28,9 +28,7 @@ protocol PharmacyService {
     
     func deleteWokringHours(ids: [String]) async throws
     
-    func updateStaffMembers(request: UpdatePharmacyStaffRequest) async throws
-    
-    func deleteStaffMembers(ids: [String]) async throws
+    func manageStaffMember(request: ManagePharmacyStaffMemberRequest) async throws
     
     func getActiveJoinCode(for pharmacyId: String) async throws -> InvitaionCode?
     

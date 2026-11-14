@@ -24,15 +24,23 @@ struct PharmacyEditWorkingHourScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            workingHourListSection
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            ScrollView {
+                SwipeHintView()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                workingHourListSection
+                
+                addNewWorkingHourSection
+            }
             
-            addNewWorkingHourSection
+            if let error = vm.loadingState.error {
+                ErrorView(title: "Couldn't update the working hours", description: error.errorDescription)
+            }
             
-            errorSection
-            
-            buttonSection
+            saveButton
         }
+        .customNavTitle("Working Hours")
         .padding(DesignSystem.Spacing.xLarge)
         .scrollDisabled(isSwipingAnItem)
         .onDisappear {
@@ -41,11 +49,13 @@ struct PharmacyEditWorkingHourScreen: View {
     }
     
     private var workingHourListSection: some View {
-        VStack(spacing: DesignSystem.Spacing.xxLarge) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             ForEach($vm.workingHours) { $workingHour in
                 SwipyView(
                     isSwipingAnItem: $isSwipingAnItem) {
-                        workingHourItemView($workingHour)
+                        WorkingHourEditView(workingHour: $workingHour)
+                            .padding(DesignSystem.Spacing.large)
+                            .roundedBackground()
                     } onDeleteTapped: {
                         vm.deleteWorkingHour(workingHour)
                     }
@@ -55,23 +65,11 @@ struct PharmacyEditWorkingHourScreen: View {
     
     @ViewBuilder
     private var addNewWorkingHourSection: some View {
-        ActionPromptView(actionTitle: "Add working hour", action: vm.addWorkingHour)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+        SecondaryButtonView(title: "Add working hour", systemName: "plus", action: vm.addWorkingHour)
+            .padding(DesignSystem.Spacing.large)
     }
     
-    @ViewBuilder
-    private var errorSection: some View {
-        if let error = vm.loadingState.error {
-            Text(error.errorDescription)
-        }
-    }
-    
-    private func workingHourItemView(_ workingHour: Binding<WorkingHour>) -> some View {
-        WorkingHourView(workingHour: workingHour)
-            .frame(maxWidth: .infinity, alignment: .leading)
-    }
-    
-    private var buttonSection: some View {
+    private var saveButton: some View {
         PrimaryButtonView(
             title: "Save",
             isLoading: vm.loadingState.status != .idle) {
@@ -89,9 +87,11 @@ struct PharmacyEditWorkingHourScreen: View {
     let pharmacy = Pharmacy.samples[0]
     let workingHours = Array(WorkingHour.samples.prefix(7))
     
-    PharmacyEditWorkingHourScreen(
-        pharmacyService: MockPharmacyService.sample,
-        pharmacy: pharmacy,
-        workingHours: workingHours
-    )
+    CustomNavStack {
+        PharmacyEditWorkingHourScreen(
+            pharmacyService: MockPharmacyService.sample,
+            pharmacy: pharmacy,
+            workingHours: workingHours
+        )
+    }
 }

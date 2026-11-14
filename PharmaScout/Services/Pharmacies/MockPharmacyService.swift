@@ -72,11 +72,7 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func updateStaffMembers(request: UpdatePharmacyStaffRequest) async throws {
-        try? await Task.sleep(for: .seconds(2))
-    }
-    
-    func deleteStaffMembers(ids: [String]) async throws {
+    func manageStaffMember(request: ManagePharmacyStaffMemberRequest) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
     

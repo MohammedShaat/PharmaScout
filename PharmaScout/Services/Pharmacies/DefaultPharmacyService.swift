@@ -181,27 +181,11 @@ class DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func updateStaffMembers(request: UpdatePharmacyStaffRequest) async throws {
-        let updatePharmacyStaffFunc = SupabaseManager.Database.Functions.updatePharmacyStaffMembers.self
+    func manageStaffMember(request: ManagePharmacyStaffMemberRequest) async throws {
+        let managePharmacyStaffMemberFunc = SupabaseManager.Database.Functions.managePharmacyStaffMember.self
         do {
             try await supabase
-                .rpc(updatePharmacyStaffFunc.name, params: request)
-                .execute()
-            
-        } catch {
-            throw SupabaseErrorMapper.mapDatabseError(error)
-        }
-    }
-    
-    func deleteStaffMembers(ids: [String]) async throws {
-        let pharmacyStaffTable = SupabaseManager.Database.Table.PharmacyStaff.self
-        let columns = pharmacyStaffTable.Column.self
-        
-        do {
-            try await supabase
-                .from(pharmacyStaffTable.name)
-                .delete()
-                .in(columns.id, values: ids)
+                .rpc(managePharmacyStaffMemberFunc.name, params: request)
                 .execute()
             
         } catch {

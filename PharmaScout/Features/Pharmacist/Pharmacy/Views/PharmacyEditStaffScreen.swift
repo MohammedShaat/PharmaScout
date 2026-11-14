@@ -9,6 +9,8 @@ import SwiftUI
 import Swipy
 
 struct PharmacyEditStaffScreen: View {
+    let userId: String
+    
     @State private var vm: PharmacyEditStaffViewModel
     @State private var updateTask: Task<Void, Never>?
     @Environment(\.dismiss) private var dismiss
@@ -20,6 +22,8 @@ struct PharmacyEditStaffScreen: View {
         pharmacy: Pharmacy,
         staffMembers: [PharmacyStaffMember]
     ) {
+        self.userId = userId
+        
         let viewModel = PharmacyEditStaffViewModel(
             userId: userId,
             pharmacyService: pharmacyService,
@@ -30,25 +34,29 @@ struct PharmacyEditStaffScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            staffMemberListSection
-            
-            addNewStaffMemberSection
-            
-            errorSection
-            
-            buttonSection
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.large) {
+                    SwipeHintView()
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                    staffMemberListSection
+                }
+            }
         }
+        .customNavTitle("Staff")
         .padding(DesignSystem.Spacing.xLarge)
         .scrollDisabled(isSwipingAnItem)
+        .errorAlert(title: "Couldn't update the staff", loadingState: $vm.loadingState)
         .onDisappear {
             updateTask?.cancel()
         }
+        .task(vm.listenToStaffChanges)
     }
     
     private var staffMemberListSection: some View {
         VStack(spacing: DesignSystem.Spacing.xxLarge) {
-            ForEach($vm.staffMembers) { $staffMember in
+            ForEach(vm.staffMembers) { staffMember in
                 Swipy(
                     isSwipingAnItem: $isSwipingAnItem,
                     swipeActionsMargin: SwipyHorizontalMargin(
@@ -57,13 +65,14 @@ struct PharmacyEditStaffScreen: View {
                     ),
                     swipeBehavior: .straight
                 ) { model in
-                    contactItemView($staffMember)
+                    staffMemberItemView(staffMember)
                     
                 } actions: {
                     SwipyAction { model in
                         Button(role: .destructive) {
-                            vm.deleteStaffMember(staffMember)
-                            model.unswipe()
+                            updateMember(memberId: staffMember.id, action: .delete) {
+                                model.unswipe()
+                            }
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
@@ -73,67 +82,47 @@ struct PharmacyEditStaffScreen: View {
         }
     }
     
-    private var addNewStaffMemberSection: some View {
-        Text("Add member")
-            .foregroundStyle(.theme.textPrimary)
-            .padding(.vertical, DesignSystem.Spacing.small)
-            .clickable(action: vm.addStaffMember)
-            .frame(maxWidth: .infinity, alignment: .trailing)
-    }
-    
-    @ViewBuilder
-    private var errorSection: some View {
-        if let error = vm.loadingState.error {
-            Text(error.errorDescription)
-        }
-    }
-    
-    private func contactItemView(_ staffMember: Binding<PharmacyStaffMember>) -> some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
-            HStack {
-                Text(staffMember.wrappedValue.userInfo.fullName ?? "")
-                Text(staffMember.wrappedValue.userInfo.email ?? "")
-            }
+    private func staffMemberItemView(_ staffMember: PharmacyStaffMember) -> some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
+            PharmacyStaffMemeberView(member: staffMember, isCurrentUser: userId == staffMember.userInfo.id)
             
-            HStack {
-                HStack {
-                    Text("Role")
-                    
-                    Picker("Role", selection: staffMember.role) {
-                        ForEach(PharmacyStaffRole.allCases, id: \.self) { role in
-                            Text(role.rawValue.capitalized)
+            // Manage staff status
+            if userId != staffMember.userInfo.id {
+                if staffMember.status == .pending {
+                    HStack {
+                        PrimaryButtonView(title: "Accept", isDisabled: vm.loadingState.status != .idle,  isLoading: vm.memberIdLoading == staffMember.id) {
+                            updateMember(memberId: staffMember.id, action: .approve)
+                        }
+                        Spacer()
+                        PrimaryButtonView(title: "Reject", isDisabled: vm.loadingState.status != .idle, isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.red) {
+                            updateMember(memberId: staffMember.id, action: .reject)
                         }
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                
-                HStack {
-                    Text("Status")
-                    
-                    Picker("Status", selection: staffMember.status) {
-                        ForEach(PharmacyStaffStatus.allCases, id: \.self) { status in
-                            Text(status.rawValue.capitalized)
-                        }
+                } else if staffMember.status == .approved {
+                    PrimaryButtonView(title: "Suspend", isDisabled: vm.loadingState.status != .idle, isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.orange) {
+                        updateMember(memberId: staffMember.id, action: .suspend)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                } else if staffMember.status == .suspended {
+                    PrimaryButtonView(title: "Activate", isDisabled: vm.loadingState.status != .idle,  isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.blue) {
+                        updateMember(memberId: staffMember.id, action: .reactivate)
+                    }
                 }
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var buttonSection: some View {
-        PrimaryButtonView(
-            title: "Save",
-            isDisabled: !vm.canUpdate,
-            isLoading: vm.loadingState.status != .idle) {
-                updateTask?.cancel()
-                updateTask = Task {
-                    await vm.updateStaff {
-                        dismiss()
-                    }
-                }
-            }
+    private func updateMember(
+        memberId: String,
+        action: PharmacyStaffAction,
+        onCompletion: (() -> Void)? = nil
+    ) {
+        updateTask?.cancel()
+        updateTask = Task {
+            await vm.updateMember(memberId: memberId, action: action)
+            onCompletion?()
+        }
     }
 }
 
