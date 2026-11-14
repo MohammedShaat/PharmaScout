@@ -48,6 +48,8 @@ struct ThemeColors {
     let amber = Color("amber")
     let goldenYellow = Color("goldenYellow")
     let mutedLavender = Color("mutedLavender")
+    let orange = Color("orangeBrand")
+    let orangeBackground = Color("orangeBackground")
     
     
     // Text

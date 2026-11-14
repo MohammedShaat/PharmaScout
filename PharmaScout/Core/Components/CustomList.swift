@@ -16,6 +16,7 @@ struct CustomList<Item: Identifiable, V: View>: View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
             ForEachView(items: items, itemView: itemView)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.vertical, items.isEmpty ? 0 : DesignSystem.Spacing.large)
         .roundedBackground(showBorder: true)
         

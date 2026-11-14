@@ -9,19 +9,21 @@ import SwiftUI
 
 struct PharmacyBasicInfoView: View {
     let pharmac: Pharmacy
+    var showSeeLocation: Bool = true
     var onSeeLocationTapped: (() -> Void)? = nil
     
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.large) {
             openStatus
             
-            addressAndDistanct
+            addressAndDistance
             
             staticMapPreview
             
-            seeLocationButton
+            if showSeeLocation {
+                seeLocationButton
+            }
         }
-        .padding(.vertical, DesignSystem.Spacing.large)
     }
     
     private var openStatus: some View {
@@ -39,7 +41,7 @@ struct PharmacyBasicInfoView: View {
         .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    private var addressAndDistanct: some View {
+    private var addressAndDistance: some View {
         VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
             Label(pharmac.address, image: .location)
                 .foregroundStyle(.theme.textPrimary)

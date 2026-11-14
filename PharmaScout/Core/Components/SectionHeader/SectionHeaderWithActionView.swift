@@ -17,7 +17,7 @@ struct SectionHeaderWithActionView<Icon: View>: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.title3)
+                .font(.subheadline)
                 .fontWeight(.bold)
                 .foregroundStyle(.theme.textSecondary)
             

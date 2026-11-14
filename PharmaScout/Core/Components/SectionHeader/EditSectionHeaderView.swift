@@ -7,16 +7,52 @@
 
 import SwiftUI
 
-struct EditSectionHeaderView: View {
+struct EditSectionHeaderView<Content: View>: View {
     let title: String
-    var isActionDisabled: Bool = false
+    var showAction: Bool = true
     var onActionTapped: (() -> Void)?
+    let content: Content
+    
+    init(
+        title: String,
+        showAction: Bool = true,
+        onActionTapped: (() -> Void)? = nil,
+        @ViewBuilder content: () -> Content = { EmptyView() }
+    ) {
+        self.title = title
+        self.showAction = showAction
+        self.onActionTapped = onActionTapped
+        self.content = content()
+    }
     
     var body: some View {
-        SectionHeaderWithActionView(title: title, actionName: "Edit", isActionDisabled: isActionDisabled) {
-            Image(systemName: "pencil")
-        } onActionTapped: {
-            onActionTapped?()
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            HStack {
+                Text(title)
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.theme.textPrimary)
+                
+                Spacer()
+                
+                if showAction {
+                    Label {
+                        Text("Edit")
+                    } icon: {
+                        Image(systemName: "pencil")
+                            .font(.headline)
+                    }
+                    .font(.callout)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.theme.green)
+                    .padding(DesignSystem.Spacing.medium)
+                    .roundedBackground(background: .theme.greenBackground)
+                    .clickable(action: onActionTapped)
+                }
+            }
+            .frame(maxWidth: .infinity)
+            
+            content
         }
     }
 }

@@ -39,13 +39,15 @@ struct PharmacyScreen: View {
         CustomNavStack(path: $path) {
             ScrollView {
                 VStack(spacing: DesignSystem.Spacing.xxLarge) {
-                    pharmacySection
+                    pharmacyBasicInfoSection
                     
                     contactSection
                     
                     workingHoursSection
                     
-                    staffSection
+                    if canEditStaff {
+                        staffSection
+                    }
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }
@@ -77,73 +79,82 @@ struct PharmacyScreen: View {
         }
     }
     
-    private var pharmacySection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Pharmacy Info", isActionDisabled: !canEditPharmacy) {
-                path.append(PharmacyRoute.editAddress)
-            }
-            
+    private var pharmacyBasicInfoSection: some View {
+        EditSectionHeaderView(
+            title: "Pharmacy Info",
+            showAction: canEditPharmacy,
+            onActionTapped: { path.append(PharmacyRoute.editAddress) }
+        ) {
             LoadingContentView(
                 LoadingState: vm.pharmacyLoadingState,
                 showMessage: vm.pharmacy == nil,
-                emptyMessage: "No pharmacy info") {
-                    if let pharmacy = vm.pharmacy {
-                        PharmacyAddressAndDistanceView(pharmacy: pharmacy)
-                    }
+                emptyTitle: "Couldn't get the pharmacy info",
+                emptyMessage: ""
+            ) {
+                if let pharmacy = vm.pharmacy {
+                    PharmacyBasicInfoView(pharmac: pharmacy, showSeeLocation: false)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, DesignSystem.Spacing.large)
+                        .roundedBackground()
                 }
+            }
         }
     }
     
     private var contactSection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Contact", isActionDisabled: !canEditPharmacy) {
-                path.append(PharmacyRoute.editContact)
-            }
-            
+        EditSectionHeaderView(
+            title: "Contact",
+            showAction: canEditPharmacy,
+            onActionTapped: { path.append(PharmacyRoute.editContact) }
+        ) {
             LoadingContentView(
                 LoadingState: vm.contactLoadingState,
                 showMessage: vm.contacts.isEmpty,
-                emptyMessage: "There is no contact info"
+                emptyMessage: "There is no contact info",
+                showIcon: false
             ) {
-                PharmacyContactListView(contacts: vm.contacts)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                CustomList(items: vm.contacts, isLoadingMore: false) { contact in
+                    PharmacyContactView(contact: contact)
+                }
+                .frame(maxWidth: .infinity)
             }
         }
     }
     
     private var workingHoursSection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Working Hours", isActionDisabled: !canEditPharmacy) {
-                path.append(PharmacyRoute.editWorkingHours)
-            }
-            
+        EditSectionHeaderView(
+            title: "Working Hours",
+            showAction: canEditPharmacy,
+            onActionTapped: { path.append(PharmacyRoute.editWorkingHours) }
+        ) {
             LoadingContentView(
                 LoadingState: vm.workingHoursLoadingState,
                 showMessage: vm.workingHours.isEmpty,
-                emptyMessage: "There is no working hours info"
+                emptyTitle: "There is no working hours info",
+                emptyMessage: "",
             ) {
-                PharmacyWorkingHourListView(workingHours: vm.workingHours)
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                WorkingHourListView(workingHours: vm.workingHours)
+                    .frame(maxWidth: .infinity)
             }
         }
     }
     
     private var staffSection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Staff", isActionDisabled: !canEditStaff) {
-                path.append(PharmacyRoute.editStaff)
-            }
-            
+        EditSectionHeaderView(
+            title: "Staff",
+            showAction: canEditStaff,
+            onActionTapped: { path.append(PharmacyRoute.editStaff) }
+        ) {
             LoadingContentView(
                 LoadingState: vm.staffLoadingState,
                 showMessage: vm.pharmacyStaff.isEmpty,
-                emptyMessage: "There is no staff") {
-                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                        ForEach(vm.pharmacyStaff) { member in
-                            PharmacyStaffMemeberView(member: member)
-                        }
-                    }
+                emptyTitle: "There is no staff",
+                emptyMessage: ""
+            ) {
+                CustomList(items: vm.pharmacyStaff, isLoadingMore: false,) { member in
+                    PharmacyStaffMemeberView(member: member, isCurrentUser: userId == member.userInfo.id)
                 }
+            }
         }
     }
 }
@@ -153,6 +164,7 @@ enum PharmacyRoute {
     case editContact
     case editWorkingHours
     case editStaff
+    
 }
 
 #Preview {

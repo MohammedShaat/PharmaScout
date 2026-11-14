@@ -38,6 +38,7 @@ struct PharmacyDetailScreen: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 
                 PharmacyBasicInfoView(pharmac: pharmacy, onSeeLocationTapped: onSeeLocationTapped)
+                    .padding(.vertical, DesignSystem.Spacing.large)
                     .roundedBackground()
                 
                 contactsSection
