@@ -12,7 +12,7 @@ class AdminPharmaciesViewModel {
     private let pharmacyService: PharmacyService
     
     private(set) var pharmacyApplications: [PharmacyApplication] = []
-    var filter: PharmacyApplicationFilter = .pending
+    var filter: PharmacyApplicationFilter = .all
     
     private(set) var loadingState: LoadingState = .init(pageSize: AppConstants.Network.pageSize)
     
@@ -29,10 +29,10 @@ class AdminPharmaciesViewModel {
     
     func loadPharmacyApplicationsaIfNeeded() {
         guard !hasStarted else { return }
-        hasStarted = true
         
         firstLoadTask = Task {
             await loadPharmacyApplications()
+            hasStarted = true
         }
     }
     

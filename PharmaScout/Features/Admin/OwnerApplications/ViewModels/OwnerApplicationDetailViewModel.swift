@@ -14,13 +14,14 @@ class OwnerApplicationDetailViewModel {
     private(set) var ownerApplication: OwnerApplication?
     
     var canRevoke: Bool {
-        ownerApplication?.status == .issued
+        guard let ownerApplication else { return false }
+        return ownerApplication.status == .issued && !ownerApplication.expired
     }
     var canReview: Bool {
         ownerApplication?.status == .pending
     }
     
-    var approve: Bool = true
+    var approve: Bool?
     
     private(set) var ownerApplicationLoadingState = LoadingState()
     private(set) var reviewLoadingState = LoadingState()
@@ -81,6 +82,8 @@ class OwnerApplicationDetailViewModel {
     }
     
     func review() async {
+        guard let approve else { return }
+        
         reviewLoadingState.startLoading()
         defer { reviewLoadingState.stopLoading() }
         

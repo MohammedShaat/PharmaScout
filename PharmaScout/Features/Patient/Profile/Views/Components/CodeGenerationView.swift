@@ -119,7 +119,7 @@ struct CodeGenerationView: View {
                 
                 // Copy button
                 ButtonWithIconView(title: "Copy", systemName: "doc.on.doc", color: .theme.textPrimary, bgColor: .theme.surface, isDisabled: loadingState.status != .idle) {
-                    UIPasteboard.general.string = invitationCode.code
+                    copyToClipboard(invitationCode.code)
                 }
             }
             

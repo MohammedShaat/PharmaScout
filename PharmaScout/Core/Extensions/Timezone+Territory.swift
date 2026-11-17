@@ -10,7 +10,13 @@ import Foundation
 extension TimeZone {
     var territory: String? {
         identifier
-            .components(separatedBy: "/")
+            .lastAfterSlash
+    }
+}
+
+extension String {
+    var lastAfterSlash: String? {
+        components(separatedBy: "/")
             .last?
             .replacingOccurrences(of: "_", with: " ")
     }

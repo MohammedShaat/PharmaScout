@@ -12,7 +12,7 @@ class OwnerApplicationsViewModel {
     private let ownerApplicationService: OwnerApplicationService
     
     private(set) var applications: [OwnerApplication] = []
-    var filter: OwnerApplicationFilter = .pending
+    var filter: OwnerApplicationFilter = .all
     
     private(set) var loadingState: LoadingState = .init(pageSize: AppConstants.Network.pageSize)
     
@@ -29,10 +29,10 @@ class OwnerApplicationsViewModel {
     
     func loadApplicationsIfNeeded() {
         guard !hasStarted else { return }
-        hasStarted = true
         
         firstLoadTask = Task {
             await loadApplications()
+            hasStarted = true
         }
     }
     

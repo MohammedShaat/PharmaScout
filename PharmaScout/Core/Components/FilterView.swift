@@ -39,7 +39,8 @@ struct FilterView<T: Hashable & Identifiable, Content: View, Icon: View>: View {
                     .font(.callout)
             }
             .foregroundStyle(.theme.textTertiary)
-            .padding(DesignSystem.Spacing.large)
+            .padding(.horizontal, DesignSystem.Spacing.medium)
+            .padding(.vertical, DesignSystem.Spacing.small)
             .roundedBackground(showBorder: true, borderColor: .theme.primary)
         }
     }

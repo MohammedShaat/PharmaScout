@@ -52,6 +52,10 @@ struct ThemeColors {
     let mutedLavender = Color("mutedLavender")
     let orange = Color("orangeBrand")
     let orangeBackground = Color("orangeBackground")
+    let staleGray = Color("staleGray")
+    let staleGrayBackground = Color("staleGrayBackground")
+    let offWhite = Color("offWhite")
+    let blueGray = Color("blueGray")
     
     
     // Text

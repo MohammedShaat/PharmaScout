@@ -11,10 +11,12 @@ struct TextFieldView: View {
     @Binding var title: String
     let placeholder: String
     var capitalization: TextInputAutocapitalization = .never
+    var axis: Axis = .horizontal
+    var minHeight: Double = 0
     
     var body: some View {
         TextFieldContainer(label: nil, capitalization: capitalization) {
-            TextFieldTintedPlaceholder(title: $title, placeholder: placeholder)
+            TextFieldTintedPlaceholder(title: $title, placeholder: placeholder, axis: axis, minHeight: minHeight)
         }
     }
 }

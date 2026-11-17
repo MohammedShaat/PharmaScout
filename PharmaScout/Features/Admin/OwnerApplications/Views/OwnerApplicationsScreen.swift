@@ -21,15 +21,19 @@ struct OwnerApplicationsScreen: View {
     
     var body: some View {
         CustomNavStack {
-            ScrollView {
-                VStack {
-                    filterSection
-                    
-                    applicationListSection
+            VStack(spacing: DesignSystem.Spacing.large) {
+                filterSection
+                
+                ScrollView {
+                    VStack(spacing: 0) {
+                        applicationListSection
+                    }
+                    .refreshable(action: vm.refresh)
                 }
-                .padding(DesignSystem.Spacing.xLarge)
             }
+            .padding(.horizontal, DesignSystem.Spacing.xLarge)
             .customNavBarVisibility(.root)
+            .customNavTitle("Owner applications")
             .customNavigationDestination(for: OwnerApplicationDetailRoute.self) { route in
                 OwnerApplicationDetailScreen(
                     ownerApplicationService: ownerApplicationService,
@@ -37,7 +41,6 @@ struct OwnerApplicationsScreen: View {
                     ownerApplication: route.application
                 )
             }
-            .refreshable(action: vm.refresh)
             .onAppear {
                 vm.loadApplicationsIfNeeded()
             }
@@ -55,68 +58,54 @@ struct OwnerApplicationsScreen: View {
     }
     
     private var filterSection: some View {
-        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
-            Picker("Status", selection: $vm.filter) {
-                ForEach(OwnerApplicationFilter.allCases) { status in
-                    Text(status.title)
-                        .tag(status)
-                }
-            }
+        FilterView(
+            selection: $vm.filter,
+            label: vm.filter.title,
+            pickerTitle: "Status",
+            options: OwnerApplicationFilter.allCases
+        ) { status in
+            Text(status.title)
         }
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private var applicationListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
             showMessage: vm.applications.isEmpty,
-            emptyMessage: "No applications") {
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(vm.applications) { application in
-                        CustomNavValueLink(value: OwnerApplicationDetailRoute(application: application)) {
-                            ownerApplicationView(application)
-                        }
-                        .onAppear {
-                            if application.id == vm.applications.last?.id {
-                                applicationsTask?.cancel()
-                                applicationsTask = Task {
-                                    await vm.loadMore()
-                                }
+            emptyTitle: "No applications",
+            emptyMessage: ""
+        ) {
+            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                ForEach(vm.applications) { application in
+                    CustomNavValueLink(
+                        value: OwnerApplicationDetailRoute(application: application)
+                    ) {
+                        OwnerApplicationView(ownerApplication: application)
+                            .padding(DesignSystem.Spacing.large)
+                            .roundedBackground(
+                                showBorder: true,
+                                borderColor: application.status == .pending ? OwnerApplicationStatus.pending.color : .theme.disabledBackground
+                            )
+                    }
+                    .onAppear {
+                        if application.isLast(vm.applications) {
+                            applicationsTask?.cancel()
+                            applicationsTask = Task {
+                                await vm.loadMore()
                             }
                         }
-                        
-                        if application.id == vm.applications.last?.id && vm.loadingState.status == .loadingMore {
-                            RingProgressView()
-                        }
+                    }
+                    
+                    if application.isLast(vm.applications) && vm.loadingState.status == .loadingMore {
+                        RingProgressView()
                     }
                 }
             }
-    }
-    
-    private func ownerApplicationView(_ application: OwnerApplication) -> some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            // MARK: Code and status
-            HStack {
-                Text("Code: \(application.code)")
-                Spacer()
-                Text("Status: \(application.status.title)")
-            }
-            
-            // MARK: Applicant ID
-            if let applicantId = application.applicantId {
-                Text("Applicant ID: \(applicantId)")
-            }
-            
-            // MARK: Creation and expiration dates
-            VStack {
-                Text("Created at: \(application.createdAt.formattedDateTime)")
-                Spacer()
-                Text("Expires at: \(application.expiresAt.formattedDateTime)")
-            }
         }
-        .background(.theme.primary.opacity(0.2))
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
+
 
 #Preview {
     OwnerApplicationsScreen(ownerApplicationService: MockOwnerApplicationService.sample)

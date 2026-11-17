@@ -18,6 +18,8 @@ struct OwnerApplication: nonisolated Codable, Identifiable, Hashable {
     let reviewedBy: String?
     let reviewedAt: Date?
     let createdAt: Date
+    
+    var expired: Bool { Date.now >= expiresAt  }
 }
 
 enum OwnerApplicationStatus: String, Codable {

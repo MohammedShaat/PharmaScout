@@ -21,4 +21,11 @@ enum DateFormatters {
         formatter.dateFormat = "HH:mm"
         return formatter
     }()
+    
+    static let dayMonthHourMinute: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "d MMM, hh:mm a"
+        return formatter
+    }()
 }

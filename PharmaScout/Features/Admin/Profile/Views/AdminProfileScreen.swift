@@ -9,45 +9,42 @@ import SwiftUI
 
 struct AdminProfileScreen: View {
     let user: AppUser
-    let authService: AuthService
     
-    @State private var vm: AdminProfileViewModel
-    @State private var task: Task<Void, Never>?
+    @State private var accountVM: AccountActionsViewModel
     
     init(
         user: AppUser,
         authService: AuthService,
-        pushTokenCoordinator: PushTokenCoordinator
+        pushTokenCoordinator: PushTokenCoordinator,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService
     ) {
         self.user = user
-        self.authService = authService
         
-        let viewModel = AdminProfileViewModel(
+        let accountViewModel = AccountActionsViewModel(
             authService: authService,
-            pushTokenCoordinator: pushTokenCoordinator
+            pushTokenCoordinator: pushTokenCoordinator,
+            appleReauthenticationService: appleReauthenticationService,
+            googleReauthenticationService: googleReauthenticationService
         )
-        self._vm = State(initialValue: viewModel)
+        self._accountVM = State(initialValue: accountViewModel)
     }
     
     var body: some View {
         CustomNavStack {
-            Form {
-                logout
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.xLarge) {
+                    UserBasicInfoView(user: user)
+                        .padding( DesignSystem.Spacing.large)
+                        .roundedBackground()
+                    
+                    AccountSectionView(accountVM: $accountVM)
+                }
             }
-            .customNavTitle(user.fullName ?? "")
+            .padding(.horizontal, DesignSystem.Spacing.large)
             .customNavBarVisibility(.root)
-            .onDisappear {
-                task?.cancel()
-            }
-        }
-    }
-    
-    private var logout: some View {
-        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
-            task?.cancel()
-            task = Task {
-                await vm.logout()
-            }
+            .customNavTitle("Profile")
+            .scrollBounceBehavior(.basedOnSize)
         }
     }
 }
@@ -56,6 +53,8 @@ struct AdminProfileScreen: View {
     AdminProfileScreen(
         user: .samples[0],
         authService: MockAuthService.sample,
-        pushTokenCoordinator: .sample
+        pushTokenCoordinator: .sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample
     )
 }

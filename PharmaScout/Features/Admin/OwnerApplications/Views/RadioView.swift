@@ -9,30 +9,50 @@ import SwiftUI
 
 struct RadioView: View {
     let title: String
+    var subtitle: String? = nil
     let isSelected: Bool
     var action: (() -> Void)? = nil
     
     var body: some View {
         HStack {
-            Group {
-                if isSelected {
-                    Image(systemName: "0.circle.fill.hi")
-                } else {
-                    Image(systemName: "0.circle.hi")
+            VStack(spacing: DesignSystem.Spacing.small) {
+                Text(title)
+                    .font(.callout)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.theme.textPrimary)
+                
+                if let subtitle {
+                    Text(subtitle)
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundStyle(.theme.textSecondary)
                 }
             }
-            .foregroundStyle(.theme.secondary)
+
+            Spacer()
             
-            Text(title)
+            Group {
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                } else {
+                    Image(systemName: "circle")
+                }
+            }
+            .font(.title)
+            .foregroundStyle(.theme.primary)
+            
         }
+        .frame(maxWidth: .infinity)
+        .background(.theme.background.opacity(0.001))
         .clickable(action: action)
     }
 }
 
 #Preview {
-    HStack(spacing: 50) {
-        RadioView(title: "Option 1", isSelected: true)
+    VStack(spacing: 50) {
+        RadioView(title: "Option 1", subtitle: "This is a subtitle", isSelected: true)
         
-        RadioView(title: "Option 2", isSelected: false)
+        RadioView(title: "Option 2", subtitle: "This is a subtitle", isSelected: false)
     }
+    .padding()
 }

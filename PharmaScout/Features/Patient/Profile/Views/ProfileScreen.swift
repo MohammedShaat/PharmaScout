@@ -41,20 +41,21 @@ struct ProfileScreen: View {
     
     var body: some View {
         CustomNavStack {
-            VStack(spacing: DesignSystem.Spacing.xLarge) {
-                UserBasicInfoView(user: user)
-                    .padding( DesignSystem.Spacing.large)
-                    .roundedBackground()
-                
-                pharmacySection
-                
-                AccountSectionView(accountVM: $accountVM)
-                
-                Spacer()
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.xLarge) {
+                    UserBasicInfoView(user: user)
+                        .padding( DesignSystem.Spacing.large)
+                        .roundedBackground()
+                    
+                    pharmacySection
+                    
+                    AccountSectionView(accountVM: $accountVM)
+                }
             }
             .padding(.horizontal, DesignSystem.Spacing.large)
             .customNavBarVisibility(.root)
             .customNavTitle("Profile")
+            .scrollBounceBehavior(.basedOnSize)
             .customNavigationDestination(for: ProfileRoute.self) { route in
                 switch route {
                 case .joinPharmacy:

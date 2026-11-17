@@ -92,7 +92,7 @@ struct RootView: View {
                 PharmacistTabView(user: user, router: router, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService, drugService: drugService, pharmacyService: pharmacySerivce, analyticsService: analyticsService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: MockAppleAuthService.sample, googleReauthenticationService: MockGoogleAuthService.sample)
                 
             case .admin(let user):
-                AdminTabView(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce)
+                AdminTabView(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
                 
             case .ownerApplicant(let user, let ownerApplicationSummary):
                 OwnerApplicantTabView(user: user, ownerApplicationSummary: ownerApplicationSummary, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce, geocodingService: geocodingService, placeSearchService: placeSearchService, locationService: locationService)

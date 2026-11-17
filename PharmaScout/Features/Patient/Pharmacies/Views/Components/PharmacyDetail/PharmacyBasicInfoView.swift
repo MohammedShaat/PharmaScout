@@ -60,18 +60,10 @@ struct PharmacyBasicInfoView: View {
     }
     
     private var staticMapPreview: some View {
-        VStack {
-            Image(.location)
-                .frame(width: 22)
-                .foregroundStyle(.theme.onPrimary)
-                .padding(DesignSystem.Spacing.large)
-                .background(.theme.primary)
-                .clipShape(.circle)
-        }
-        
-        .frame(height: 112)
-        .frame(maxWidth: .infinity)
-        .background(.blue.opacity(0.2))
+        StaticMapPreview()
+            .frame(height: 112)
+            .frame(maxWidth: .infinity)
+            .background(.blue.opacity(0.2))
     }
     
     private var seeLocationButton: some View {

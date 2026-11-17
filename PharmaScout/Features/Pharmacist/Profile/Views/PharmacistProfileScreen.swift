@@ -53,20 +53,21 @@ struct PharmacistProfileScreen: View {
     
     var body: some View {
         CustomNavStack {
-            VStack(spacing: DesignSystem.Spacing.xLarge) {
-                UserBasicInfoView(user: user)
-                    .padding( DesignSystem.Spacing.large)
-                    .roundedBackground()
-                
-                pharmacySection
-                
-                AccountSectionView(accountVM: $accountVM)
-                
-                Spacer()
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.xLarge) {
+                    UserBasicInfoView(user: user)
+                        .padding( DesignSystem.Spacing.large)
+                        .roundedBackground()
+                    
+                    pharmacySection
+                    
+                    AccountSectionView(accountVM: $accountVM)
+                }
             }
             .padding(.horizontal, DesignSystem.Spacing.large)
             .customNavTitle(user.fullName ?? "")
             .customNavBarVisibility(.root)
+            .scrollBounceBehavior(.basedOnSize)
             .errorAlert(title: "Failed", loadingState: $vm.loadingState)
             .alert("Close Pharmacy?", isPresented: $showingClosePharmacyConfirmation) {
                 Button("Close Pharmacy", role: .destructive) {

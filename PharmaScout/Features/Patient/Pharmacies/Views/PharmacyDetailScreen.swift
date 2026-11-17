@@ -72,7 +72,7 @@ struct PharmacyDetailScreen: View {
                 ) { contact in
                     PharmacyContactView(contact: contact)
                         .clickable {
-                            handleContactTap(contact)
+                            open(contact.makeURL(), by: openURL)
                         }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -111,11 +111,6 @@ struct PharmacyDetailScreen: View {
                 .padding(.horizontal, DesignSystem.Spacing.medium)
             }
         }
-    }
-    
-    private func handleContactTap(_ contact: PharmacyContact) {
-        guard let url = contact.makeURL() else { return }
-        openURL(url)
     }
 }
 
