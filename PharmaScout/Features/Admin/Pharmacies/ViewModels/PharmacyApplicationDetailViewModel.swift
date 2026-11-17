@@ -16,9 +16,9 @@ class PharmacyApplicationDetailViewModel {
     private(set) var contacts: [PharmacyContact] = []
     private(set) var workingHours: [WorkingHour] = []
     
+    let minRejectionReasonLength = AppConstants.Validation.minRejectionReasonLength
     var rejectionReason: PharmacyRejectionReason?
     var customRejectionReason: String = ""
-    
     var canReject: Bool {
         switch rejectionReason {
         case .other:
@@ -30,12 +30,13 @@ class PharmacyApplicationDetailViewModel {
         }
     }
     
+    var canReview: Bool { pharmacyApplication?.status == .pending }
     private(set) var activeReviewAction: ReviewAction?
     
     private(set) var pharmacyApplicationLoadingState = LoadingState()
     private(set) var contactLoadingState = LoadingState()
     private(set) var workingHoursLoadingState = LoadingState()
-    private(set) var reviewLoadingState = LoadingState()
+    var reviewLoadingState = LoadingState()
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
@@ -192,6 +193,6 @@ extension PharmacyApplicationDetailViewModel {
     private func isRejectionReasonValid(_ reason: String?) -> Bool {
         guard let reason else { return false }
         
-        return reason.count >= AppConstants.Validation.minRejectionReasonLength
+        return reason.count >= minRejectionReasonLength
     }
 }

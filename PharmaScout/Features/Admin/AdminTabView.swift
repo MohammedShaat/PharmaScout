@@ -13,6 +13,8 @@ struct AdminTabView: View {
     private let pushTokenCoordinator: PushTokenCoordinator
     private let ownerApplicationService: OwnerApplicationService
     private let pharmacyService: PharmacyService
+    private let appleReauthenticationService: AppleReauthenticationService
+    private let googleReauthenticationService: GoogleReauthenticationService
     
     @State private var vm: AdminTabViewModel
     
@@ -21,13 +23,17 @@ struct AdminTabView: View {
         authService: AuthService,
         pushTokenCoordinator: PushTokenCoordinator,
         ownerApplicationService: OwnerApplicationService,
-        pharmacyService: PharmacyService
+        pharmacyService: PharmacyService,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService
     ) {
         self.user = user
         self.authService = authService
         self.pushTokenCoordinator = pushTokenCoordinator
         self.ownerApplicationService = ownerApplicationService
         self.pharmacyService = pharmacyService
+        self.appleReauthenticationService = appleReauthenticationService
+        self.googleReauthenticationService = googleReauthenticationService
         
         let viewModel = AdminTabViewModel()
         self._vm = State(wrappedValue: viewModel)
@@ -48,7 +54,7 @@ struct AdminTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                AdminProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator)
+                AdminProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
             }
         }
         .tint(.theme.primary)
@@ -78,6 +84,8 @@ struct AdminTabView: View {
         authService: MockAuthService.sample,
         pushTokenCoordinator: .sample,
         ownerApplicationService: MockOwnerApplicationService.sample,
-        pharmacyService: MockPharmacyService.sample
+        pharmacyService: MockPharmacyService.sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample
     )
 }

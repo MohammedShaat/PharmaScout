@@ -21,15 +21,19 @@ struct AdminPharmaciesScreen: View {
     
     var body: some View {
         CustomNavStack {
-            ScrollView {
-                VStack {
-                    filterSection
-                    
-                    pharmacyApplicationListSection
+            VStack(spacing: DesignSystem.Spacing.large) {
+                filterSection
+
+                ScrollView {
+                    VStack {
+                        pharmacyApplicationListSection
+                    }
+                    .refreshable(action: vm.refresh)
                 }
-                .padding(DesignSystem.Spacing.xLarge)
             }
+            .padding(.horizontal, DesignSystem.Spacing.xLarge)
             .customNavBarVisibility(.root)
+            .customNavTitle("Pharmacy applications")
             .customNavigationDestination(for: PharmacyApplicationDetailRoute.self) { route in
                 PharmacyApplicationDetailScreen(
                     pharmacyService: pharmacyService,
@@ -37,7 +41,6 @@ struct AdminPharmaciesScreen: View {
                     pharmacyApplication: route.pharmacyApplication
                 )
             }
-            .refreshable(action: vm.refresh)
             .onAppear {
                 vm.loadPharmacyApplicationsaIfNeeded()
             }
@@ -55,65 +58,51 @@ struct AdminPharmaciesScreen: View {
     }
     
     private var filterSection: some View {
-        Menu(vm.filter.title, systemImage: "line.3.horizontal.decrease") {
-            Picker("Status", selection: $vm.filter) {
-                ForEach(PharmacyApplicationFilter.allCases) { status in
-                    Text(status.title)
-                        .tag(status)
-                }
-            }
+        FilterView(
+            selection: $vm.filter,
+            label: vm.filter.title,
+            pickerTitle: "Status",
+            options: PharmacyApplicationFilter.allCases
+        ) { status in
+            Text(status.title)
         }
+        .frame(maxWidth: .infinity, alignment: .trailing)
     }
     
     private var pharmacyApplicationListSection: some View {
         LoadingContentView(
             LoadingState: vm.loadingState,
             showMessage: vm.pharmacyApplications.isEmpty,
-            emptyMessage: "No applications") {
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(vm.pharmacyApplications) { pharmacyApplication in
-                        CustomNavValueLink(value: PharmacyApplicationDetailRoute(pharmacyId: pharmacyApplication.id, pharmacyApplication: pharmacyApplication)) {
-                            pharmacyApplicationView(pharmacyApplication)
-                        }
-                        .onAppear {
-                            if pharmacyApplication.id == vm.pharmacyApplications.last?.id {
-                                applicationsTask?.cancel()
-                                applicationsTask = Task {
-                                    await vm.loadMore()
-                                }
+            emptyTitle: "No applications",
+            emptyMessage: ""
+        ) {
+            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                ForEach(vm.pharmacyApplications) { pharmacyApplication in
+                    CustomNavValueLink(
+                        value: PharmacyApplicationDetailRoute(pharmacyId: pharmacyApplication.id, pharmacyApplication: pharmacyApplication)
+                    ) {
+                        PharmacyApplicationView(pharmacyApplication: pharmacyApplication)
+                            .padding(DesignSystem.Spacing.large)
+                            .roundedBackground(
+                                showBorder: true,
+                                borderColor: pharmacyApplication.status == .pending ? PharmacyStatus.pending.color : .theme.disabledBackground
+                            )
+                    }
+                    .onAppear {
+                        if pharmacyApplication.isLast(vm.pharmacyApplications) {
+                            applicationsTask?.cancel()
+                            applicationsTask = Task {
+                                await vm.loadMore()
                             }
                         }
-                        
-                        if pharmacyApplication.id == vm.pharmacyApplications.last?.id && vm.loadingState.status == .loadingMore {
-                            RingProgressView()
-                        }
+                    }
+                    
+                    if pharmacyApplication.isLast(vm.pharmacyApplications) && vm.loadingState.status == .loadingMore {
+                        RingProgressView()
                     }
                 }
             }
-    }
-    
-    private func pharmacyApplicationView(_ pharmacyApplication: PharmacyApplication) -> some View {
-        VStack(spacing: DesignSystem.Spacing.medium) {
-            // MARK: Name, status and address
-            VStack(alignment: .leading) {
-                // Name and status
-                HStack {
-                    Text(pharmacyApplication.name)
-                    Spacer()
-                    Text(pharmacyApplication.status.title)
-                }
-                
-                // Address
-                Text(pharmacyApplication.address)
-            }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            
-            // MARK: Timezone
-            Text(pharmacyApplication.timezone)
-                .frame(maxWidth: .infinity, alignment: .leading)
         }
-        .frame(maxWidth: .infinity)
-        .background(.theme.primary.opacity(0.2))
     }
 }
 

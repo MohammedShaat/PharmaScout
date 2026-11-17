@@ -22,15 +22,20 @@ struct OwnerApplicationDetailScreen: View {
     
     var body: some View {
         ScrollView {
-            VStack {
+            VStack(spacing: DesignSystem.Spacing.large) {
                 applicationDetailSection
                 
-                reviewSection
+                if vm.canReview {
+                    reviewSection
+                }
                 
-                revokeSection
+                if vm.canRevoke {
+                    revokeSection
+                }
             }
             .padding(DesignSystem.Spacing.xLarge)
         }
+        .customNavTitle("Application details")
         .refreshable(action: vm.refresh)
         .onAppear {
             vm.loadApplicationIfNeeded()
@@ -45,99 +50,71 @@ struct OwnerApplicationDetailScreen: View {
         LoadingContentView(
             LoadingState: vm.ownerApplicationLoadingState,
             showMessage: vm.ownerApplication == nil,
-            emptyMessage: "Couldn't load the application") {
-                if let ownerApplication = vm.ownerApplication {
-                    VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-                        // MARK: Code and status
-                        HStack {
-                            Text("Code: \(ownerApplication.code)")
-                            Spacer()
-                            Text("Status: \(ownerApplication.status.title)")
-                        }
-                        
-                        // MARK: Applicant ID
-                        if let applicantId = ownerApplication.applicantId {
-                            Text("Applicant ID: \(applicantId)")
-                        }
-                        
-                        // MARK: Creation and expiration
-                        VStack(alignment: .leading) {
-                            Text("Created by: \(ownerApplication.createdBy)")
-                            Text("Created at: \(ownerApplication.createdAt.formattedDateTime)")
-                            Spacer()
-                            Text("Expires at: \(ownerApplication.expiresAt.formattedDateTime)")
-                        }
-                        
-                        // MARK: Review
-                        if let reviewedBy = ownerApplication.reviewedBy,
-                           let reviewedAt = ownerApplication.reviewedAt {
-                            VStack(alignment: .leading) {
-                                Text("Reviewed by: \(reviewedBy)")
-                                Spacer()
-                                Text("Reviewed at: \(reviewedAt.formattedDateTime)")
-                            }
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
+            emptyTitle: "Couldn't load the application",
+            emptyMessage: ""
+        ) {
+            if let ownerApplication = vm.ownerApplication {
+                OwnerApplicationDetailInfoView(ownerApplication: ownerApplication)
             }
+        }
     }
     
     private var revokeSection: some View {
-        VStack {
-            if vm.canRevoke {
-                HStack {
-                    Text("Revoke")
-                        .foregroundStyle(.theme.textPrimary)
-                        .clickable(
-                            isDisabled: vm.revokeLoadingState.status != .idle || vm.reviewLoadingState.status != .idle
-                        ) {
-                            task?.cancel()
-                            task = Task {
-                                await vm.revoke()
-                            }
-                        }
-                    
-                    if vm.revokeLoadingState.status != .idle {
-                        RingProgressView()
-                    }
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
+            Text("The code stops working immediately. This can't be undone.")
+                .foregroundStyle(.theme.textSecondary)
+
+            HStack(spacing: DesignSystem.Spacing.medium) {
+                if vm.revokeLoadingState.status != .idle {
+                    RingProgressView(trimColor: .theme.red)
+                } else {
+                    Image(systemName: "circle.slash")
+                }
+                
+                Text("Revoke code")
+                    .fontWeight(.bold)
+            }
+            .foregroundStyle(.theme.red)
+            .padding(DesignSystem.Spacing.large)
+            .roundedBackground(radius: DesignSystem.CornerRadius.small,showBorder: true, borderColor: .theme.red)
+            .clickable(isDisabled: vm.revokeLoadingState.status != .idle) {
+                task?.cancel()
+                task = Task {
+                    await vm.revoke()
                 }
             }
         }
-        .padding(.vertical, DesignSystem.Spacing.xxLarge)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
     
-    @ViewBuilder
     private var reviewSection: some View {
-        if vm.canReview {
-            VStack(spacing: DesignSystem.Spacing.xLarge) {
-                // MARK: Review options
-                HStack(spacing: 0) {
-                    Spacer()
-                    RadioView(title: "Approve", isSelected: vm.approve) {
-                        vm.approve = true
-                    }
-                    Spacer()
-                    RadioView(title: "Reject", isSelected: !vm.approve) {
-                        vm.approve = false
-                    }
-                    Spacer()
+        VStack(spacing: DesignSystem.Spacing.large) {
+            Text("Review")
+                .font(.headline)
+                .fontWeight(.heavy)
+                .foregroundStyle(.theme.textPrimary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            
+            ApproveAndRejectView(
+                selection: $vm.approve,
+                approveSubtitle: "The applicant becomes a pharmacy owner.",
+                rejectSubtitle: "The applicant won't become an owner."
+            )
+            
+            PrimaryButtonView(
+                title: "Review",
+                isDisabled: !vm.canReview || vm.approve == nil,
+                isLoading: vm.reviewLoadingState.status != .idle
+            ) {
+                task?.cancel()
+                task = Task {
+                    await vm.review()
                 }
-                .font(.title3)
-                
-                // MARK: Review button
-                PrimaryButtonView(
-                    title: "Review",
-                    isDisabled: !vm.canReview || vm.revokeLoadingState.status != .idle,
-                    isLoading: vm.reviewLoadingState.status != .idle) {
-                        task?.cancel()
-                        task = Task {
-                            await vm.review()
-                        }
-                    }
             }
-            .padding(.vertical, DesignSystem.Spacing.xxLarge)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(DesignSystem.Spacing.large)
+        .roundedBackground()
     }
 }
 
@@ -157,11 +134,13 @@ struct OwnerApplicationDetailRoute: Hashable {
 }
 
 #Preview {
-    let ownerApplication = OwnerApplication.samples[1]
+    let ownerApplication = OwnerApplication.samples[0]
     
-    OwnerApplicationDetailScreen(
-        ownerApplicationService: MockOwnerApplicationService.sample,
-        ownerApplicationId: ownerApplication.id,
-        ownerApplication: ownerApplication
-    )
+    CustomNavStack {
+        OwnerApplicationDetailScreen(
+            ownerApplicationService: MockOwnerApplicationService.sample,
+            ownerApplicationId: ownerApplication.id,
+            ownerApplication: ownerApplication
+        )
+    }
 }

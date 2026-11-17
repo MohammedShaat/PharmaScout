@@ -19,5 +19,9 @@ extension Date {
     var dayMonth: String {
         formatted(.dateTime.day().month())
     }
+    
+    var dayMonthHourMinute: String {
+        DateFormatters.dayMonthHourMinute.string(from: self)
+    }
 }
 
