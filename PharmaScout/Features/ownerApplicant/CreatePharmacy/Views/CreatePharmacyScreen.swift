@@ -37,19 +37,22 @@ struct CreatePharmacyScreen: View {
     
     var body: some View {
         CustomNavStack(path: $path) {
-            ScrollView {
-                VStack(spacing: DesignSystem.Spacing.xxLarge) {
-                    pharmacySection
-                    
-                    locationSection
-                    
-                    workingHoursSection
+            VStack(spacing: 0) {
+                ScrollView {
+                    VStack(spacing: DesignSystem.Spacing.xxLarge) {
+                        basicInfoSection
+                        
+                        locationSection
+                        
+                        workingHoursSection
 
-                    contactSection
-                    
-                    createPharmacyButtonSection
+                        contactSection
+                    }
+                    .padding(DesignSystem.Spacing.xLarge)
                 }
-                .padding(DesignSystem.Spacing.xLarge)
+                
+                DividerView()
+                createPharmacyButtonSection
             }
             .customNavBarVisibility(.root)
             .customNavTitle("Create Pharmacy")
@@ -61,7 +64,7 @@ struct CreatePharmacyScreen: View {
                         geocodingService: geocodingService,
                         placeSearchService: placeSearchService,
                     ) { coordiante, resolvedPlace in
-                        vm.onLocationConfirmed(coordiante, resolvedPlace)
+                        vm.onLocationConfirmed(coordiante, 	resolvedPlace)
                     }
                     
                 case .createOrEditWorkingHours:
@@ -75,8 +78,12 @@ struct CreatePharmacyScreen: View {
                     }
                 }
             }
-            .sheet(isPresented: $vm.showSuccessMessage) {
-                MidSheetView(title: "Your request has been submitted successfully") {
+            .errorAlert(title: "Pharmacy creation failed", loadingState: $vm.loadingState)
+            .sheet(isPresented: $vm.showSuccessMessage, onDismiss: vm.onSuccessMessageDismissed) {
+                RequestSucceededView(
+                    title: "Your request has been submitted",
+                    subtitle: "An admin will review your pharmacy. We’ll show you the status on your Home screen."
+                ) {
                     vm.onSuccessMessageDismissed()
                 }
             }
@@ -86,86 +93,85 @@ struct CreatePharmacyScreen: View {
         }
     }
     
-    private var pharmacySection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            sectionHeader("Pharmacy Info")
+    private var basicInfoSection: some View {
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            SectionHeaderView(title: "Pharmacy Info")
             
             LabeledTextFieldView(title: $vm.name, label: "Pharmacy name", placeholder: "Type your pharmacy's name")
-            
-            LabeledTextFieldView(title: $vm.address, label: "Address", placeholder: "Type your pharmacy's address")
         }
     }
     
     private var locationSection: some View {
         VStack(spacing: DesignSystem.Spacing.medium) {
-            sectionHeader("Location")
-            
-            if let coordinate = vm.coordinate {
-                HStack {
-                    Text("Latitude: \(coordinate.latitude)")
-                    Text("Longitude: \(coordinate.longitude)")
-                }
-                
-                LabeledTextFieldView(title: $vm.address, label: "Address", placeholder: "Type your pharmacy's address")
-                    .focused($isAddressFocused)
-                    .onChange(of: vm.address) {
-                        if isAddressFocused {
-                            vm.onAddressChangedByUser()
-                        }
-                    }
-            }
-            
-            NavigationPromptView(
-                value: CreatePharmacyRoute.selectLocationOnMap,
-                actionTitle: "Open map to detect location"
+            SectionHeaderView(title: "Location")
+
+            LocationDetectionView(
+                isLocationDetected: vm.coordinate != nil,
+                timezone: vm.timezone,
+                address: $vm.address,
+                minAddressLength: vm.minAddressLength,
+                onAddressChangedByUser: { vm.onAddressChangedByUser() },
+                onOpenMapTapped: { path.append(CreatePharmacyRoute.selectLocationOnMap) },
+                onChangeTapped: { path.append(CreatePharmacyRoute.selectLocationOnMap) }
             )
         }
     }
     
     private var workingHoursSection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Working Hours") {
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            EditSectionHeaderView(title: "Working Hours", showAction: vm.workingHours.isNotEmpty) {
                 path.append(CreatePharmacyRoute.createOrEditWorkingHours)
             }
             
-            PharmacyWorkingHourListView(workingHours: vm.workingHours)
+            if vm.workingHours.isNotEmpty {
+                WorkingHourListView(workingHours: vm.workingHours)
+            } else {
+                CreatePharmacyEmptyListView(
+                    systemName: "clock",
+                    title: "No working hours yet",
+                    subtitle: "Add opening times so patients know when to visit.",
+                    buttonTitle: "Set working hours",
+                    onButtonTapped: { path.append(CreatePharmacyRoute.createOrEditWorkingHours) }
+                )
+            }
         }
     }
     
     private var contactSection: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
-            EditSectionHeaderView(title: "Contact") {
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            EditSectionHeaderView(title: "Contact", showAction: vm.contacts.isNotEmpty) {
                 path.append(CreatePharmacyRoute.createOrEditContacts)
             }
             
-            PharmacyContactListView(contacts: vm.contacts)
+            if vm.contacts.isNotEmpty {
+                CustomList(items: vm.contacts, isLoadingMore: false) { contact in
+                    PharmacyContactView(contact: contact)
+                }
+            } else {
+                CreatePharmacyEmptyListView(
+                    systemName: "phone",
+                    title: "No contact info yet",
+                    subtitle: "Add a phone number, email, or website so patients can reach you.",
+                    buttonTitle: "Add contact",
+                    onButtonTapped: { path.append(CreatePharmacyRoute.createOrEditContacts) }
+                )
+            }
         }
-    }
-    
-    private func sectionHeader(_ title: String) -> some View {
-        Text(title)
-            .font(.title3)
-            .fontWeight(.bold)
-            .foregroundStyle(.theme.textPrimary)
-            .frame(maxWidth: .infinity, alignment: .leading)
     }
     
     private var createPharmacyButtonSection: some View {
-        VStack {
-            if let error = vm.loadingState.error {
-                Text(error.errorDescription)
+        PrimaryButtonView(
+            title: "Create Pharmacy",
+            isDisabled: !vm.canCreatePharmacy,
+            isLoading: vm.loadingState.status != .idle
+        ) {
+            createPharmacyTask?.cancel()
+            createPharmacyTask = Task {
+                await vm.createPharmacy()
             }
-            
-            PrimaryButtonView(
-                title: "Create Pharmacy",
-                isDisabled: !vm.canCreatePharmacy,
-                isLoading: vm.loadingState.status != .idle) {
-                    createPharmacyTask?.cancel()
-                    createPharmacyTask = Task {
-                        await vm.createPharmacy()
-                    }
-                }
         }
+        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.small)
     }
 }
 

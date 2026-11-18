@@ -95,7 +95,7 @@ struct RootView: View {
                 AdminTabView(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
                 
             case .ownerApplicant(let user, let ownerApplicationSummary):
-                OwnerApplicantTabView(user: user, ownerApplicationSummary: ownerApplicationSummary, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce, geocodingService: geocodingService, placeSearchService: placeSearchService, locationService: locationService)
+                OwnerApplicantTabView(user: user, ownerApplicationSummary: ownerApplicationSummary, authService: authService, pushTokenCoordinator: pushTokenCoordinator, ownerApplicationService: ownerApplicationService, pharmacyService: pharmacySerivce, geocodingService: geocodingService, placeSearchService: placeSearchService, locationService: locationService, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
             }
             
         }

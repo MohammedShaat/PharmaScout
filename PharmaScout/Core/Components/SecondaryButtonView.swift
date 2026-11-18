@@ -17,6 +17,7 @@ struct SecondaryButtonView: View {
     
     var body: some View {
         Label(title, systemImage: systemName)
+            .fontWeight(.bold)
             .frame(maxWidth: maxWidth)
             .foregroundStyle(color)
             .padding(DesignSystem.Spacing.large)

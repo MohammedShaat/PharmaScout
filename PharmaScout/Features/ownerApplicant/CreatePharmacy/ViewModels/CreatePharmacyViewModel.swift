@@ -19,28 +19,27 @@ class CreatePharmacyViewModel {
     var workingHours: [WorkingHour] = []
     var contacts: [PharmacyContact] = []
     
+    let minAddressLength = 30
+    
     private var addressChangedByUser: Bool = false
     
     var canCreatePharmacy: Bool { isDataValid() }
     
     var showSuccessMessage: Bool = false
     
-    private(set) var loadingState = LoadingState()
+    var loadingState = LoadingState()
     
     init(pharmacyService: PharmacyService, ownerApplicationService: OwnerApplicationService) {
         self.pharmacyService = pharmacyService
         self.ownerApplicationService = ownerApplicationService
     }
     
-    func onLocationConfirmed(_ newCoordinate: Coordinate, _ resolvedPlace: ResolvedPlace) {
-        coordinate = newCoordinate
-        
+    func onLocationConfirmed(_ newCoordinate: Coordinate?, _ resolvedPlace: ResolvedPlace?) {
+        self.coordinate = newCoordinate ?? coordinate
+        self.timezone = resolvedPlace?.timeZone?.identifier ?? timezone
         if !addressChangedByUser,
-           let suggestedAddress = resolvedPlace.suggestedAddress {
+           let suggestedAddress = resolvedPlace?.suggestedAddress {
             address = suggestedAddress
-        }
-        if let resolvedTimezone =  resolvedPlace.timeZone {
-            timezone = resolvedTimezone.identifier
         }
     }
     
@@ -104,8 +103,9 @@ class CreatePharmacyViewModel {
 extension CreatePharmacyViewModel {
     private func isDataValid() -> Bool {
         name.trimmed.count >= 3
-        && address.trimmed.count >= 6
+        && address.trimmed.count >= minAddressLength
         && coordinate != nil
         && workingHours.count >= 1
+        && contacts.count >= 1
     }
 }

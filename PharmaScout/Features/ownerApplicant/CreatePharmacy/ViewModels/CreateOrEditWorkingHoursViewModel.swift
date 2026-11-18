@@ -11,10 +11,8 @@ import Foundation
 class CreateOrEditWorkingHoursViewModel {
     var workingHours: [WorkingHour]
     
-    var selectedDays: Set<DayOfWeek> {
-        Set(workingHours.map { $0.day })
-    }
     var workingHourError: WorkingHourError?
+    var canSubmit: Bool { workingHours.isNotEmpty }
     
     init(workingHours: [WorkingHour]) {
         self.workingHours = workingHours

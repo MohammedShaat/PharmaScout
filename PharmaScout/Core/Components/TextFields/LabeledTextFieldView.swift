@@ -12,10 +12,12 @@ struct LabeledTextFieldView: View {
     let label: String
     let placeholder: String
     var capitalization: TextInputAutocapitalization = .never
+    var axis: Axis = .horizontal
+    var minHeight: Double = 0
     
     var body: some View {
         TextFieldContainer(label: label, capitalization: capitalization) {
-            TextFieldTintedPlaceholder(title: $title, placeholder: placeholder)
+            TextFieldTintedPlaceholder(title: $title, placeholder: placeholder, axis: axis, minHeight: minHeight)
         }
     }
 }

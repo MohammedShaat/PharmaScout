@@ -24,7 +24,7 @@ struct UserProfileImageView: View {
                         .foregroundStyle(.theme.textPrimary)
                 } else {
                     Image(systemName: "person.crop.circle")
-                        .font(.system(size: size / 1.2))
+                        .font(.system(size: size / 1.5))
                         .padding(DesignSystem.Spacing.small)
                         .foregroundStyle(.theme.textPrimary)
                 }

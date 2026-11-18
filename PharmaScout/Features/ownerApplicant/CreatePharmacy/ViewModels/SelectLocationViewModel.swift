@@ -39,6 +39,11 @@ class SelectLocationViewModel {
     }
     
     func updateQuery() async {
+        guard searchText.isNotEmpty else {
+            suggestions.removeAll()
+            return
+        }
+        
         let shouldPerform = SearchRequestPolicy.shouldPerform(
             query: searchText,
             lastQuery: lastSearchText,
@@ -59,7 +64,7 @@ class SelectLocationViewModel {
             }
     }
     
-    func searchPlace(for placeSuggestion: PlaceSuggestion, onSuccess: () -> Void) async {
+    func searchPlace(for placeSuggestion: PlaceSuggestion) async {
         placeSearchingLoadingState.startLoading()
         defer { placeSearchingLoadingState.stopLoading() }
         
@@ -68,8 +73,6 @@ class SelectLocationViewModel {
 
             selectedCoordiante = newCoordiante ?? selectedCoordiante
             searchText = placeSuggestion.title
-            
-            onSuccess()
             
         } catch {
             placeSearchingLoadingState.fail(error)
@@ -97,19 +100,7 @@ class SelectLocationViewModel {
         }
     }
     
-    func confirmLocation(onCompletion: ((Coordinate, ResolvedPlace) -> Void)? = nil) async {
-        guard let selectedCoordiante else {
-            reverseGeocodingLoadingState.fail(ReversePlaceError.regionTooBroad)
-            print("no selected coordiante (nil)")
-            return
-        }
-        
-        await reverseGeocode()
-        
-        onCompletion?(selectedCoordiante, resolvedPlace ?? .empty)
-    }
-    
-    private func reverseGeocode() async {
+    func reverseGeocode() async {
         guard let selectedCoordiante else {
             reverseGeocodingLoadingState.fail(ReversePlaceError.regionTooBroad)
             print("no selected coordiante (nil)")
