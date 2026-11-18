@@ -19,10 +19,10 @@ struct SectionHeaderView<Content: View>: View {
     var body: some View {
         VStack(spacing: DesignSystem.Spacing.medium) {
             HStack {
-                Text(title.uppercased())
-                    .font(.subheadline)
+                Text(title)
+                    .font(.title3)
                     .fontWeight(.bold)
-                    .foregroundStyle(.theme.textSecondary)
+                    .foregroundStyle(.theme.textPrimary)
                 
                 Spacer()
             }

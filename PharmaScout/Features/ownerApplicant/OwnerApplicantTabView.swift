@@ -17,6 +17,8 @@ struct OwnerApplicantTabView: View {
     private let geocodingService: GeocodingService
     private let placeSearchService: PlaceSearchService
     private let locationService: LocationService
+    private let appleReauthenticationService: AppleReauthenticationService
+    private let googleReauthenticationService: GoogleReauthenticationService
     
     @State private var vm: OwnerApplicantTabViewModel
     
@@ -29,7 +31,9 @@ struct OwnerApplicantTabView: View {
         pharmacyService: PharmacyService,
         geocodingService: GeocodingService,
         placeSearchService: PlaceSearchService,
-        locationService: LocationService
+        locationService: LocationService,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService
     ) {
         self.user = user
         self.ownerApplicationSummary = ownerApplicationSummary
@@ -40,6 +44,8 @@ struct OwnerApplicantTabView: View {
         self.geocodingService = geocodingService
         self.placeSearchService = placeSearchService
         self.locationService = locationService
+        self.appleReauthenticationService = appleReauthenticationService
+        self.googleReauthenticationService = googleReauthenticationService
         
         let viewModel = OwnerApplicantTabViewModel(ownerApplicationSummary: ownerApplicationSummary)
         self._vm = State(wrappedValue: viewModel)
@@ -48,7 +54,7 @@ struct OwnerApplicantTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                OwnerApplicantHomeScreen(ownerApplicantTabViewModel: vm, ownerApplicationSummary: ownerApplicationSummary)
+                OwnerApplicantHomeScreen(user: user, ownerApplicantTabViewModel: vm, ownerApplicationSummary: ownerApplicationSummary)
             }
             
             if vm.status == .approved {
@@ -58,7 +64,7 @@ struct OwnerApplicantTabView: View {
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                OwnerApplicantProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator)
+                OwnerApplicantProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService, ownerApplicationService: ownerApplicationService)
             }
         }
         .tint(.theme.primary)
@@ -93,6 +99,8 @@ struct OwnerApplicantTabView: View {
         pharmacyService: MockPharmacyService.sample,
         geocodingService: MockGeocodingService.sample,
         placeSearchService: MockPlaceSearchService.sample,
-        locationService: MockLocationService.sample
+        locationService: MockLocationService.sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample
     )
 }

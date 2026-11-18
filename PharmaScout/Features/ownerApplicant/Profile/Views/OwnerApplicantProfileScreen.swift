@@ -9,53 +9,84 @@ import SwiftUI
 
 struct OwnerApplicantProfileScreen: View {
     private let user: AppUser
-    private let authService: AuthService
+    private let ownerApplicationService: OwnerApplicationService
     
-    @State private var vm: OwnerApplicantProfileViewModel
+    @State private var accountVM: AccountActionsViewModel
     @State private var task: Task<Void, Never>?
     
     init(
         user: AppUser,
         authService: AuthService,
-        pushTokenCoordinator: PushTokenCoordinator
+        pushTokenCoordinator: PushTokenCoordinator,
+        appleReauthenticationService: AppleReauthenticationService,
+        googleReauthenticationService: GoogleReauthenticationService,
+        ownerApplicationService: OwnerApplicationService
     ) {
         self.user = user
-        self.authService = authService
+        self.ownerApplicationService = ownerApplicationService
         
-        let viewModel = OwnerApplicantProfileViewModel(
+        let accountViewModel = AccountActionsViewModel(
             authService: authService,
-            pushTokenCoordinator: pushTokenCoordinator
+            pushTokenCoordinator: pushTokenCoordinator,
+            appleReauthenticationService: appleReauthenticationService,
+            googleReauthenticationService: googleReauthenticationService
         )
-        self._vm = State(initialValue: viewModel)
+        self._accountVM = State(initialValue: accountViewModel)
     }
     
     var body: some View {
         CustomNavStack {
-            Form {
-                logout
+            ScrollView {
+                VStack(spacing: DesignSystem.Spacing.xLarge) {
+                    UserBasicInfoView(user: user)
+                        .padding( DesignSystem.Spacing.large)
+                        .roundedBackground()
+                    
+                    pharmacySection
+                    
+                    AccountSectionView(accountVM: $accountVM)
+                }
             }
-            .customNavTitle(user.fullName ?? "")
+            .padding(.horizontal, DesignSystem.Spacing.large)
             .customNavBarVisibility(.root)
-            .onDisappear {
-                task?.cancel()
+            .customNavTitle("Profile")
+            .scrollBounceBehavior(.basedOnSize)
+            .customNavigationDestination(for: OwnerApplicantProfileRoute.self) { route in
+                switch route {
+                case .applyAgain:
+                    BecomePharmacyOwnerScreen(ownerApplicationService: ownerApplicationService)
+                }
             }
         }
     }
     
-    private var logout: some View {
-        LogOutButtonView(isLoading: vm.logoutLoadingState.status != .idle) {
-            task?.cancel()
-            task = Task {
-                await vm.logout()
+    private var pharmacySection: some View {
+        ProfileSectionView(sectionTitle: "For pharmacies") {
+            CustomNavValueLink(value: OwnerApplicantProfileRoute.applyAgain) {
+                ProfileSectionRowView(
+                    title: "Submit a new application",
+                    description: "Enter a new ownership code",
+                    systemName: "building.2.crop.circle",
+                )
+                .disclosureIndicator()
             }
         }
+        .padding(DesignSystem.Spacing.medium)
+        .roundedBackground()
     }
+}
+
+enum OwnerApplicantProfileRoute {
+    case applyAgain
 }
 
 #Preview {
     OwnerApplicantProfileScreen(
         user: .samples[0],
         authService: MockAuthService.sample,
-        pushTokenCoordinator: .sample
+        pushTokenCoordinator: .sample,
+        appleReauthenticationService: MockAppleAuthService.sample,
+        googleReauthenticationService: MockGoogleAuthService.sample,
+        ownerApplicationService: MockOwnerApplicationService.sample
     )
 }

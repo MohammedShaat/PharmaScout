@@ -12,7 +12,8 @@ struct UserBasicInfoView: View {
     
     var body: some View {
         HStack(spacing: DesignSystem.Spacing.large) {
-            initialLetters
+            UserProfileImageView(fullName: user.fullName)
+                .frame(width: 80)
             
             VStack(alignment: .leading, spacing: DesignSystem.Spacing.small) {
                 Text(user.fullName ?? "User")
@@ -26,11 +27,6 @@ struct UserBasicInfoView: View {
             }
             Spacer()
         }
-    }
-    
-    private var initialLetters: some View {
-        UserProfileImageView(fullName: user.fullName)
-            .frame(width: 80)
     }
 }
 

@@ -23,27 +23,43 @@ struct CreateOrEditContactsScreen: View {
     }
     
     var body: some View {
-        ScrollView {
-            contactListSection
-            
-            addNewContactSection
-            
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            ScrollView {
+                VStack {
+                    if vm.contacts.isNotEmpty {
+                        SwipeHintView()
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                        
+                        contactListSection
+                        
+                        addNewContactSection
+                    } else {
+                        startSection
+                    }
+                }
+                .padding(DesignSystem.Spacing.xLarge)
+            }
+
+            DividerView()
+
             if let error = vm.loadingState.error {
-                Text(error.errorDescription)
+                ErrorView(title: "Couldn't update contacts", description: error.errorDescription)
             }
             
-            buttonSection
+            saveButton
         }
-        .padding(DesignSystem.Spacing.xLarge)
+        .customNavTitle("Contact")
         .scrollDisabled(isSwipingAnItem)
     }
     
     private var contactListSection: some View {
-        VStack(spacing: DesignSystem.Spacing.xxLarge) {
+        VStack(spacing: DesignSystem.Spacing.large) {
             ForEach($vm.contacts) { $contact in
                 SwipyView(
                     isSwipingAnItem: $isSwipingAnItem) {
-                        contactItemView($contact)
+                        ContactEditView(contact: $contact)
+                            .padding(DesignSystem.Spacing.large)
+                            .roundedBackground()
                     } onDeleteTapped: {
                         vm.deleteContact(contact)
                     }
@@ -52,25 +68,33 @@ struct CreateOrEditContactsScreen: View {
     }
     
     private var addNewContactSection: some View {
-        ActionPromptView(actionTitle: "Add new Contact", action: vm.addContact)
-            .frame(maxWidth: .infinity, alignment: .trailing)
+        SecondaryButtonView(title: "Add contact", systemName: "plus", action: vm.addContact)
+            .padding(DesignSystem.Spacing.large)
     }
     
-    private func contactItemView(_ contact: Binding<PharmacyContact>) -> some View {
-        ContactEditView(contact: contact)
-            .frame(maxWidth: .infinity, alignment: .leading)
+    private var startSection: some View {
+        CreatePharmacyEmptyListView(
+            systemName: "phone",
+            title: "No contact info yet",
+            subtitle: "Add a phone number, email, or website so patients can reach you.",
+            buttonTitle: "Add contact",
+            onButtonTapped: { vm.addContact() }
+        )
     }
     
-    private var buttonSection: some View {
+    private var saveButton: some View {
         PrimaryButtonView(
             title: "Save",
             isDisabled: !vm.canUpdate,
-            isLoading: vm.loadingState.status != .idle) {
-                vm.updateContacts {
-                    onSaveTapped?(vm.contacts)
-                    dismiss()
-                }
+            isLoading: vm.loadingState.status != .idle
+        ) {
+            vm.updateContacts {
+                onSaveTapped?(vm.contacts)
+                dismiss()
             }
+        }
+        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .padding(.top, DesignSystem.Spacing.small)
     }
 }
 
@@ -78,5 +102,7 @@ struct CreateOrEditContactsScreen: View {
     let pharmacy = Pharmacy.samples[0]
     let contacts = PharmacyContact.samples.filter { $0.pharmacyId == pharmacy.id }
     
-    CreateOrEditContactsScreen(contacts: contacts)
+    CustomNavStack {
+        CreateOrEditContactsScreen(contacts: contacts)
+    }
 }

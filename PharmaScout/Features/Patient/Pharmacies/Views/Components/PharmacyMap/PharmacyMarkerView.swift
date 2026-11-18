@@ -17,18 +17,19 @@ struct PharmacyMarkerView<Label: View>: View {
         ZStack {
             pharmacyPin
                 .readFrame { pinSize = $0.size }
+                .offset(y: -16)
             
             label
                 .readFrame { labelSize = $0.size }
                 .foregroundStyle(.theme.brightBlue)
-                .offset(y: -(labelSize.height + labelSize.height * 0.5))
+                .offset(y: -(labelSize.height + labelSize.height * 1.4))
         }
     }
     
     private var pharmacyPin: some View {
         Image(.pinPlus)
             .resizable()
-            .scaledToFill()
+            .scaledToFit()
             .frame(width: 34)
     }
 

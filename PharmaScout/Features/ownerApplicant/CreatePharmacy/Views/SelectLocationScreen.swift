@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 
 struct SelectLocationScreen: View {
-    private let onLocationConfirmed: (((Coordinate, ResolvedPlace)) -> Void)?
+    private let onLocationConfirmed: (((Coordinate?, ResolvedPlace?)) -> Void)?
     
     @State private var vm: SelectLocationViewModel
     @State private var cameraPosition: MapCameraPosition = .userLocation(fallback: .automatic)
@@ -21,7 +21,7 @@ struct SelectLocationScreen: View {
         locationService: LocationService,
         geocodingService: GeocodingService,
         placeSearchService: PlaceSearchService,
-        onLocationConfirmed: (((Coordinate, ResolvedPlace)) -> Void)? = nil
+        onLocationConfirmed: (((Coordinate?, ResolvedPlace?)) -> Void)? = nil
     ) {
         self.onLocationConfirmed = onLocationConfirmed
         
@@ -44,10 +44,10 @@ struct SelectLocationScreen: View {
                 
                 reverseGeocodingSection
             }
-            .padding(.top)
+            .padding([.horizontal, .top], DesignSystem.Spacing.large)
             
         }
-//        .customNavBarVisibility(.root)
+        .customNavTitle("Choose location")
         .task {
             vm.requestLocationPermission()
             await vm.observeSuggestionsStream()
@@ -56,11 +56,8 @@ struct SelectLocationScreen: View {
             suggestionsTask?.cancel()
             addressTask?.cancel()
         }
-        .onChange(of: vm.searchText) {
-            suggestionsTask?.cancel()
-            suggestionsTask = Task {
-                await vm.updateQuery()
-            }
+        .task(id: vm.searchText) {
+            await vm.updateQuery()
         }
     }
     
@@ -79,55 +76,42 @@ struct SelectLocationScreen: View {
             )
         }
         .overlay {
-            Image(systemName: "mappin")
-                .font(.system(size: 36, weight: .medium))
-                .foregroundStyle(.red)
-                .offset(y: -18)
+            PharmacyMarkerView {}
         }
     }
     
     private var searchCompletionSection: some View {
-        VStack {
-            TextFieldView(title: $vm.searchText, placeholder: "Type place to search")
-                .padding()
-                .background(.gray.opacity(0.4))
-                .overlay {
-                    if vm.suggestionsLoadingState.status != .idle {
-                        RingProgressView()
-                    }
-                }
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            SearchFieldView(text: $vm.searchText, placehodler: "Search for a place")
             
             LoadingContentView(
                 LoadingState: vm.suggestionsLoadingState,
-                showMessage: vm.suggestions.isEmpty,
-                emptyMessage: vm.searchText.isEmpty ? "" : "Couldn't find such a place. Try another one") {
-                    ForEach(vm.suggestions) { suggestion in
-                        Button(suggestion.title) {
-                            Task {
-                                await vm.searchPlace(for: suggestion) {
-                                    if let selectedCoordiante = vm.selectedCoordiante {
-                                        cameraPosition = .region(
-                                            MKCoordinateRegion(
-                                                center: selectedCoordiante.clLocationCoordinate2d,
-                                                span: MKCoordinateSpan(
-                                                    latitudeDelta: 0.005,
-                                                    longitudeDelta: 0.005
-                                                )
-                                            )
-                                        )
-                                    }
-                                }
+                showMessage: vm.suggestions.isEmpty && vm.searchText.isNotEmpty,
+                emptyTitle: "Couldn't find such a place. Try another one",
+                emptyMessage: ""
+            ) {
+                ScrollView {
+                    CustomLazyList(
+                        items: vm.suggestions,
+                        isLoadingMore: vm.suggestionsLoadingState.status == .loadingMore
+                    ) { suggestion in
+                        PlaceSuggestionView(place: suggestion)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .background(.theme.surface.opacity(0.001))
+                            .clickable(isDisabled: vm.suggestionsLoadingState.status != .idle) {
+                                searchPlace(suggestion)
                             }
-                        }
                     }
                 }
+                .containerRelativeFrame(.vertical) { height, _ in height / 2 }
+            }
         }
     }
     
     private var reverseGeocodingSection: some View {
-        VStack {
+        VStack(spacing: DesignSystem.Spacing.medium) {
             if let error = vm.reverseGeocodingLoadingState.error {
-                Text(error.errorDescription)
+                ErrorView(title: "Couldn’t confirm location", description: error.errorDescription)
             }
             
             PrimaryButtonView(
@@ -136,15 +120,36 @@ struct SelectLocationScreen: View {
             ) {
                 addressTask?.cancel()
                 addressTask = Task {
-                    await vm.confirmLocation { coordinate, resolvedPlace in
-                        onLocationConfirmed?((coordinate, resolvedPlace))
-                        dismiss()
-                    }
+                    await vm.reverseGeocode()
+                    guard !Task.isCancelled,
+                          vm.reverseGeocodingLoadingState.error == nil
+                    else { return }
+                    onLocationConfirmed?((vm.selectedCoordiante, vm.resolvedPlace))
+                    dismiss()
                 }
             }
-            .padding()
-            .containerRelativeFrame(.horizontal) { width, _ in
-                width / 2
+        }
+        .padding(DesignSystem.Spacing.large)
+        .roundedBackground()
+    }
+    
+    private func searchPlace(_ suggestion: PlaceSuggestion) {
+        suggestionsTask?.cancel()
+        suggestionsTask = Task {
+            await vm.searchPlace(for: suggestion)
+            
+            if !Task.isCancelled,
+               vm.placeSearchingLoadingState.error == nil,
+               let selectedCoordiante = vm.selectedCoordiante {
+                cameraPosition = .region(
+                    MKCoordinateRegion(
+                        center: selectedCoordiante.clLocationCoordinate2d,
+                        span: MKCoordinateSpan(
+                            latitudeDelta: 0.005,
+                            longitudeDelta: 0.005
+                        )
+                    )
+                )
             }
         }
     }

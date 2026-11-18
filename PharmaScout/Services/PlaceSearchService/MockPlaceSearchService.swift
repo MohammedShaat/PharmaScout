@@ -8,10 +8,15 @@
 import Foundation
 
 struct MockPlaceSearchService: PlaceSearchService {
-    let suggestionsStream: AsyncStream<Result<[PlaceSuggestion], Error>> = .makeStream().stream
+    let suggestionsStream: AsyncStream<Result<[PlaceSuggestion], Error>>
+    private let suggestionContinuation: AsyncStream<Result<[PlaceSuggestion], Error>>.Continuation
+    
+    init() {
+        (suggestionsStream, suggestionContinuation) = AsyncStream.makeStream()
+    }
     
     func updateQuery(_ query: String) {
-        
+        suggestionContinuation.yield(.success(PlaceSuggestion.samples))
     }
 
     func coordinate(for placeSuggestion: PlaceSuggestion) async throws -> Coordinate? {
