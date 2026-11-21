@@ -137,7 +137,7 @@ class SearchDetailViewModel {
         defer { detailLoadingState.stopLoading() }
         
         do {
-            let params = SearchDrugDetailsParams(
+            let params = SearchDrugDetailsRequest(
                 latitude: userCoordinate.latitude,
                 longitude: userCoordinate.longitude,
                 searchId: searchId

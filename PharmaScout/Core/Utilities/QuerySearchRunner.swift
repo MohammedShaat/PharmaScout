@@ -1,5 +1,5 @@
 //
-//  SearchRequest.swift
+//  QuerySearchRunner.swift
 //  PharmaScout
 //
 //  Created by Mohammed on 10/12/26.
@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SearchRequestPolicy {
+enum QuerySearchRunner {
     static func shouldPerform(
         query: String,
         lastQuery: String?,

@@ -163,7 +163,7 @@ extension DrugSelectionViewModel {
         asyncWork: () async throws -> T,
         onSuccess: (T) -> Void
     ) async {
-        let shouldPerform = SearchRequestPolicy.shouldPerform(
+        let shouldPerform = QuerySearchRunner.shouldPerform(
             query: searchText,
             lastQuery: lastSearchText,
             allowsEmptyQuery: allowEmpty,
@@ -171,7 +171,7 @@ extension DrugSelectionViewModel {
             isRefreshing: searchLoadingState.status == .refreshing
         )
         
-        await SearchRequestPolicy.perform(
+        await QuerySearchRunner.perform(
             shouldPerform: shouldPerform,
             hasPreviousPage: searchLoadingState.pagination.hasPreviousPage,
             isRefreshing: searchLoadingState.status == .refreshing,

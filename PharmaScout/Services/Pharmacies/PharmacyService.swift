@@ -14,7 +14,7 @@ protocol PharmacyService {
     
     func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour]
     
-    func getPharmacy(_ params: GetPharmacyDetailsParams) async throws -> Pharmacy
+    func getPharmacy(_ params: GetPharmacyDetailsRequest) async throws -> Pharmacy
     
     func getStaff(for pharmacyId: String) async throws -> [PharmacyStaffMember]
     

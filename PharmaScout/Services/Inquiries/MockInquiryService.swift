@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockInquiryService: InquiryService {
-    func getInquiries(_ params: GetInquiriesParams) async throws -> [Inquiry] {
+    func getInquiries(_ params: GetInquiriesRequest) async throws -> [Inquiry] {
         try? await Task.sleep(for: .seconds(2))
         
         let filteredInquiries = Inquiry.samples
@@ -28,7 +28,7 @@ struct MockInquiryService: InquiryService {
         return Inquiry.samples.first { $0.id == inquiryId }!
     }
     
-    func respondToInquiry(_ params: RespondToInquiryParams) async throws {
+    func respondToInquiry(_ params: RespondToInquiryRequest) async throws {
         try? await Task.sleep(for: .seconds(2))
     }
     

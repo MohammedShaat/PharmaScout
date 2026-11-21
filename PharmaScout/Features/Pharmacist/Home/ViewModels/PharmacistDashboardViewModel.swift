@@ -72,7 +72,7 @@ class PharmacistDashboardViewModel {
         defer { latestPendingInquiriesLoadingState.stopLoading() }
         
         do {
-            let params = GetInquiriesParams(
+            let params = GetInquiriesRequest(
                 pharmacyId: pharmacyId,
                 limit: latestPendingInquiriesLoadingState.pagination.pageSize,
                 offset: 0,

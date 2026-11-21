@@ -13,7 +13,7 @@ class DefaultInquiryService: InquiryService {
     
     private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
-    func getInquiries(_ params: GetInquiriesParams) async throws -> [Inquiry] {
+    func getInquiries(_ params: GetInquiriesRequest) async throws -> [Inquiry] {
         let getPharmacyInquiriesFunc = SupabaseManager.Database.Functions.getPharmacyInquiries.self
         
         do {
@@ -49,7 +49,7 @@ class DefaultInquiryService: InquiryService {
         }
     }
     
-    func respondToInquiry(_ params: RespondToInquiryParams) async throws {
+    func respondToInquiry(_ params: RespondToInquiryRequest) async throws {
         let respondToInquiryFunc = SupabaseManager.Database.Functions.respondToPharmacyInquiry.self
         
         do {

@@ -63,7 +63,7 @@ class InquiriesViewModel {
     
     private func loadInquiries(refresh: Bool = false, filterHasChanged: Bool = false) async {
         var shouldPerform: Bool {
-            SearchRequestPolicy.shouldPerform(
+            QuerySearchRunner.shouldPerform(
                 query: searchText,
                 lastQuery: lastSearchText,
                 allowsEmptyQuery: true,
@@ -72,7 +72,7 @@ class InquiriesViewModel {
             )
         }
         
-        await SearchRequestPolicy.perform(
+        await QuerySearchRunner.perform(
             shouldPerform: shouldPerform || filterHasChanged,
             hasPreviousPage: loadingState.pagination.hasPreviousPage,
             isRefreshing: refresh,
@@ -93,7 +93,7 @@ class InquiriesViewModel {
             updateLastQuery: {
                 lastSearchText = searchText
             }) {
-                let params = GetInquiriesParams(
+                let params = GetInquiriesRequest(
                     pharmacyId: staffMembership.pharmacyId,
                     limit: refresh ? max(inquiries.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
                     offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : inquiries.count,

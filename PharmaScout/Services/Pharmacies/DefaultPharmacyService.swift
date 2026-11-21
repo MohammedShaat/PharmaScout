@@ -68,7 +68,7 @@ class DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func getPharmacy(_ params: GetPharmacyDetailsParams) async throws -> Pharmacy {
+    func getPharmacy(_ params: GetPharmacyDetailsRequest) async throws -> Pharmacy {
         let getPharmacyDetailsFunc = SupabaseManager.Database.Functions.getPharmacyDetails.self
         
         print(params.pharmacyId)

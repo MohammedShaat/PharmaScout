@@ -62,7 +62,7 @@ class PharmacyViewModel {
         defer { pharmacyLoadingState.stopLoading() }
         
         do {
-            let params = GetPharmacyDetailsParams(pharmacyId: pharmacyId, latitude: 0, longitude: 0)
+            let params = GetPharmacyDetailsRequest(pharmacyId: pharmacyId, latitude: 0, longitude: 0)
             pharmacy = try await pharmacyService.getPharmacy(params)
             
         } catch {

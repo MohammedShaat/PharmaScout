@@ -149,7 +149,7 @@ class HomeViewModel {
         defer { recentSearchesloadingState.stopLoading() }
         
         do {
-            let params = GetSearchesParams(
+            let params = GetSearchesRequest(
                 limit: recentSearchesloadingState.pagination.pageSize,
                 offset: 0,
                 filter: .nonPending
@@ -167,7 +167,7 @@ class HomeViewModel {
         defer { activeSearchesloadingState.stopLoading() }
         
         do {
-            let params = GetSearchesParams(
+            let params = GetSearchesRequest(
                 limit: activeSearchesloadingState.pagination.pageSize,
                 offset: 0,
                 filter: .pending

@@ -69,7 +69,7 @@ class RecentSearchesViewModel {
         defer { loadingState.stopLoading() }
         
         do {
-            let params = GetSearchesParams(
+            let params = GetSearchesRequest(
                 limit: refresh ? max(searches.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
                 offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : searches.count,
                 filter: filter
