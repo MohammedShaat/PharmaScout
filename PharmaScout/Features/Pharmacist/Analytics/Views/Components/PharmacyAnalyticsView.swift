@@ -94,28 +94,30 @@ struct PharmacyAnalyticsView: View {
     }
     
     private var drugDemandListSection: some View {
-        LoadingContentView(
-            loadingState: loadingState,
-            showMessage: pharmacySearchAnalytics.drugDemands.isEmpty,
-            emptyTitle: "No analytics yet",
-            emptyMessage: "No one has requested medicines from your pharmacy in the last \(period.title). Analytics will appear here once you receive requests.",
-            errorTitle: "Couldn't load analytics"
-        ) {
-            LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
-                    Text("Most requested medicines")
-                        .font(.title3)
-                        .fontWeight(.heavy)
-                        .foregroundStyle(.theme.textPrimary)
-                    
-                    Text("Requested from your pharmacy · last \(period.title)")
-                        .font(.subheadline)
-                        .foregroundStyle(.theme.textSecondary)
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(spacing: DesignSystem.Spacing.medium) {
+            VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
+                Text("Most requested medicines")
+                    .font(.title3)
+                    .fontWeight(.heavy)
+                    .foregroundStyle(.theme.textPrimary)
                 
-                ForEach(pharmacySearchAnalytics.drugDemands) { drugDemand in
-                    DrugDemandView(drugDemand: drugDemand)
+                Text("Requested from your pharmacy · last \(period.title)")
+                    .font(.subheadline)
+                    .foregroundStyle(.theme.textSecondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            
+            LoadingContentView(
+                loadingState: loadingState,
+                showMessage: pharmacySearchAnalytics.drugDemands.isEmpty,
+                emptyTitle: "No medicine requests to show",
+                emptyMessage: "There are no requested medicines to show for the last \(period.title).",
+                errorTitle: "Couldn't load medicine requests"
+            ) {
+                LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(pharmacySearchAnalytics.drugDemands) { drugDemand in
+                        DrugDemandView(drugDemand: drugDemand)
+                    }
                 }
             }
         }

@@ -77,7 +77,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
             // Title & message
             VStack(spacing: DesignSystem.Spacing.medium) {
                 Text(title)
-                    .font(.title2)
+                    .font(.title3)
                     .fontWeight(.heavy)
                     .foregroundStyle(.theme.textPrimary)
                 
