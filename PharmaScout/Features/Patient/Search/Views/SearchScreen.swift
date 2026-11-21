@@ -44,42 +44,43 @@ struct SearchScreen: View {
             CenteredScrollView {
                 VStack(spacing: 0) {
                     LoadingContentView(
-                        LoadingState: vm.numberOfActiveSearchsLoadingState,
+                        loadingState: vm.numberOfActiveSearchsLoadingState,
                         showMessage: vm.hasReachedSearchLimit,
                         emptyTitle: "Search limit reached",
                         emptyMessage: "You've reached the maximum number of active search requests. Please wait until one of your current searches is completed before starting a new one.",
+                        errorTitle: "Couldn't check your active searches",
                         emptyIcon: {
                             Image(systemName: "hourglass.badge.lock")
                                 .font(.system(size: 34))
                                 .foregroundStyle(.theme.yellow)
                         }
                     ) {
-                            if vm.selectedDrugs.isEmpty {
-                                EmptySearchView {
-                                    showingDrugSelection = true
-                                }
-                            } else {
-                                ConfiguredSearchView(
-                                    selectedDrugs: vm.selectedDrugs,
-                                    canAdd: vm.canAddDrug,
-                                    onAddTapped: { showingDrugSelection = true },
-                                    onCancelTapped:  { id in vm.cancelDrug(id: id) },
-                                    onSelectedDrugTapped: { selectedDrugToEdit = $0 },
-                                    acceptSubstitutes: $vm.acceptSubstitutes,
-                                    fulfilmentMode: $vm.fulfilmentMode,
-                                    distanceMeters: $vm.distanceMeters,
-                                    minDistance: vm.minDistanceMeters,
-                                    maxDistance: vm.maxDistanceMeters,
-                                    isCreatingSearchRequest: vm.requestLoadingState.status != .idle,
-                                    canStartSearch: vm.canStartSearch) {
-                                        searchTask?.cancel()
-                                        searchTask = Task {
-                                            submittedSearch = await vm.startSearch()
-                                            showingStartedSearch = submittedSearch != nil
-                                        }
-                                    }
+                        if vm.selectedDrugs.isEmpty {
+                            EmptySearchView {
+                                showingDrugSelection = true
                             }
+                        } else {
+                            ConfiguredSearchView(
+                                selectedDrugs: vm.selectedDrugs,
+                                canAdd: vm.canAddDrug,
+                                onAddTapped: { showingDrugSelection = true },
+                                onCancelTapped:  { id in vm.cancelDrug(id: id) },
+                                onSelectedDrugTapped: { selectedDrugToEdit = $0 },
+                                acceptSubstitutes: $vm.acceptSubstitutes,
+                                fulfilmentMode: $vm.fulfilmentMode,
+                                distanceMeters: $vm.distanceMeters,
+                                minDistance: vm.minDistanceMeters,
+                                maxDistance: vm.maxDistanceMeters,
+                                isCreatingSearchRequest: vm.requestLoadingState.status != .idle,
+                                canStartSearch: vm.canStartSearch) {
+                                    searchTask?.cancel()
+                                    searchTask = Task {
+                                        submittedSearch = await vm.startSearch()
+                                        showingStartedSearch = submittedSearch != nil
+                                    }
+                                }
                         }
+                    }
                 }
                 .padding(DesignSystem.Spacing.xLarge)
             }

@@ -109,27 +109,29 @@ struct DrugSelectionScreen: View {
     
     private var genericDrugListSection: some View {
         LoadingContentView(
-            LoadingState: vm.searchLoadingState,
+            loadingState: vm.searchLoadingState,
             showMessage: vm.genericDrugs.isEmpty && vm.searchText.isNotEmpty,
-            emptyMessage: "We couldn't find \"\(vm.searchText)\". Check the spelling or try another medicine name."
+            emptyTitle: "No medicines found",
+            emptyMessage: "We couldn't find \"\(vm.searchText)\". Check the spelling or try another medicine name.",
+            errorTitle: "Couldn't search for medicines"
         ) {
-                CustomLazyList(
-                    items: vm.genericDrugs,
-                    isLoadingMore: vm.searchLoadingState.status == .loadingMore) { genericDrug in
-                        genericDrugItem(genericDrug: genericDrug)
-                            .clickable {
-                                selectionTask?.cancel()
-                                selectionTask = Task {
-                                    await vm.onGenericDrugClicked(genericDrug: genericDrug)
-                                }
+            CustomLazyList(
+                items: vm.genericDrugs,
+                isLoadingMore: vm.searchLoadingState.status == .loadingMore) { genericDrug in
+                    genericDrugItem(genericDrug: genericDrug)
+                        .clickable {
+                            selectionTask?.cancel()
+                            selectionTask = Task {
+                                await vm.onGenericDrugClicked(genericDrug: genericDrug)
                             }
-                            .task(id: genericDrug.id) {
-                                if genericDrug.isLast(vm.genericDrugs) {
-                                    await vm.loadMore()
-                                }
+                        }
+                        .task(id: genericDrug.id) {
+                            if genericDrug.isLast(vm.genericDrugs) {
+                                await vm.loadMore()
                             }
-                    }
-            }
+                        }
+                }
+        }
     }
     
     private func genericDrugItem(genericDrug: GenericDrug) -> some View {
@@ -141,30 +143,32 @@ struct DrugSelectionScreen: View {
     
     private var drugFormulationListSection: some View {
         LoadingContentView(
-            LoadingState: vm.searchLoadingState,
+            loadingState: vm.searchLoadingState,
             showMessage: vm.drugFormulations.isEmpty && vm.searchText.isNotEmpty,
-            emptyMessage: "We couldn't find any medicine matching your search criteria. Try adjusting the strength, form, or route."
+            emptyTitle: "No matching medicines",
+            emptyMessage: "We couldn't find any medicine matching your search criteria. Try adjusting the strength, form, or route.",
+            errorTitle: "Couldn't load medicine options"
         ) {
-                CustomLazyList(
-                    items: vm.drugFormulations,
-                    isLoadingMore: vm.searchLoadingState.status == .loadingMore
-                ) { drugFormulation in
-                    drugFormulationsItem(drugFormulation: drugFormulation)
-                        .padding(.horizontal, DesignSystem.Spacing.large)
-                        .clickable {
-                            selectionTask?.cancel()
-                            selectionTask = Task {
-                                await vm.onDrugFormulationClicked(drugFormulaion: drugFormulation)
-                            }
+            CustomLazyList(
+                items: vm.drugFormulations,
+                isLoadingMore: vm.searchLoadingState.status == .loadingMore
+            ) { drugFormulation in
+                drugFormulationsItem(drugFormulation: drugFormulation)
+                    .padding(.horizontal, DesignSystem.Spacing.large)
+                    .clickable {
+                        selectionTask?.cancel()
+                        selectionTask = Task {
+                            await vm.onDrugFormulationClicked(drugFormulaion: drugFormulation)
                         }
-                        .task {
-                            if drugFormulation.isLast(vm.drugFormulations) {
-                                await vm.loadMore()
-                            }
+                    }
+                    .task {
+                        if drugFormulation.isLast(vm.drugFormulations) {
+                            await vm.loadMore()
                         }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                    }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
     }
     
     private func drugFormulationsItem(drugFormulation: DrugFormulation) -> some View {

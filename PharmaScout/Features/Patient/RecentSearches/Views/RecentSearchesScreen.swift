@@ -95,10 +95,11 @@ struct RecentSearchesScreen: View {
     
     private var searchListSection: some View {
         LoadingContentView(
-            LoadingState: vm.loadingState,
+            loadingState: vm.loadingState,
             showMessage: vm.searches.isEmpty,
-            emptyTitle: "No recent searches",
-            emptyMessage: "Your recent medicine searches will appear here once you start searching."
+            emptyTitle: vm.filter.emptyStateTitle,
+            emptyMessage: vm.filter.emptyStateMessage,
+            errorTitle: "Couldn't load searches"
         ) {
             LazyVStack(spacing: DesignSystem.Spacing.medium) {
                 ForEach(vm.searches) { search in

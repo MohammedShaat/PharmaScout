@@ -48,10 +48,10 @@ struct OwnerApplicationDetailScreen: View {
     
     private var applicationDetailSection: some View {
         LoadingContentView(
-            LoadingState: vm.ownerApplicationLoadingState,
+            loadingState: vm.ownerApplicationLoadingState,
             showMessage: vm.ownerApplication == nil,
-            emptyTitle: "Couldn't load the application",
-            emptyMessage: ""
+            emptyMessage: "This application may have been withdrawn or is no longer available.",
+            errorTitle: "Couldn't load the application"
         ) {
             if let ownerApplication = vm.ownerApplication {
                 OwnerApplicationDetailInfoView(ownerApplication: ownerApplication)

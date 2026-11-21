@@ -85,10 +85,11 @@ struct SelectLocationScreen: View {
             SearchFieldView(text: $vm.searchText, placehodler: "Search for a place")
             
             LoadingContentView(
-                LoadingState: vm.suggestionsLoadingState,
+                loadingState: vm.suggestionsLoadingState,
                 showMessage: vm.suggestions.isEmpty && vm.searchText.isNotEmpty,
-                emptyTitle: "Couldn't find such a place. Try another one",
-                emptyMessage: ""
+                emptyTitle: "No places found",
+                emptyMessage: "Try a different name or check the spelling.",
+                errorTitle: "Couldn't search for places"
             ) {
                 ScrollView {
                     CustomLazyList(

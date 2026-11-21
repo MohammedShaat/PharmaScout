@@ -95,10 +95,11 @@ struct PharmacyAnalyticsView: View {
     
     private var drugDemandListSection: some View {
         LoadingContentView(
-            LoadingState: loadingState,
+            loadingState: loadingState,
             showMessage: pharmacySearchAnalytics.drugDemands.isEmpty,
-            emptyTitle: "There is no analytics",
-            emptyMessage: ""
+            emptyTitle: "No analytics yet",
+            emptyMessage: "No one has requested medicines from your pharmacy in the last \(period.title). Analytics will appear here once you receive requests.",
+            errorTitle: "Couldn't load analytics"
         ) {
             LazyVStack(spacing: DesignSystem.Spacing.medium) {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {

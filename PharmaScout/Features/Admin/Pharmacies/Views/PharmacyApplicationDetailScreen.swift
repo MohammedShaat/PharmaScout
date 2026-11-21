@@ -69,10 +69,11 @@ struct PharmacyApplicationDetailScreen: View {
     
     private var basicInfoSection: some View {
         LoadingContentView(
-            LoadingState: vm.pharmacyApplicationLoadingState,
+            loadingState: vm.pharmacyApplicationLoadingState,
             showMessage: vm.pharmacyApplication == nil,
-            emptyTitle: "No pharmacy Application",
-            emptyMessage: ""
+            emptyTitle: "Application not found",
+            emptyMessage: "This pharmacy application may have been withdrawn or is no longer available.",
+            errorTitle: "Couldn't load the pharmacy application"
         ) {
             if let pharmacyApplication = vm.pharmacyApplication {
                 PharmacyApplicationBasicIfnoView(pharmacyApplication: pharmacyApplication)
@@ -93,10 +94,11 @@ struct PharmacyApplicationDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
-                LoadingState: vm.contactLoadingState,
+                loadingState: vm.contactLoadingState,
                 showMessage: vm.contacts.isEmpty,
-                emptyTitle: "There is no contact info",
-                emptyMessage: "",
+                emptyTitle: "No contact information",
+                emptyMessage: "No contact details were provided for this application.",
+                errorTitle: "Couldn't load contact information",
                 showIcon: false
             ) {
                 CustomList(items: vm.contacts, isLoadingMore: false) { contact in
@@ -119,10 +121,11 @@ struct PharmacyApplicationDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
-                LoadingState: vm.workingHoursLoadingState,
+                loadingState: vm.workingHoursLoadingState,
                 showMessage: vm.workingHours.isEmpty,
-                emptyTitle: "There is no working hours info",
-                emptyMessage: "",
+                emptyTitle: "No working hours",
+                emptyMessage: "No working hours were provided for this application.",
+                errorTitle: "Couldn't load working hours",
             ) {
                 WorkingHourListView(workingHours: vm.workingHours)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -139,10 +142,11 @@ struct PharmacyApplicationDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
-                LoadingState: vm.pharmacyApplicationLoadingState,
+                loadingState: vm.pharmacyApplicationLoadingState,
                 showMessage: vm.pharmacyApplication == nil,
-                emptyTitle: "There is no review info",
-                emptyMessage: "",
+                emptyTitle: "No review information",
+                emptyMessage: "Review details aren't available for this application.",
+                errorTitle: "Couldn't load review information"
             ) {
                 if let pharmacyApplication = vm.pharmacyApplication {
                     PharmacyApplicationReviewHistoryView(pharmacyApplication: pharmacyApplication)

@@ -85,46 +85,47 @@ struct PharmaciesScreen: View {
     
     private var pharmacyListSection: some View {
         LoadingContentView(
-            LoadingState: vm.loadingState,
+            loadingState: vm.loadingState,
             showMessage: vm.nearbyPharmacies.isEmpty && !vm.canExpandRadius,
-            emptyTitle: "No nearby pharmacies found",
-            emptyMessage: "There are none within \(vm.radiusMeters.formattedDistance) of you."
+            emptyTitle: "No pharmacies nearby",
+            emptyMessage: "We couldn't find any pharmacies within the search distance. Try again from a different location.",
+            errorTitle: "Couldn't load nearby pharmacies"
         ) {
-                // MARK: - Pharmacies list
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(vm.nearbyPharmacies) { nearbyPharmacy in
-                        nearbyPharmacyItem(pharmacy: nearbyPharmacy)
-                            .task(id: nearbyPharmacy.id) {
-                                if nearbyPharmacy.isLast(vm.nearbyPharmacies) {
-                                    await vm.loadMore()
-                                }
+            // MARK: - Pharmacies list
+            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                ForEach(vm.nearbyPharmacies) { nearbyPharmacy in
+                    nearbyPharmacyItem(pharmacy: nearbyPharmacy)
+                        .task(id: nearbyPharmacy.id) {
+                            if nearbyPharmacy.isLast(vm.nearbyPharmacies) {
+                                await vm.loadMore()
                             }
-                        
-                        if nearbyPharmacy.isLast(vm.nearbyPharmacies)
-                            && vm.loadingState.status == .loadingMore {
-                            RingProgressView()
                         }
-                    }
-
-                    // MARK: Search further
-                    if vm.canExpandRadius && vm.loadingState.status == .idle {
-                        Text("Search further than \(vm.radiusMeters.formattedDistance)?")
-                            .font(.headline)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.theme.green)
-                            .capsuleBackground(
-                                verticalPadding: DesignSystem.Spacing.medium,
-                                horizontalPadding: DesignSystem.Spacing.large,
-                            )
-                            .clickable {
-                                nearbyPharmaciesTask?.cancel()
-                                nearbyPharmaciesTask = Task {
-                                    await vm.searchFurther()
-                                }
-                            }
+                    
+                    if nearbyPharmacy.isLast(vm.nearbyPharmacies)
+                        && vm.loadingState.status == .loadingMore {
+                        RingProgressView()
                     }
                 }
+                
+                // MARK: Search further
+                if vm.canExpandRadius && vm.loadingState.status == .idle {
+                    Text("Search further than \(vm.radiusMeters.formattedDistance)?")
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundStyle(.theme.green)
+                        .capsuleBackground(
+                            verticalPadding: DesignSystem.Spacing.medium,
+                            horizontalPadding: DesignSystem.Spacing.large,
+                        )
+                        .clickable {
+                            nearbyPharmaciesTask?.cancel()
+                            nearbyPharmaciesTask = Task {
+                                await vm.searchFurther()
+                            }
+                        }
+                }
             }
+        }
     }
     
     private func nearbyPharmacyItem(pharmacy: Pharmacy) -> some View {

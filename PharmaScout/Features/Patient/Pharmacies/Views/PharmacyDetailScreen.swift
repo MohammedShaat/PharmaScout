@@ -61,9 +61,11 @@ struct PharmacyDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
-                LoadingState: vm.contactLoadingState,
+                loadingState: vm.contactLoadingState,
                 showMessage: vm.contacts.isEmpty,
-                emptyMessage: "There is no contact info",
+                emptyTitle: "No contact information",
+                emptyMessage: "This pharmacy hasn't added any contact details yet.",
+                errorTitle: "Couldn't load contact information",
                 showIcon: false
             ) {
                 CustomList(
@@ -89,9 +91,11 @@ struct PharmacyDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
-                LoadingState: vm.workingHoursLoadingState,
+                loadingState: vm.workingHoursLoadingState,
                 showMessage: vm.workingHours.isEmpty,
-                emptyMessage: "There is no working hours info",
+                emptyTitle: "No working hours",
+                emptyMessage: "This pharmacy hasn't added its working hours yet.",
+                errorTitle: "Couldn't load working hours"
             ) {
                 // Working hours
                 WorkingHourListView(workingHours: vm.workingHours)

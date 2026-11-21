@@ -61,10 +61,11 @@ struct PharmacistDashboardScreen: View {
             }
             
             LoadingContentView(
-                LoadingState: vm.latestPendingInquiriesLoadingState,
+                loadingState: vm.latestPendingInquiriesLoadingState,
                 showMessage: vm.latestPendingInquiries.isEmpty,
                 emptyTitle: "No pending inquiries",
-                emptyMessage: "You're all caught up. New requests will appear here."
+                emptyMessage: "You're all caught up. New requests will appear here.",
+                errorTitle: "Couldn't load pending inquiries"
             ) {
                 VStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.latestPendingInquiries) { inquiry in
@@ -89,10 +90,11 @@ struct PharmacistDashboardScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             LoadingContentView(
-                LoadingState: vm.todaysInquiriesCountLoadingState,
+                loadingState: vm.todaysInquiriesCountLoadingState,
                 showMessage: vm.allTodaysInquiriesCount == 0,
                 emptyTitle: "No inquiries today",
-                emptyMessage: ""
+                emptyMessage: "New inquiries will show up here as they come in.",
+                errorTitle: "Couldn't load today's activity"
             ) {
                 HStack(spacing: DesignSystem.Spacing.medium) {
                     Group {
