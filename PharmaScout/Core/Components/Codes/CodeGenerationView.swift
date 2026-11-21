@@ -11,7 +11,7 @@ struct CodeGenerationView: View {
     let title: String
     let subtitle: String
     let systemName: String
-    let invitationCode: InvitaionCode?
+    let invitationCode: InvitationCode?
     let codeLength: Int
     let loadingState: LoadingState
     let shareLinkSubject: String
@@ -97,7 +97,7 @@ struct CodeGenerationView: View {
         }
     }
     
-    private func actionsSection(_ invitationCode: InvitaionCode) -> some View  {
+    private func actionsSection(_ invitationCode: InvitationCode) -> some View  {
         VStack(spacing: DesignSystem.Spacing.large) {
             HStack(spacing: DesignSystem.Spacing.large) {
                 // Share button
@@ -144,7 +144,7 @@ struct CodeGenerationView: View {
         return state
     }()
     
-    @State @Previewable var invitationCode: InvitaionCode? = nil
+    @State @Previewable var invitationCode: InvitationCode? = nil
     
     
     CustomNavStack {

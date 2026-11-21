@@ -44,13 +44,13 @@ class SelectLocationViewModel {
             return
         }
         
-        let shouldPerform = SearchRequestPolicy.shouldPerform(
+        let shouldPerform = QuerySearchRunner.shouldPerform(
             query: searchText,
             lastQuery: lastSearchText,
             hasPreviousPage: false,
             isRefreshing: false,
         )
-        await SearchRequestPolicy.perform(
+        await QuerySearchRunner.perform(
             shouldPerform: shouldPerform,
             hasPreviousPage: false,
             isRefreshing: false,

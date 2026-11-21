@@ -8,7 +8,7 @@
 import Foundation
 
 protocol OwnerApplicationService {
-    func generateCode() async throws -> InvitaionCode
+    func generateCode() async throws -> InvitationCode
     
     func applyForPharmacyOwnership(code: String) async throws -> String
     

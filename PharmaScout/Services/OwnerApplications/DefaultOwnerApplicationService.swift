@@ -12,11 +12,11 @@ class DefaultOwnerApplicationService: OwnerApplicationService {
     private let supabase = SupabaseManager.shared.client
     private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
     
-    func generateCode() async throws -> InvitaionCode {
+    func generateCode() async throws -> InvitationCode {
         let createOwnerCodeFunc = SupabaseManager.Database.Functions.createOwnerCode.self
         
         do {
-            let invitationCode: InvitaionCode =  try await supabase
+            let invitationCode: InvitationCode =  try await supabase
                 .rpc(createOwnerCodeFunc.name)
                 .single()
                 .execute()

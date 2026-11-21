@@ -48,7 +48,7 @@ class DefaultSearchRequestService: SearchRequestService {
         }
     }
     
-    func getSearches(_ params: GetSearchesParams) async throws -> [Search] {
+    func getSearches(_ params: GetSearchesRequest) async throws -> [Search] {
         let getSearchesFunc = SupabaseManager.Database.Functions.getSearches.self
         
         do {
@@ -85,7 +85,7 @@ class DefaultSearchRequestService: SearchRequestService {
         }
     }
     
-    func getSearchDrugDetails(_ params: SearchDrugDetailsParams) async throws -> [SearchDrugDetail] {
+    func getSearchDrugDetails(_ params: SearchDrugDetailsRequest) async throws -> [SearchDrugDetail] {
         let getSearchDrugDetailsFunc = SupabaseManager.Database.Functions.getSearchDrugDetails.self
 
         do {

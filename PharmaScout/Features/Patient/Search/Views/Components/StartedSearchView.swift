@@ -16,7 +16,7 @@ struct StartedSearchView: View {
         VStack {
             Spacer()
             
-            CheckIconView()
+            BigIconView(systemName: "checkmark", iconColor: .theme.white, bgColor: .theme.green)
             Spacer()
             
             descriptionSection

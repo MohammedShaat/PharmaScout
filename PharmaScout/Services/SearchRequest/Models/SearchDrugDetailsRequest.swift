@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct SearchDrugDetailsParams: Codable {
+struct SearchDrugDetailsRequest: Codable {
     let latitude: Double
     let longitude: Double
     let searchId: String

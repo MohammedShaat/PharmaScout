@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetInquiriesParams: Codable {
+struct GetInquiriesRequest: Codable {
     let pharmacyId: String
     let limit: Int
     let offset: Int

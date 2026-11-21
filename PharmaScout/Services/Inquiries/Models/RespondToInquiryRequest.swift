@@ -8,7 +8,7 @@
 import Foundation
 
 
-struct RespondToInquiryParams: Codable {
+struct RespondToInquiryRequest: Codable {
     let inquiryId: String
     let response: InquiryResponse
     let substituteDrugFormulationId: String?

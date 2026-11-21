@@ -113,7 +113,7 @@ class InquiryDetailViewModel {
         defer { responseLoadingState.stopLoading() }
         
         do {
-            let params = RespondToInquiryParams(
+            let params = RespondToInquiryRequest(
                 inquiryId: inquiryId,
                 response: response,
                 substituteDrugFormulationId: substituteSelectedDrug?.formulation.id

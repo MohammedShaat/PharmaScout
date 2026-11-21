@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetSearchesParams: Codable {
+struct GetSearchesRequest: Codable {
     let limit: Int
     let offset: Int
     var filter: SearchFilter = .all

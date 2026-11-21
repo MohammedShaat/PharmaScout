@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct GetPharmacyDetailsParams: Codable {
+struct GetPharmacyDetailsRequest: Codable {
     let pharmacyId: String
     let latitude: Double
     let longitude: Double

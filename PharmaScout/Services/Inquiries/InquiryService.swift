@@ -8,11 +8,11 @@
 import Foundation
 
 protocol InquiryService {
-    func getInquiries(_ params: GetInquiriesParams) async throws -> [Inquiry]
+    func getInquiries(_ params: GetInquiriesRequest) async throws -> [Inquiry]
     
     func getInquiry(forId inquiryId: String) async throws -> Inquiry
     
-    func respondToInquiry(_ params: RespondToInquiryParams) async throws
+    func respondToInquiry(_ params: RespondToInquiryRequest) async throws
     
     func getNumberOfAllTodaysInquiries(for pharmacyId: String) async throws -> Int
     

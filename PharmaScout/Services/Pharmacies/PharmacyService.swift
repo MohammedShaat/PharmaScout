@@ -14,7 +14,7 @@ protocol PharmacyService {
     
     func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour]
     
-    func getPharmacy(_ params: GetPharmacyDetailsParams) async throws -> Pharmacy
+    func getPharmacy(_ params: GetPharmacyDetailsRequest) async throws -> Pharmacy
     
     func getStaff(for pharmacyId: String) async throws -> [PharmacyStaffMember]
     
@@ -30,9 +30,9 @@ protocol PharmacyService {
     
     func manageStaffMember(request: ManagePharmacyStaffMemberRequest) async throws
     
-    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitaionCode?
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitationCode?
     
-    func generateJoinCode(for pharmacyId: String) async throws -> InvitaionCode
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitationCode
     
     func joinPharmacy(code: String) async throws -> String
     
