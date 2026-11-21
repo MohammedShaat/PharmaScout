@@ -29,14 +29,4 @@ enum PharmacyApplicationFilter: String, Codable, CaseIterable, Identifiable {
     case suspended
     
     var id: String { rawValue }
-    
-    var title: String {
-        switch self {
-        case .all: "All"
-        case .pending: "Pending"
-        case .approved: "Approved"
-        case .rejected: "Rejected"
-        case .suspended: "Suspended"
-        }
-    }
 }

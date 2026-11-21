@@ -14,8 +14,6 @@ class HomeViewModel {
     private let pharmacyService: PharmacyService
     private let searchRequestService: SearchRequestService
     
-    var hasUnreadNotifications: Bool = true
-    
     private(set) var nearbyPharmacies: [Pharmacy] = []
     
     private var locationCoordinate: Coordinate?

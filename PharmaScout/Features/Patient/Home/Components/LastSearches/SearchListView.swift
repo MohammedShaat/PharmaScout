@@ -23,10 +23,12 @@ struct SearchListView: View {
     
     private var list: some View {
         LoadingContentView(
-            LoadingState: loadingState,
+            loadingState: loadingState,
             showMessage: searches.isEmpty,
             emptyTitle: "No completed searches yet",
-            emptyMessage: "Your completed searches will appear here.") {
+            emptyMessage: "Your completed searches will appear here.",
+            errorTitle: "Couldn't load completed searches"
+        ) {
                 CustomList(
                     items: searches,
                     isLoadingMore: false

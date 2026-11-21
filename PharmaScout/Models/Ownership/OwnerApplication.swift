@@ -54,8 +54,4 @@ enum OwnerApplicationFilter: String, Codable, CaseIterable, Identifiable {
     case revoked
     
     var id: Self { self }
-    
-    var title: String {
-        rawValue.capitalized
-    }
 }

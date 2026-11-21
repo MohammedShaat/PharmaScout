@@ -12,10 +12,10 @@ struct SessionLoadingScreen: View {
         ZStack {
             Color.theme.primary.ignoresSafeArea()
             
-            Image("logo")
+            Image(.logo)
                 .resizable()
                 .scaledToFit()
-                .padding()
+                .containerRelativeFrame(.horizontal) { width, _ in width * 0.5 }
         }
     }
 }

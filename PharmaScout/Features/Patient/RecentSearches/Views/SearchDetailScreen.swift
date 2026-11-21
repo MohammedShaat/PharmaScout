@@ -65,47 +65,55 @@ struct SearchDetailScreen: View {
     
     private var searchSummarySection: some View {
         LoadingContentView(
-            LoadingState: vm.searchLoadingState,
+            loadingState: vm.searchLoadingState,
             showMessage: vm.search == nil,
-            emptyMessage: "No search found") {
-                if let search = vm.search {
-                    SearchSummaryView(search: search)
-                }
+            emptyTitle: "Search not found",
+            emptyMessage: "This search may have been removed or is no longer available.",
+            errorTitle: "Couldn't load the search"
+        ) {
+            if let search = vm.search {
+                SearchSummaryView(search: search)
             }
+        }
     }
     
     private var drugDetailsSection: some View {
         LoadingContentView(
-            LoadingState: vm.detailLoadingState,
+            loadingState: vm.detailLoadingState,
             showMessage: vm.searchDrugDetails.isEmpty,
-            emptyMessage: "No results found") {
-                VStack(spacing: DesignSystem.Spacing.large) {
-                    Text("Drugs detail")
-                        .font(.title3)
-                        .fontWeight(.bold)
-                        .foregroundStyle(.theme.textPrimary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    
-                    LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                        ForEach(vm.searchDrugDetails) { searchDrugDetail in
-                            SearchDrugDetailView(
-                                searchDrugDetail: searchDrugDetail,
-                                onPharmacyTapped: {
-                                    patientTabViewModel.navigateToPharmacyDetailScreen(for: $0)
-                                }
-                            )
-                        }
+            emptyTitle: "No medicine details",
+            emptyMessage: "No medicine details are available for this search.",
+            errorTitle: "Couldn't load medicine details"
+        ) {
+            VStack(spacing: DesignSystem.Spacing.large) {
+                Text("Drugs detail")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.theme.textPrimary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                    ForEach(vm.searchDrugDetails) { searchDrugDetail in
+                        SearchDrugDetailView(
+                            searchDrugDetail: searchDrugDetail,
+                            onPharmacyTapped: {
+                                patientTabViewModel.navigateToPharmacyDetailScreen(for: $0)
+                            }
+                        )
                     }
                 }
-                .padding(.vertical, DesignSystem.Spacing.large)
             }
+            .padding(.vertical, DesignSystem.Spacing.large)
+        }
     }
     
     private var continuationSection: some View {
         LoadingContentView(
-            LoadingState: vm.distanceConfigsLoadingState,
+            loadingState: vm.distanceConfigsLoadingState,
             showMessage: vm.maxDistanceMeters == nil && vm.minDistanceMeters == nil,
-            emptyMessage: "",
+            emptyTitle: "Search distance unavailable",
+            emptyMessage: "We couldn't find the search distance settings. Please try again later.",
+            errorTitle: "Couldn't load search distance settings",
             showIcon: false
         ) {
             if let minDistanceMeters = vm.minDistanceMeters,

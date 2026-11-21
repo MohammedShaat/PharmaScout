@@ -14,10 +14,11 @@ struct ActiveSearchesView: View {
     
     var body: some View {
         LoadingContentView(
-            LoadingState: loadingState,
+            loadingState: loadingState,
             showMessage: activeSearches.isEmpty,
             emptyTitle: "No active searches",
             emptyMessage: "You don't have any active searches at the moment. Start a new search to find nearby pharmacies.",
+            errorTitle: "Couldn't load active searches",
             showIcon: false
         ) {
             VStack {

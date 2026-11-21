@@ -74,10 +74,11 @@ struct InquiryDetailScreen: View {
     
     private var infoSection: some View {
         LoadingContentView(
-            LoadingState: vm.inquiryLoadingState,
+            loadingState: vm.inquiryLoadingState,
             showMessage: vm.inquiry == nil,
-            emptyTitle: "Couldn't fetch the inquiry details",
-            emptyMessage: ""
+            emptyTitle: "Inquiry not found",
+            emptyMessage: "This inquiry may have been removed or is no longer available.",
+            errorTitle: "Couldn't load the inquiry"
         ) {
             if let inquiry = vm.inquiry {
                 InquiryDetailInfoView(inquiry: inquiry)
@@ -87,10 +88,11 @@ struct InquiryDetailScreen: View {
     
     private var responseSection: some View {
         LoadingContentView(
-            LoadingState: vm.editEligibilityLoadingState,
+            loadingState: vm.editEligibilityLoadingState,
             showMessage: vm.editEligibilityLoadingState.error != nil,
-            emptyTitle: "Couldn't check if you can respond",
-            emptyMessage: ""
+            emptyTitle: "Response unavailable",
+            emptyMessage: "This inquiry can no longer be responded to.",
+            errorTitle: "Couldn't check if you can respond"
         ) {
             if vm.canCanResponse {
                 VStack(spacing: DesignSystem.Spacing.xxLarge) {

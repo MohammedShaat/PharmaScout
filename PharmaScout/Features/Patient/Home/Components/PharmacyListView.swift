@@ -23,18 +23,21 @@ struct PharmacyListView: View {
     
     private var list: some View {
         LoadingContentView(
-            LoadingState: loadingState,
+            loadingState: loadingState,
             showMessage: pharmacies.isEmpty,
-            emptyMessage: "Could not find nearby pharmacies") {
-                VStack(spacing: DesignSystem.Spacing.large) {
-                    ForEach(pharmacies) { pharmacy in
-                        PharmacyCardView(name: pharmacy.name, distance: pharmacy.distanceMeters, isOpen: pharmacy.isOpen)
-                            .clickable {
-                                onPharmacyTapped?(pharmacy)
-                            }
-                    }
+            emptyTitle: "No pharmacies nearby",
+            emptyMessage: "We couldn't find any pharmacies within the search distance. Try again from a different location.",
+            errorTitle: "Couldn't load nearby pharmacies"
+        ) {
+            VStack(spacing: DesignSystem.Spacing.large) {
+                ForEach(pharmacies) { pharmacy in
+                    PharmacyCardView(name: pharmacy.name, distance: pharmacy.distanceMeters, isOpen: pharmacy.isOpen)
+                        .clickable {
+                            onPharmacyTapped?(pharmacy)
+                        }
                 }
             }
+        }
     }
     
     

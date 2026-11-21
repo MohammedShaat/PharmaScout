@@ -86,10 +86,11 @@ struct PharmacyScreen: View {
             onActionTapped: { path.append(PharmacyRoute.editAddress) }
         ) {
             LoadingContentView(
-                LoadingState: vm.pharmacyLoadingState,
+                loadingState: vm.pharmacyLoadingState,
                 showMessage: vm.pharmacy == nil,
-                emptyTitle: "Couldn't get the pharmacy info",
-                emptyMessage: ""
+                emptyTitle: "Pharmacy not found",
+                emptyMessage: "This pharmacy may have been removed or is no longer available.",
+                errorTitle: "Couldn't load the pharmacy info"
             ) {
                 if let pharmacy = vm.pharmacy {
                     PharmacyBasicInfoView(pharmac: pharmacy, showSeeLocation: false)
@@ -108,9 +109,11 @@ struct PharmacyScreen: View {
             onActionTapped: { path.append(PharmacyRoute.editContact) }
         ) {
             LoadingContentView(
-                LoadingState: vm.contactLoadingState,
+                loadingState: vm.contactLoadingState,
                 showMessage: vm.contacts.isEmpty,
-                emptyMessage: "There is no contact info",
+                emptyTitle: "No contact information",
+                emptyMessage: "No contact details have been added yet.",
+                errorTitle: "Couldn't load contact information",
                 showIcon: false
             ) {
                 CustomList(items: vm.contacts, isLoadingMore: false) { contact in
@@ -128,10 +131,11 @@ struct PharmacyScreen: View {
             onActionTapped: { path.append(PharmacyRoute.editWorkingHours) }
         ) {
             LoadingContentView(
-                LoadingState: vm.workingHoursLoadingState,
+                loadingState: vm.workingHoursLoadingState,
                 showMessage: vm.workingHours.isEmpty,
-                emptyTitle: "There is no working hours info",
-                emptyMessage: "",
+                emptyTitle: "No working hours",
+                emptyMessage: "No working hours have been added yet.",
+                errorTitle: "Couldn't load working hours"
             ) {
                 WorkingHourListView(workingHours: vm.workingHours)
                     .frame(maxWidth: .infinity)
@@ -146,10 +150,11 @@ struct PharmacyScreen: View {
             onActionTapped: { path.append(PharmacyRoute.editStaff) }
         ) {
             LoadingContentView(
-                LoadingState: vm.staffLoadingState,
+                loadingState: vm.staffLoadingState,
                 showMessage: vm.pharmacyStaff.isEmpty,
-                emptyTitle: "There is no staff",
-                emptyMessage: ""
+                emptyTitle: "No staff members",
+                emptyMessage: "No staff members have been added to this pharmacy yet.",
+                errorTitle: "Couldn't load staff"
             ) {
                 CustomList(items: vm.pharmacyStaff, isLoadingMore: false,) { member in
                     PharmacyStaffMemeberView(member: member, isCurrentUser: userId == member.userInfo.id)

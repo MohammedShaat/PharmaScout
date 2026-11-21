@@ -12,11 +12,4 @@ enum AnalyticsType: String, CaseIterable, Identifiable {
     case regional = "regional"
     
     var id: String { rawValue }
-    
-    var title: String {
-        switch self {
-        case .pharmacySearch: "Pharmacy Search"
-        case .regional: "Regional"
-        }
-    }
 }

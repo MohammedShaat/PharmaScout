@@ -86,10 +86,11 @@ struct AnalyticsScreen: View {
     @ViewBuilder
     private var pharmacyAnalyticsSection: some View {
         LoadingContentView(
-            LoadingState: vm.pharmacyAnalyticsLoadingState,
+            loadingState: vm.pharmacyAnalyticsLoadingState,
             showMessage: vm.pharmacySearchAnalytics == nil,
-            emptyTitle: "No pharmacy search analytics",
-            emptyMessage: "Requests sent to your pharmacy will be counted here. Try a longer period."
+            emptyTitle: vm.analyticsType.emptyStateTitle,
+            emptyMessage: vm.analyticsType.emptyStateMessage,
+            errorTitle: "Couldn't load analytics"
         ) {
             if let pharmacySearchAnalytics = vm.pharmacySearchAnalytics {
                 PharmacyAnalyticsView(
@@ -103,10 +104,11 @@ struct AnalyticsScreen: View {
     
     private var regionalAnalyticsSection: some View {
         LoadingContentView(
-            LoadingState: vm.regionalAnalyticsLoadingState,
+            loadingState: vm.regionalAnalyticsLoadingState,
             showMessage: vm.regionalDrugDemands.isEmpty,
-            emptyTitle: "There is no analytics",
-            emptyMessage: ""
+            emptyTitle: vm.analyticsType.emptyStateTitle,
+            emptyMessage: vm.analyticsType.emptyStateMessage,
+            errorTitle: "Couldn't load regional analytics"
         ) {
             LazyVStack(spacing: DesignSystem.Spacing.medium) {
                 VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {

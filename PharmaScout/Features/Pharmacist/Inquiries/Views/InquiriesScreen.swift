@@ -95,30 +95,32 @@ struct InquiriesScreen: View {
     
     private var inquiryListSection: some View {
         LoadingContentView(
-            LoadingState: vm.loadingState,
+            loadingState: vm.loadingState,
             showMessage: vm.inquiries.isEmpty,
-            emptyTitle: "No inquiries",
-            emptyMessage: "") {
-                LazyVStack(spacing: DesignSystem.Spacing.medium) {
-                    ForEach(vm.inquiries) { inquiry in
-                        CustomNavValueLink(value: InquiryDetailRoute(inquiryId: inquiry.id, inquiry: inquiry)) {
-                            InquiryView(inquiry)
-                        }
-                        .onAppear {
-                            if inquiry.isLast(vm.inquiries) {
-                                inquiriesTask?.cancel()
-                                inquiriesTask = Task {
-                                    await vm.loadMore()
-                                }
+            emptyTitle: vm.filter.emptyStateTitle,
+            emptyMessage: vm.filter.emptyStateMessage,
+            errorTitle: "Couldn't load inquiries"
+        ) {
+            LazyVStack(spacing: DesignSystem.Spacing.medium) {
+                ForEach(vm.inquiries) { inquiry in
+                    CustomNavValueLink(value: InquiryDetailRoute(inquiryId: inquiry.id, inquiry: inquiry)) {
+                        InquiryView(inquiry)
+                    }
+                    .onAppear {
+                        if inquiry.isLast(vm.inquiries) {
+                            inquiriesTask?.cancel()
+                            inquiriesTask = Task {
+                                await vm.loadMore()
                             }
                         }
-                        
-                        if inquiry.isLast(vm.inquiries) && vm.loadingState.status == .loadingMore {
-                            RingProgressView()
-                        }
+                    }
+                    
+                    if inquiry.isLast(vm.inquiries) && vm.loadingState.status == .loadingMore {
+                        RingProgressView()
                     }
                 }
             }
+        }
     }
 }
 

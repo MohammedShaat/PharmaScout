@@ -71,10 +71,11 @@ struct AdminPharmaciesScreen: View {
     
     private var pharmacyApplicationListSection: some View {
         LoadingContentView(
-            LoadingState: vm.loadingState,
+            loadingState: vm.loadingState,
             showMessage: vm.pharmacyApplications.isEmpty,
-            emptyTitle: "No applications",
-            emptyMessage: ""
+            emptyTitle: vm.filter.emptyStateTitle,
+            emptyMessage: vm.filter.emptyStateMessage,
+            errorTitle: "Couldn't load pharmacy applications"
         ) {
             LazyVStack(spacing: DesignSystem.Spacing.medium) {
                 ForEach(vm.pharmacyApplications) { pharmacyApplication in

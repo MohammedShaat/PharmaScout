@@ -71,10 +71,11 @@ struct OwnerApplicationsScreen: View {
     
     private var applicationListSection: some View {
         LoadingContentView(
-            LoadingState: vm.loadingState,
+            loadingState: vm.loadingState,
             showMessage: vm.applications.isEmpty,
-            emptyTitle: "No applications",
-            emptyMessage: ""
+            emptyTitle: vm.filter.emptyStateTitle,
+            emptyMessage: vm.filter.emptyStateMessage,
+            errorTitle: "Couldn't load applications"
         ) {
             LazyVStack(spacing: DesignSystem.Spacing.medium) {
                 ForEach(vm.applications) { application in
