@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PharmacistCapability: CaseIterable {
+enum PharmacistCapability: Equatable, CaseIterable {
     case respondToInquiry
     case editPharmacy
     case viewPharmacy
@@ -43,7 +43,7 @@ extension PharmacistTab {
     }
 }
 
-enum PharmacistAccess {
+enum PharmacistAccess: Equatable {
     case full(role: PharmacyStaffRole)
     case restricted(role: PharmacyStaffRole, reason: PharmacistRestriction)
     
@@ -100,8 +100,8 @@ enum PharmacistAccess {
             }	
             switch reason {
             case .pharmacyClosed, .membershipRejected:
+                allowed.removeAll()
                 allowed.append(.joinAnotherPharmacy)
-                allowed.removeAll { $0 == .closePharmacy }
             default: break
             }
             return allowed.contains(capability)
@@ -113,28 +113,3 @@ enum PharmacistAccess {
         return can(requiredCapability)
     }
 }
-
-
-/*
- switch capablility {
- case .viewPharmacy:
-     // Owner or approved employee with approved pharmacy
-     membership.isOwner || (membership.isPharmacyApproved && membership.isStaffApproved)
- 
- case .editPharmacy:
-     // Owner can edit pharmacy regardless of pharmacy status to edit info in case of ownership appliation edit
-     membership.isOwner
-     
- case .manageEmployees:
-     // Owner can manage employees while the pharmacy is approved
-     membership.isPharmacyApproved && membership.isOwner
-     
- case .respondToInquiry:
-     // Approved staff can respond to inquiries while the pharmacy is approved
-     membership.isPharmacyApproved && membership.isStaffApproved
-     
- case .viewAnalytics:
-     // Owner can view analytics while the pharmacy is approved
-     membership.isPharmacyApproved && membership.isOwner
- }
- */
