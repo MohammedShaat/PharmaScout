@@ -36,6 +36,9 @@ enum AppConstants {
         // Number of pharmacies
         static let minimumPharmacyCount: Int = 2
         static let defaultPharmacyCount: Int = 10
+        
+        // Query
+        static let minimumQueryLength: Int = 3
     }
 
     enum Pharmacy {
