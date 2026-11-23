@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum PharmacistTab {
+enum PharmacistTab: CaseIterable {
     case home
     case inquiries
     case pharmacy
