@@ -16,9 +16,11 @@ enum QuerySearchRunner {
         isRefreshing: Bool
     ) -> Bool {
         let minimumQueryLength: Int = AppConstants.Search.minimumQueryLength
+        let query = query.trimmed.lowercased()
+        let lastQuery = lastQuery?.trimmed.lowercased()
         
-        let queryChanged = lastQuery == nil || query.trimmed.lowercased() != lastQuery?.trimmed.lowercased()
-        let meetsMinimumLength = query.count >= minimumQueryLength
+        let queryChanged = lastQuery == nil || query.lowercased() != lastQuery?.lowercased()
+        let meetsMinimumLength = query.trimmed.count >= minimumQueryLength
         let queryIsValid = queryChanged && meetsMinimumLength
         
         let emptyQueryIsAllowed = allowsEmptyQuery && query.isEmpty && queryChanged
