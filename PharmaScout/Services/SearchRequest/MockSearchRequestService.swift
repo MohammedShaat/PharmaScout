@@ -7,20 +7,31 @@
 
 import Foundation
 
-struct MockSearchRequestService: SearchRequestService {
+class MockSearchRequestService: SearchRequestService {
+    let requestLimit: Int
+    var delay: Duration
+    var activeSearchCount: Int
+    
+    init(requestLimit: Int = 3, delay: Duration = .seconds(1), activeSearchCount: Int = 2) {
+        self.requestLimit = requestLimit
+        self.delay = delay
+        self.activeSearchCount = activeSearchCount
+    }
+    
     func createSearchRequest(request: SearchRequest) async throws -> String {
-        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: delay)
+        guard activeSearchCount < requestLimit else { throw UnknownError.unKnown(NSError()) }
+        activeSearchCount += 1
         return Search.samples[0].id
     }
     
     func getNumberOfActiveSearchs(userId: String) async throws -> Int {
-        try? await Task.sleep(for: .seconds(2))
-        
-        return 3
+        try? await Task.sleep(for: delay)
+        return activeSearchCount
     }
     
     func getSearches(_ params: GetSearchesRequest) async throws -> [Search] {
-        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: delay)
         
         let filteredSearches = Search.samples
             .filter { search in
@@ -36,13 +47,13 @@ struct MockSearchRequestService: SearchRequestService {
     }
     
     func getSearch(for searchId: String) async throws -> Search {
-        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: delay)
 
         return Search.samples.first { $0.id == searchId }!
     }
     
     func getSearchDrugDetails(_ params: SearchDrugDetailsRequest) async throws -> [SearchDrugDetail] {
-//        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: delay)
         
         guard let drugIds = Search.samples.first(where: { $0.id == params.searchId })?.drugs.map(\.id) else {
             return []
@@ -55,7 +66,7 @@ struct MockSearchRequestService: SearchRequestService {
     }
     
     func continueSearch(request: ContinueSearchRequest) async throws -> Int {
-        try? await Task.sleep(for: .seconds(2))
+        try? await Task.sleep(for: delay)
         
         return 2
     }

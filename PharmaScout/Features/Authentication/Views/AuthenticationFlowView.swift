@@ -8,27 +8,20 @@
 import SwiftUI
 
 struct AuthenticationFlowView: View {
-    private let authService: AuthService
-    private let googleAuthService: OAuthService
-    private let appleAuthService: OAuthService
+    private let dependencies: AppDependencies
     private let initialRoute: AuthenticationRoute?
 
     @State private var vm: AuthenticationFlowViewModel
     
     init(
-        authSerivce: AuthService,
-        googleAuthService: OAuthService,
-        appleAuthService: OAuthService,
-        onboardingService: OnboardingService,
+        dependencies: AppDependencies,
         initialRoute: AuthenticationRoute? = nil,
     ) {
         self.initialRoute = initialRoute
-        self.authService = authSerivce
-        self.googleAuthService = googleAuthService
-        self.appleAuthService = appleAuthService
+        self.dependencies = dependencies
         
         let router = AuthenticationFlowViewModel(
-            onboardingService: onboardingService,
+            onboardingService: dependencies.onboardingService,
             root: initialRoute
         )
         self._vm = State(wrappedValue: router)
@@ -61,18 +54,18 @@ struct AuthenticationFlowView: View {
         switch route {
         case .signUp:
             SignUpScreen(
-                authService: authService,
-                googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
+                authService: dependencies.authService,
+                googleAuthService: dependencies.googleAuthService,
+                appleAuthService: dependencies.appleAuthService
             ) {
                 vm.navigateTo(.signIn)
             }
             
         case .signIn:
             SignInScreen(
-                authService: authService,
-                googleAuthService: googleAuthService,
-                appleAuthService: appleAuthService
+                authService: dependencies.authService,
+                googleAuthService: dependencies.googleAuthService,
+                appleAuthService: dependencies.appleAuthService
             ) {
                 vm.navigateTo(.signUp)
             } onForgotPasswordTapped: {
@@ -80,17 +73,14 @@ struct AuthenticationFlowView: View {
             }
             
         case .forgotPassword:
-            ForgotPasswordScreen(authSerivce: authService)
+            ForgotPasswordScreen(authSerivce: dependencies.authService)
         }
     }
 }
 
 #Preview {
     AuthenticationFlowView(
-        authSerivce: MockAuthService.sample,
-        googleAuthService: MockGoogleAuthService.sample,
-        appleAuthService: MockAppleAuthService.sample,
-        onboardingService: MockOnboardingService.sample,
+        dependencies: .uiTesting(),
         initialRoute: nil
     )
 }

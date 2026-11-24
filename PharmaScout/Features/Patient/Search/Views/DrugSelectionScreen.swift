@@ -81,6 +81,7 @@ struct DrugSelectionScreen: View {
         VStack(spacing: DesignSystem.Spacing.small) {
             SearchFieldView(text: $vm.searchText, placehodler: "Search medicines")
                 .focused($isSearchFocused)
+                .accessibilityIdentifier("searchTextField")
             
             HStack(alignment: .top, spacing: DesignSystem.Spacing.small) {
                 Image(systemName: "questionmark.circle")
@@ -217,6 +218,7 @@ struct DrugSelectionScreen: View {
             }
             dismiss()
         }
+        .accessibilityIdentifier("applyMedicineChangesButton")
     }
 }
 

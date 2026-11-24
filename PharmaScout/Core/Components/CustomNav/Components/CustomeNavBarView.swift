@@ -26,6 +26,7 @@ struct CustomeNavBarView: View {
                         .background(.red.opacity(0.001))
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("backButton")
             }
             
             if style == .standard {

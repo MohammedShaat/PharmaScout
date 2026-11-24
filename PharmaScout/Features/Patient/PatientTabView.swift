@@ -8,72 +8,32 @@
 import SwiftUI
 
 struct PatientTabView: View {
-    private let user: AppUser
-    private let router: AppRouter
-    private let authService: AuthService
-    private let drugService: DrugService
-    private let searchRequestService: SearchRequestService
-    private let locationService: LocationService
-    private let pharmacySerivce: PharmacyService
-    private let directionsService: DirectionsService
-    private let pushTokenCoordinator: PushTokenCoordinator
-    private let appConfigService: AppConfigService
-    private let ownerApplicationService: OwnerApplicationService
-    private let appleReauthenticationService: AppleReauthenticationService
-    private let googleReauthenticationService: GoogleReauthenticationService
+    let user: AppUser
+    let router: AppRouter
+    let dependencies: AppDependencies
     
     @State private var vm = PatientTabViewModel()
-    
-    init(
-        user: AppUser,
-        router: AppRouter,
-        authService: AuthService,
-        drugService: DrugService,
-        searchRequestService: SearchRequestService,
-        locationService: LocationService,
-        pharmacySerivce: PharmacyService,
-        directionsService: DirectionsService,
-        pushTokenCoordinator: PushTokenCoordinator,
-        appConfigService: AppConfigService,
-        ownerApplicationService: OwnerApplicationService,
-        appleReauthenticationService: AppleReauthenticationService,
-        googleReauthenticationService: GoogleReauthenticationService
-    ) {
-        self.user = user
-        self.router = router
-        self.authService = authService
-        self.drugService = drugService
-        self.searchRequestService = searchRequestService
-        self.locationService = locationService
-        self.pharmacySerivce = pharmacySerivce
-        self.directionsService = directionsService
-        self.pushTokenCoordinator = pushTokenCoordinator
-        self.appConfigService = appConfigService
-        self.ownerApplicationService = ownerApplicationService
-        self.appleReauthenticationService = appleReauthenticationService
-        self.googleReauthenticationService = googleReauthenticationService
-    }
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                HomeScreen(user: user, drugService: drugService, patientTabViewModel: vm, locationService: locationService, pharmacyService: pharmacySerivce, searchRequestService: searchRequestService)
+                HomeScreen(user: user, drugService: dependencies.drugService, patientTabViewModel: vm, locationService: dependencies.locationService, pharmacyService: dependencies.pharmacyService, searchRequestService: dependencies.searchRequestService)
             }
             
             Tab("Search", image: tabImage(.search), value: .search) {
-                SearchScreen(userId: user.id, drugService: drugService, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm)
+                SearchScreen(userId: user.id, drugService: dependencies.drugService, searchRequestService: dependencies.searchRequestService, locationService: dependencies.locationService, patientTabViewModel: vm)
             }
             
             Tab("Recent", image: tabImage(.recentSearches), value: .recentSearches) {
-                RecentSearchesScreen(path: $vm.recentSearchsPath, userId: user.id, searchRequestService: searchRequestService, locationService: locationService, patientTabViewModel: vm, appConfigService: appConfigService)
+                RecentSearchesScreen(path: $vm.recentSearchsPath, userId: user.id, searchRequestService: dependencies.searchRequestService, locationService: dependencies.locationService, patientTabViewModel: vm, appConfigService: dependencies.appConfigService)
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
-                PharmaciesScreen(path: $vm.pharmacyPath, pharmacyService: pharmacySerivce, locationService: locationService, directionsService: directionsService)
+                PharmaciesScreen(path: $vm.pharmacyPath, pharmacyService: dependencies.pharmacyService, locationService: dependencies.locationService, directionsService: dependencies.directionsService)
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                ProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, pharmacyService: pharmacySerivce, ownerApplicationService: ownerApplicationService, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
+                ProfileScreen(user: user, authService: dependencies.authService, pushTokenCoordinator: dependencies.pushTokenCoordinator, pharmacyService: dependencies.pharmacyService, ownerApplicationService: dependencies.ownerApplicationService, appleReauthenticationService: dependencies.appleReauthenticationService, googleReauthenticationService: dependencies.googleReauthenticationService)
             }
         }
         .tint(.theme.textPrimary)	
@@ -107,16 +67,6 @@ struct PatientTabView: View {
     PatientTabView(
         user: .samples[0],
         router: .sample,
-        authService: MockAuthService.sample,
-        drugService: MockDrugService.sample,
-        searchRequestService: MockSearchRequestService.sample,
-        locationService: MockLocationService.sample,
-        pharmacySerivce: MockPharmacyService.sample,
-        directionsService: MockDirectionsSrevice.sample,
-        pushTokenCoordinator: .sample,
-        appConfigService: MockAppConfigService.sample,
-        ownerApplicationService: MockOwnerApplicationService.sample,
-        appleReauthenticationService: MockAppleAuthService.sample,
-        googleReauthenticationService: MockGoogleAuthService.sample
+        dependencies: .uiTesting()
     )
 }

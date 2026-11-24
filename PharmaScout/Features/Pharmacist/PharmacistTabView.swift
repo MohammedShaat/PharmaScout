@@ -11,14 +11,7 @@ struct PharmacistTabView: View {
     private let user: AppUser
     private let router: AppRouter
     private let staffMembership: StaffMembership
-    private let authService: AuthService
-    private let inquiryService: InquiryService
-    private let drugService: DrugService
-    private let pharmacyService: PharmacyService
-    private let analyticsService: AnalyticsService
-    private let pushTokenCoordinator: PushTokenCoordinator
-    private let appleReauthenticationService: AppleReauthenticationService
-    private let googleReauthenticationService: GoogleReauthenticationService
+    let dependencies: AppDependencies
     
     @State private var vm: PharmacistTabViewModel
     
@@ -26,26 +19,12 @@ struct PharmacistTabView: View {
         user: AppUser,
         router: AppRouter,
         staffMembership: StaffMembership,
-        authService: AuthService,
-        inquiryService: InquiryService,
-        drugService: DrugService,
-        pharmacyService: PharmacyService,
-        analyticsService: AnalyticsService,
-        pushTokenCoordinator: PushTokenCoordinator,
-        appleReauthenticationService: AppleReauthenticationService,
-        googleReauthenticationService: GoogleReauthenticationService
+        dependencies: AppDependencies
     ) {
         self.user = user
         self.router = router
         self.staffMembership = staffMembership
-        self.authService = authService
-        self.inquiryService = inquiryService
-        self.drugService = drugService
-        self.pharmacyService = pharmacyService
-        self.analyticsService = analyticsService
-        self.pushTokenCoordinator = pushTokenCoordinator
-        self.appleReauthenticationService = appleReauthenticationService
-        self.googleReauthenticationService = googleReauthenticationService
+        self.dependencies = dependencies
         
         let viewModel = PharmacistTabViewModel(staffMembership: staffMembership)
         self._vm = State(wrappedValue: viewModel)
@@ -54,30 +33,30 @@ struct PharmacistTabView: View {
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Home", image: tabImage(.home), value: .home) {
-                PharmacistHomeScreen(user: user, pharmacistTabViewModel: vm, staffMembership: staffMembership, inquiryService: inquiryService)
+                PharmacistHomeScreen(user: user, pharmacistTabViewModel: vm, staffMembership: staffMembership, inquiryService: dependencies.inquiryService)
             }
             
             if vm.access.canAccess(.inquiries) {
                 Tab("Inquiries", image: tabImage(.inquiries), value: .inquiries) {
-                    InquiriesScreen(path: $vm.inquiriesPath, staffMembership: staffMembership, authService: authService, inquiryService: inquiryService, drugService: drugService)
+                    InquiriesScreen(path: $vm.inquiriesPath, staffMembership: staffMembership, authService: dependencies.authService, inquiryService: dependencies.inquiryService, drugService: dependencies.drugService)
                 }
             }
             
             if vm.access.canAccess(.pharmacy) {
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                    PharmacyScreen(userId: user.id, pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, pharmacyService: pharmacyService)
+                    PharmacyScreen(userId: user.id, pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, pharmacyService: dependencies.pharmacyService)
                 }
             }
             
             if vm.access.canAccess(.analytics) {
                 Tab("Analytics", image: tabImage(.analytics), value: .analytics) {
-                    AnalyticsScreen(pharmacyId: staffMembership.pharmacyId, analyticsService: analyticsService)
+                    AnalyticsScreen(pharmacyId: staffMembership.pharmacyId, analyticsService: dependencies.analyticsService)
                 }
             }
             
             if vm.access.canAccess(.profile) {
                 Tab("Profile", image: tabImage(.profile), value: .profile) {
-                    PharmacistProfileScreen(user: user, pharmacistAccess: vm.access, authService: authService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService, pharmacyService: pharmacyService, pharmacyId: staffMembership.pharmacyId)
+                    PharmacistProfileScreen(user: user, pharmacistAccess: vm.access, authService: dependencies.authService, pushTokenCoordinator: dependencies.pushTokenCoordinator, appleReauthenticationService: dependencies.appleReauthenticationService, googleReauthenticationService: dependencies.googleReauthenticationService, pharmacyService: dependencies.pharmacyService, pharmacyId: staffMembership.pharmacyId)
                 }
             }
         }
@@ -116,13 +95,6 @@ struct PharmacistTabView: View {
         user: .samples[0],
         router: .sample,
         staffMembership: .samples[0],
-        authService: MockAuthService.sample,
-        inquiryService: MockInquiryService.sample,
-        drugService: MockDrugService.sample,
-        pharmacyService: MockPharmacyService.sample,
-        analyticsService: MockAnalyticsService.sample,
-        pushTokenCoordinator: .sample,
-        appleReauthenticationService: MockAppleAuthService.sample,
-        googleReauthenticationService: MockGoogleAuthService.sample
+        dependencies: .uiTesting()
     )
 }

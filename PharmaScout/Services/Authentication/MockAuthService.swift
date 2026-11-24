@@ -27,7 +27,10 @@ struct MockAuthService: AuthService {
     func signInWithCredential(_ credential: OAuthCredential) async throws {}
     
     func authStateStream() async -> AsyncStream<AuthState> {
-        .makeStream().stream
+        let (stream, continuation) = AsyncStream.makeStream(of: AuthState.self, bufferingPolicy: .bufferingNewest(1))
+        let authState: AuthState = .authenticated(.init(user: .samples[0], accountState: .patient))
+        continuation.yield(authState)
+        return stream
     }
     
     func getProviders() async throws -> [AuthProvider] {

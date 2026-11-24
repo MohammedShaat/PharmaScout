@@ -8,53 +8,27 @@
 import SwiftUI
 
 struct AdminTabView: View {
-    private let user: AppUser
-    private let authService: AuthService
-    private let pushTokenCoordinator: PushTokenCoordinator
-    private let ownerApplicationService: OwnerApplicationService
-    private let pharmacyService: PharmacyService
-    private let appleReauthenticationService: AppleReauthenticationService
-    private let googleReauthenticationService: GoogleReauthenticationService
+    let user: AppUser
+    let dependencies: AppDependencies
     
-    @State private var vm: AdminTabViewModel
-    
-    init(
-        user: AppUser,
-        authService: AuthService,
-        pushTokenCoordinator: PushTokenCoordinator,
-        ownerApplicationService: OwnerApplicationService,
-        pharmacyService: PharmacyService,
-        appleReauthenticationService: AppleReauthenticationService,
-        googleReauthenticationService: GoogleReauthenticationService
-    ) {
-        self.user = user
-        self.authService = authService
-        self.pushTokenCoordinator = pushTokenCoordinator
-        self.ownerApplicationService = ownerApplicationService
-        self.pharmacyService = pharmacyService
-        self.appleReauthenticationService = appleReauthenticationService
-        self.googleReauthenticationService = googleReauthenticationService
-        
-        let viewModel = AdminTabViewModel()
-        self._vm = State(wrappedValue: viewModel)
-    }
+    @State private var vm = AdminTabViewModel()
     
     var body: some View {
         TabView(selection: $vm.selectedTab) {
             Tab("Applications", image: tabImage(.ownerApplications), value: .ownerApplications) {
-                OwnerApplicationsScreen(ownerApplicationService: ownerApplicationService)
+                OwnerApplicationsScreen(ownerApplicationService: dependencies.ownerApplicationService)
             }
             
             Tab("Pharmacies", image: tabImage(.pharmacies), value: .pharmacies) {
-                AdminPharmaciesScreen(pharmacyService: pharmacyService)
+                AdminPharmaciesScreen(pharmacyService: dependencies.pharmacyService)
             }
             
             Tab("Invite", image: tabImage(.invite), value: .invite) {
-                OwnerInvitationScreen(ownerApplicationService: ownerApplicationService)
+                OwnerInvitationScreen(ownerApplicationService: dependencies.ownerApplicationService)
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                AdminProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService)
+                AdminProfileScreen(user: user, authService: dependencies.authService, pushTokenCoordinator: dependencies.pushTokenCoordinator, appleReauthenticationService: dependencies.appleReauthenticationService, googleReauthenticationService: dependencies.googleReauthenticationService)
             }
         }
         .tint(.theme.primary)
@@ -81,11 +55,6 @@ struct AdminTabView: View {
 #Preview {
     AdminTabView(
         user: .samples[0],
-        authService: MockAuthService.sample,
-        pushTokenCoordinator: .sample,
-        ownerApplicationService: MockOwnerApplicationService.sample,
-        pharmacyService: MockPharmacyService.sample,
-        appleReauthenticationService: MockAppleAuthService.sample,
-        googleReauthenticationService: MockGoogleAuthService.sample
+        dependencies: .uiTesting()
     )
 }

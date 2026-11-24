@@ -27,6 +27,7 @@ struct EmptySearchView: View {
             VStack {
                 Spacer()
                 PrimaryButtonView(title: "Choose a medicine to start", action: onChoosenMedicineTapped)
+                    .accessibilityIdentifier("chooseMedicineButton")
             }
         }
     }
