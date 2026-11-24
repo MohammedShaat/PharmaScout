@@ -31,6 +31,7 @@ struct SectionHeaderWithActionView<Icon: View>: View {
             }
             .font(.callout)
             .clickable(isDisabled: isActionDisabled, action: onActionTapped)
+            .accessibilityIdentifier("\(actionName.lowercased())Button")
             
         }
         .foregroundStyle(.theme.textPrimary)

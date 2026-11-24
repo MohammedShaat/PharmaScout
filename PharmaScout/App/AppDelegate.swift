@@ -28,6 +28,7 @@ class AppDelegate: NSObject, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        guard !LaunchEnvironment.isUITesting else { return true }
         
         CrashReportingManager.start()
         

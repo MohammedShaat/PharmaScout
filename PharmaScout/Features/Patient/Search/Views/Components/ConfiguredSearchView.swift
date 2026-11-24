@@ -123,6 +123,7 @@ struct ConfiguredSearchView: View {
             PrimaryButtonView(title: "Start search", isLoading: isCreatingSearchRequest) {
                 onStartTapped?()
             }
+            .accessibilityIdentifier("startSearchButton")
         }
     }
 }

@@ -10,42 +10,18 @@ import SwiftUI
 struct OwnerApplicantTabView: View {
     private let user: AppUser
     private let ownerApplicationSummary: OwnerApplicationSummary
-    private let authService: AuthService
-    private let pushTokenCoordinator: PushTokenCoordinator
-    private let ownerApplicationService: OwnerApplicationService
-    private let pharmacyService: PharmacyService
-    private let geocodingService: GeocodingService
-    private let placeSearchService: PlaceSearchService
-    private let locationService: LocationService
-    private let appleReauthenticationService: AppleReauthenticationService
-    private let googleReauthenticationService: GoogleReauthenticationService
+    private let dependencies: AppDependencies
     
     @State private var vm: OwnerApplicantTabViewModel
     
     init(
         user: AppUser,
         ownerApplicationSummary: OwnerApplicationSummary,
-        authService: AuthService,
-        pushTokenCoordinator: PushTokenCoordinator,
-        ownerApplicationService: OwnerApplicationService,
-        pharmacyService: PharmacyService,
-        geocodingService: GeocodingService,
-        placeSearchService: PlaceSearchService,
-        locationService: LocationService,
-        appleReauthenticationService: AppleReauthenticationService,
-        googleReauthenticationService: GoogleReauthenticationService
+        dependencies: AppDependencies
     ) {
         self.user = user
         self.ownerApplicationSummary = ownerApplicationSummary
-        self.authService = authService
-        self.pushTokenCoordinator = pushTokenCoordinator
-        self.ownerApplicationService = ownerApplicationService
-        self.pharmacyService = pharmacyService
-        self.geocodingService = geocodingService
-        self.placeSearchService = placeSearchService
-        self.locationService = locationService
-        self.appleReauthenticationService = appleReauthenticationService
-        self.googleReauthenticationService = googleReauthenticationService
+        self.dependencies = dependencies
         
         let viewModel = OwnerApplicantTabViewModel(ownerApplicationSummary: ownerApplicationSummary)
         self._vm = State(wrappedValue: viewModel)
@@ -59,12 +35,12 @@ struct OwnerApplicantTabView: View {
             
             if vm.status == .approved {
                 Tab("Create Pharmacy", image: tabImage(.createPharmacy), value: .createPharmacy) {
-                    CreatePharmacyScreen(pharmacyService: pharmacyService, ownerApplicationService: ownerApplicationService, geocodingService: geocodingService, placeSearchService: placeSearchService, locationService: locationService)
+                    CreatePharmacyScreen(pharmacyService: dependencies.pharmacyService, ownerApplicationService: dependencies.ownerApplicationService, geocodingService: dependencies.geocodingService, placeSearchService: dependencies.placeSearchService, locationService: dependencies.locationService)
                 }
             }
             
             Tab("Profile", image: tabImage(.profile), value: .profile) {
-                OwnerApplicantProfileScreen(user: user, authService: authService, pushTokenCoordinator: pushTokenCoordinator, appleReauthenticationService: appleReauthenticationService, googleReauthenticationService: googleReauthenticationService, ownerApplicationService: ownerApplicationService)
+                OwnerApplicantProfileScreen(user: user, authService: dependencies.authService, pushTokenCoordinator: dependencies.pushTokenCoordinator, appleReauthenticationService: dependencies.appleReauthenticationService, googleReauthenticationService: dependencies.googleReauthenticationService, ownerApplicationService: dependencies.ownerApplicationService)
             }
         }
         .tint(.theme.primary)
@@ -93,14 +69,6 @@ struct OwnerApplicantTabView: View {
     OwnerApplicantTabView(
         user: .samples[0],
         ownerApplicationSummary: .samples[0],
-        authService: MockAuthService.sample,
-        pushTokenCoordinator: .sample,
-        ownerApplicationService: MockOwnerApplicationService.sample,
-        pharmacyService: MockPharmacyService.sample,
-        geocodingService: MockGeocodingService.sample,
-        placeSearchService: MockPlaceSearchService.sample,
-        locationService: MockLocationService.sample,
-        appleReauthenticationService: MockAppleAuthService.sample,
-        googleReauthenticationService: MockGoogleAuthService.sample
+        dependencies: .uiTesting()
     )
 }

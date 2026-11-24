@@ -23,6 +23,7 @@ struct ChipView: View {
                     .padding(DesignSystem.Spacing.small)
                     .background(.theme.secondary.opacity(0.001))
                     .clickable(action: onCancelTapped)
+                    .accessibilityIdentifier("cancel\(name.lowercased().capitalized)Chip")
             }
         }
         .foregroundStyle(.theme.onPrimary)

@@ -68,6 +68,7 @@ struct StartedSearchView: View {
     
     private var viewSearchButton: some View {
         PrimaryButtonView(title: "View search", action: onViewSearchTapped)
+            .accessibilityIdentifier("viewSearchButton")
     }
 }
 
