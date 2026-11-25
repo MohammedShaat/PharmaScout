@@ -9,22 +9,26 @@ import SwiftUI
 
 struct PharmacyScreen: View {
     private let userId: String
+    private let pharmacyId: String
     private let pharmacistAccess: PharmacistAccess
     private let pharmacyService: PharmacyService
     
     @State private var vm: PharmacyViewModel
-    @State private var path = NavigationPath()
+    @Binding var path: NavigationPath
     
     private var canEditPharmacy: Bool { pharmacistAccess.can(.editPharmacy) }
     private var canEditStaff: Bool { pharmacistAccess.can(.manageStaff) }
     
     init(
+        path: Binding<NavigationPath>,
         userId: String,
         pharmacyId: String,
         pharmacistAccess: PharmacistAccess,
         pharmacyService: PharmacyService
     ) {
+        self._path = path
         self.userId = userId
+        self.pharmacyId = pharmacyId
         self.pharmacistAccess = pharmacistAccess
         self.pharmacyService = pharmacyService
         
@@ -54,7 +58,10 @@ struct PharmacyScreen: View {
             .customNavBarVisibility(.root)
             .customNavTitle(vm.pharmacy?.name ?? "")
             .customNavigationDestination(for: PharmacyRoute.self) { route in
-                if let pharmacy = vm.pharmacy {
+                if case .editStaff(let pharmacyId, let staff) = route {
+                    PharmacyEditStaffScreen(userId: userId, pharmacyService: pharmacyService, pharmacyId: pharmacyId, staffMembers: staff)
+                }
+                else if let pharmacy = vm.pharmacy {
                     switch route {
                     case .editAddress:
                         PharmacyEditAddressScreen(pharmacyService: pharmacyService, pharmacy: pharmacy)
@@ -66,7 +73,7 @@ struct PharmacyScreen: View {
                         PharmacyEditWorkingHourScreen(pharmacyService: pharmacyService, pharmacy: pharmacy, workingHours: vm.workingHours)
                         
                     case .editStaff:
-                        PharmacyEditStaffScreen(userId: userId, pharmacyService: pharmacyService, pharmacy: pharmacy, staffMembers: vm.pharmacyStaff)
+                        EmptyView() // Already handled above
                     }
                 }
             }
@@ -100,7 +107,7 @@ struct PharmacyScreen: View {
                 }
             }
         }
-        .frame(minHeight: vm.pharmacyLoadingState.status != .idle ? 300 : 0, alignment: .top)
+        .frame(minHeight: vm.pharmacyLoadingState.status == .loading ? 300 : 0, alignment: .top)
     }
     
     private var contactSection: some View {
@@ -123,7 +130,7 @@ struct PharmacyScreen: View {
                 .frame(maxWidth: .infinity)
             }
         }
-        .frame(minHeight: vm.contactLoadingState.status != .idle ? 250 : 0, alignment: .top)
+        .frame(minHeight: vm.contactLoadingState.status == .loading ? 250 : 0, alignment: .top)
     }
     
     private var workingHoursSection: some View {
@@ -143,14 +150,16 @@ struct PharmacyScreen: View {
                     .frame(maxWidth: .infinity)
             }
         }
-        .frame(minHeight: vm.workingHoursLoadingState.status != .idle ? 250 : 0, alignment: .top)
+        .frame(minHeight: vm.workingHoursLoadingState.status == .loading ? 250 : 0, alignment: .top)
     }
     
     private var staffSection: some View {
         EditSectionHeaderView(
             title: "Staff",
             showAction: canEditStaff,
-            onActionTapped: { path.append(PharmacyRoute.editStaff) }
+            onActionTapped: {
+                path.append(PharmacyRoute.editStaff(pharmacyId: pharmacyId, staff: vm.pharmacyStaff))
+            }
         ) {
             LoadingContentView(
                 loadingState: vm.staffLoadingState,
@@ -167,16 +176,19 @@ struct PharmacyScreen: View {
     }
 }
 
-enum PharmacyRoute {
+enum PharmacyRoute: Hashable {
     case editAddress
     case editContact
     case editWorkingHours
-    case editStaff
+    case editStaff(pharmacyId: String, staff: [PharmacyStaffMember]?)
     
 }
 
 #Preview {
+    @State @Previewable var path = NavigationPath()
+    
     PharmacyScreen(
+        path: $path,
         userId: AppUser.samples[0].id,
         pharmacyId: Pharmacy.samples[0].id,
         pharmacistAccess: .full(role: .owner),

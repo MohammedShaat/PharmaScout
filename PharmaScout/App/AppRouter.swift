@@ -64,7 +64,7 @@ class AppRouter {
     
     func consumePendingPharmacistNotificationRoute() -> PharmacistNotificationRoute? {
         defer { pendingNotificationRoute = nil }
-        guard case .pahrmacist(let route) = pendingNotificationRoute else { return nil }
+        guard case .pharmacist(let route) = pendingNotificationRoute else { return nil }
         return route
     }
     

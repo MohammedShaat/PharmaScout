@@ -13,6 +13,7 @@ class PharmacistTabViewModel {
     private(set) var membership: StaffMembership
     var selectedTab: PharmacistTab = .home
     var inquiriesPath = NavigationPath()
+    var pharmacyPath = NavigationPath()
     
     var access: PharmacistAccess
     
@@ -39,6 +40,19 @@ class PharmacistTabViewModel {
         inquiriesPath = NavigationPath([InquiryDetailRoute(inquiryId: inquiryId)])
     }
     
+    func navigateToPharmacyTab() {
+        guard access.canAccess(.pharmacy) else {
+            print("Denied access to pharmacy")
+            return
+        }
+        selectedTab = .pharmacy
+    }
+    
+    func navigateToPharmacyEditStaffScreen(_ pharmacyId: String) {
+        navigateToPharmacyTab()
+        pharmacyPath = NavigationPath([PharmacyRoute.editStaff(pharmacyId: pharmacyId, staff: nil)])
+    }
+    
     func handle(_ route: PharmacistNotificationRoute) {
         switch route {
         case .inquiries:
@@ -46,6 +60,9 @@ class PharmacistTabViewModel {
             
         case .inquiryDetail(let inquiryId):
             navigateToInquiryDetailScreenBy(inquiryId)
+            
+        case .staff(let pharmacyId):
+            navigateToPharmacyEditStaffScreen(pharmacyId)
         }
     }
     

@@ -19,15 +19,15 @@ struct PharmacyEditStaffScreen: View {
     init(
         userId: String,
         pharmacyService: PharmacyService,
-        pharmacy: Pharmacy,
-        staffMembers: [PharmacyStaffMember]
+        pharmacyId: String,
+        staffMembers: [PharmacyStaffMember]?
     ) {
         self.userId = userId
         
         let viewModel = PharmacyEditStaffViewModel(
             userId: userId,
             pharmacyService: pharmacyService,
-            pharmacy: pharmacy,
+            pharmacyId: pharmacyId,
             staffMembers: staffMembers
         )
         self._vm = State(wrappedValue: viewModel)
@@ -47,7 +47,10 @@ struct PharmacyEditStaffScreen: View {
         .customNavTitle("Staff")
         .padding(DesignSystem.Spacing.xLarge)
         .scrollDisabled(isSwipingAnItem)
-        .errorAlert(title: "Couldn't update the staff", loadingState: $vm.loadingState)
+        .errorAlert(title: "Couldn't update the staff", loadingState: $vm.updateLoadingState)
+        .onAppear {
+            vm.loadDataIfNeeded()
+        }
         .onDisappear {
             updateTask?.cancel()
         }
@@ -55,30 +58,40 @@ struct PharmacyEditStaffScreen: View {
     }
     
     private var staffMemberListSection: some View {
-        VStack(spacing: DesignSystem.Spacing.xxLarge) {
-            ForEach(vm.staffMembers) { staffMember in
-                if userId == staffMember.userInfo.id {
-                    staffMemberItemView(staffMember)
-                        
-                } else {
-                    Swipy(
-                        isSwipingAnItem: $isSwipingAnItem,
-                        swipeActionsMargin: SwipyHorizontalMargin(
-                            leading: DesignSystem.Spacing.xSmall,
-                            trailing: DesignSystem.Spacing.xSmall
-                        ),
-                        swipeBehavior: .straight
-                    ) { model in
-                        staffMemberItemView(staffMember)
-                        
-                    } actions: {
-                        SwipyAction { model in
-                            Button(role: .destructive) {
-                                updateMember(memberId: staffMember.id, action: .delete) {
-                                    model.unswipe()
+        LoadingContentView(
+            loadingState: vm.staffLoadingState,
+            showMessage: vm.staffMembers?.isEmpty ?? true,
+            emptyTitle: "No staff members",
+            emptyMessage: "Staff members added to this pharmacy will appear here.",
+            errorTitle: "Couldn't load staff members"
+        ) {
+            if let staffMembers = vm.staffMembers {
+                VStack(spacing: DesignSystem.Spacing.xxLarge) {
+                    ForEach(staffMembers) { staffMember in
+                        if userId == staffMember.userInfo.id {
+                            staffMemberItemView(staffMember)
+                            
+                        } else {
+                            Swipy(
+                                isSwipingAnItem: $isSwipingAnItem,
+                                swipeActionsMargin: SwipyHorizontalMargin(
+                                    leading: DesignSystem.Spacing.xSmall,
+                                    trailing: DesignSystem.Spacing.xSmall
+                                ),
+                                swipeBehavior: .straight
+                            ) { model in
+                                staffMemberItemView(staffMember)
+                                
+                            } actions: {
+                                SwipyAction { model in
+                                    Button(role: .destructive) {
+                                        updateMember(memberId: staffMember.id, action: .delete) {
+                                            model.unswipe()
+                                        }
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
                                 }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
                             }
                         }
                     }
@@ -95,21 +108,21 @@ struct PharmacyEditStaffScreen: View {
             if userId != staffMember.userInfo.id {
                 if staffMember.status == .pending {
                     HStack {
-                        PrimaryButtonView(title: "Accept", isDisabled: vm.loadingState.status != .idle,  isLoading: vm.memberIdLoading == staffMember.id) {
+                        PrimaryButtonView(title: "Accept", isDisabled: vm.updateLoadingState.status != .idle,  isLoading: vm.memberIdLoading == staffMember.id) {
                             updateMember(memberId: staffMember.id, action: .approve)
                         }
                         Spacer()
-                        PrimaryButtonView(title: "Reject", isDisabled: vm.loadingState.status != .idle, isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.red) {
+                        PrimaryButtonView(title: "Reject", isDisabled: vm.updateLoadingState.status != .idle, isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.red) {
                             updateMember(memberId: staffMember.id, action: .reject)
                         }
                     }
                 } else if staffMember.status == .approved {
-                    PrimaryButtonView(title: "Suspend", isDisabled: vm.loadingState.status != .idle, isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.orange) {
+                    PrimaryButtonView(title: "Suspend", isDisabled: vm.updateLoadingState.status != .idle, isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.orange) {
                         updateMember(memberId: staffMember.id, action: .suspend)
                     }
                     
                 } else if staffMember.status == .suspended {
-                    PrimaryButtonView(title: "Activate", isDisabled: vm.loadingState.status != .idle,  isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.blue) {
+                    PrimaryButtonView(title: "Activate", isDisabled: vm.updateLoadingState.status != .idle,  isLoading: vm.memberIdLoading == staffMember.id, bgColor: .theme.blue) {
                         updateMember(memberId: staffMember.id, action: .reactivate)
                     }
                 }
@@ -138,7 +151,7 @@ struct PharmacyEditStaffScreen: View {
     PharmacyEditStaffScreen(
         userId: AppUser.samples[0].id,
         pharmacyService: MockPharmacyService.sample,
-        pharmacy: pharmacy,
+        pharmacyId: pharmacy.id,
         staffMembers: staffMembers
     )
 }

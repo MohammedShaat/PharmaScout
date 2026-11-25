@@ -110,7 +110,7 @@ struct PharmacistDashboardScreen: View {
                 }
             }
         }
-        .frame(minHeight: vm.latestPendingInquiriesLoadingState.status != .idle ? 250 : 0)
+        .frame(minHeight: vm.latestPendingInquiriesLoadingState.status == .loading ? 250 : 0)
     }
     
     private func statisticCard(title: String, count: Int) -> some View {
