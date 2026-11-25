@@ -10,24 +10,46 @@ import Foundation
 @Observable
 class PharmacyEditStaffViewModel {
     private let pharmacyService: PharmacyService
-    private let pharmacy: Pharmacy
-    private(set) var staffMembers: [PharmacyStaffMember]
+    private let pharmacyId: String
+    private(set) var staffMembers: [PharmacyStaffMember]?
     
-    var loadingState = LoadingState()
     var memberIdLoading: String?
+    var updateLoadingState = LoadingState()
+    var staffLoadingState = LoadingState()
     
-    init(userId: String, pharmacyService: PharmacyService, pharmacy: Pharmacy, staffMembers: [PharmacyStaffMember]) {
+    private var hasStarted: Bool = false
+    private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
+    
+    init(userId: String, pharmacyService: PharmacyService, pharmacyId: String, staffMembers: [PharmacyStaffMember]?) {
         self.pharmacyService = pharmacyService
-        self.pharmacy = pharmacy
-        
+        self.pharmacyId = pharmacyId
         self.staffMembers = staffMembers
     }
     
+    deinit {
+        firstLoadTask?.cancel()
+    }
+    
+    func loadDataIfNeeded() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        
+        firstLoadTask = Task {
+            await loadStaff(refresh: staffMembers != nil)
+            hasFinishedFirstLoading = true
+        }
+    }
+    
+    func refresh() async {
+        await loadStaff(refresh: true)
+    }
+    
     func updateMember(memberId: String, action: PharmacyStaffAction) async {
-        loadingState.startLoading()
+        updateLoadingState.startLoading()
         memberIdLoading = memberId
         defer {
-            loadingState.stopLoading()
+            updateLoadingState.stopLoading()
             memberIdLoading = nil
         }
         
@@ -38,7 +60,7 @@ class PharmacyEditStaffViewModel {
             try await pharmacyService.manageStaffMember(request: updateStaffRequest)
             
         } catch {
-            loadingState.fail(error)
+            updateLoadingState.fail(error)
             print("Failed to update pharmacy staff member\n", error)
         }
     }
@@ -46,9 +68,9 @@ class PharmacyEditStaffViewModel {
     func listenToStaffChanges() async {
         do {
             try await changesListener(
-                needsCatchup: true,
-                realtimeStream: { try await pharmacyService.subscribeToStaffChanges(for: pharmacy.id) },
-                trigger: { await loadStaff(refresh: true) }
+                needsCatchup: hasFinishedFirstLoading,
+                realtimeStream: { try await pharmacyService.subscribeToStaffChanges(for: pharmacyId) },
+                trigger: refresh
             )
         } catch {
             print("Failed to subscribe to staff hours changes\n", error)
@@ -56,14 +78,14 @@ class PharmacyEditStaffViewModel {
     }
     
     private func loadStaff(refresh: Bool = false) async {
-        loadingState.startLoading(refresh: refresh)
-        defer { loadingState.stopLoading() }
+        staffLoadingState.startLoading(refresh: refresh)
+        defer { staffLoadingState.stopLoading() }
         
         do {
-            staffMembers = try await pharmacyService.getStaff(for: pharmacy.id)
+            staffMembers = try await pharmacyService.getStaff(for: pharmacyId)
 
         } catch {
-            loadingState.fail(error)
+            staffLoadingState.fail(error)
             print("Failed to get pharmacy staff\n", error)
         }
     }

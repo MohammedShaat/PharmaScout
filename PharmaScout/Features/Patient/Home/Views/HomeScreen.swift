@@ -88,7 +88,7 @@ struct HomeScreen: View {
             patientTabViewModel.navigateToSearchDetailScreenBy(search)
         }
         .frame(
-            minHeight: vm.recentSearchesloadingState.status != .idle ? 200 : 0,
+            minHeight: vm.recentSearchesloadingState.status == .loading ? 200 : 0,
             alignment: .top
         )
     }

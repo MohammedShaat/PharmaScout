@@ -50,8 +50,8 @@ class PharmacistDashboardViewModel {
     }
     
     func refreshData() async {
-        async let pendingInquiries = loadPendingInquiries()
-        async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
+        async let pendingInquiries = loadPendingInquiries(refresh: true)
+        async let numberOfTodaysInquiries = getNumberOfTodaysInquiries(refresh: true)
         
         _ = await (pendingInquiries, numberOfTodaysInquiries)
     }

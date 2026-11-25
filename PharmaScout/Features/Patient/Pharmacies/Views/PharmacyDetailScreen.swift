@@ -80,7 +80,7 @@ struct PharmacyDetailScreen: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             }
         }
-        .frame(minHeight: vm.contactLoadingState.status != .idle ? 200 : 0, alignment: .top)
+        .frame(minHeight: vm.contactLoadingState.status == .loading ? 200 : 0, alignment: .top)
     }
     
     private var workingHoursSection: some View {

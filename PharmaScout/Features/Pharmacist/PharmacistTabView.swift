@@ -44,7 +44,7 @@ struct PharmacistTabView: View {
             
             if vm.access.canAccess(.pharmacy) {
                 Tab("Pharmacy", image: tabImage(.pharmacy), value: .pharmacy) {
-                    PharmacyScreen(userId: user.id, pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, pharmacyService: dependencies.pharmacyService)
+                    PharmacyScreen(path: $vm.pharmacyPath, userId: user.id, pharmacyId: staffMembership.pharmacyId, pharmacistAccess: vm.access, pharmacyService: dependencies.pharmacyService)
                 }
             }
             

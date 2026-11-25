@@ -11,7 +11,7 @@ import Supabase
 
 enum NotificationRoute: Equatable {
     case patient(route: PatientNotificationRoute)
-    case pahrmacist(route: PharmacistNotificationRoute)
+    case pharmacist(route: PharmacistNotificationRoute)
 
     init?(userInfo: [AnyHashable: Any]) {
         switch userInfo[Payload.type] as? String {
@@ -24,11 +24,15 @@ enum NotificationRoute: Equatable {
             
         case Payload.TypeValue.newInquiries:
             guard let id = userInfo[Payload.pharmacyId] as? String else { return nil }
-            self = .pahrmacist(route: .inquiries(pharmacyId: id))
+            self = .pharmacist(route: .inquiries(pharmacyId: id))
             
         case Payload.TypeValue.newInquiry:
             guard let id = userInfo[Payload.inquiryId] as? String else { return nil }
-            self = .pahrmacist(route: .inquiryDetail(inquiryId: id))
+            self = .pharmacist(route: .inquiryDetail(inquiryId: id))
+            
+        case Payload.TypeValue.newStaffRequest:
+            guard let id = userInfo[Payload.pharmacyId] as? String else { return nil }
+            self = .pharmacist(route: .staff(pharmacyId: id))
 
         default:
             return nil
@@ -43,6 +47,7 @@ enum PatientNotificationRoute: Equatable {
 enum PharmacistNotificationRoute: Equatable {
     case inquiries(pharmacyId: String)
     case inquiryDetail(inquiryId: String)
+    case staff(pharmacyId: String)
 }
 
 extension NotificationRoute {
@@ -56,12 +61,13 @@ extension NotificationRoute {
             static let itemFulfilled = "item_fulfilled"
             static let newInquiries = "new_inquiries"
             static let newInquiry = "new_inquiry"
+            static let newStaffRequest = "new_staff_request"
         }
         
         // search continuation, search completed, item fulfilled
         static let searchId = "search_id"
         
-        // new inquries
+        // new inquries, staff request
         static let pharmacyId = "pharmacy_id"
         
         // new inqury
