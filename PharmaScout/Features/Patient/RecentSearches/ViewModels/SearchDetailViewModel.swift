@@ -32,6 +32,7 @@ class SearchDetailViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(
         searchRequestService: SearchRequestService,
@@ -63,6 +64,7 @@ class SearchDetailViewModel {
             async let loadSearchDetail = loadSearchDetail()
             
             _ = await (getSearch, loadSearchDetail)
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -116,7 +118,7 @@ class SearchDetailViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await searchRequestService.subscribeToSearchChanges(searchId: searchId) },
                 trigger: refresh
             )

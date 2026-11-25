@@ -49,9 +49,6 @@ struct ActiveSearchesView: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
             
             Spacer()
-            Text("\(activeSearches.count) Active")
-                .font(.footnote)
-                .foregroundStyle(.theme.textSecondary)
         }
         .foregroundStyle(.theme.green)
     }

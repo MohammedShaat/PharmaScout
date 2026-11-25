@@ -100,6 +100,7 @@ struct PharmacyScreen: View {
                 }
             }
         }
+        .frame(minHeight: vm.pharmacyLoadingState.status != .idle ? 300 : 0, alignment: .top)
     }
     
     private var contactSection: some View {
@@ -122,6 +123,7 @@ struct PharmacyScreen: View {
                 .frame(maxWidth: .infinity)
             }
         }
+        .frame(minHeight: vm.contactLoadingState.status != .idle ? 250 : 0, alignment: .top)
     }
     
     private var workingHoursSection: some View {
@@ -141,6 +143,7 @@ struct PharmacyScreen: View {
                     .frame(maxWidth: .infinity)
             }
         }
+        .frame(minHeight: vm.workingHoursLoadingState.status != .idle ? 250 : 0, alignment: .top)
     }
     
     private var staffSection: some View {

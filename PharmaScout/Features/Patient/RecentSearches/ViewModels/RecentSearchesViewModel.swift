@@ -19,6 +19,7 @@ class RecentSearchesViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(userId: String, searchRequestService: SearchRequestService) {
         self.userId = userId
@@ -35,6 +36,7 @@ class RecentSearchesViewModel {
         
         firstLoadTask = Task {
             await loadSearches()
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -54,7 +56,7 @@ class RecentSearchesViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
                 trigger: refresh
             )

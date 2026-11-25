@@ -27,19 +27,22 @@ struct SearchListView: View {
             showMessage: searches.isEmpty,
             emptyTitle: "No completed searches yet",
             emptyMessage: "Your completed searches will appear here.",
-            errorTitle: "Couldn't load completed searches"
-        ) {
-                CustomList(
-                    items: searches,
-                    isLoadingMore: false
-                ) { search in
-                    HomeSearchRowView(search: search)
-                        .disclosureIndicator()
-                        .clickable {
-                            onSearchTapped?(search)
-                        }
-                }
+            errorTitle: "Couldn't load completed searches",
+            emptyIcon: {
+                Image(systemName: "clock.arrow.circlepath")
             }
+        ) {
+            CustomList(
+                items: searches,
+                isLoadingMore: false
+            ) { search in
+                HomeSearchRowView(search: search)
+                    .disclosureIndicator()
+                    .clickable {
+                        onSearchTapped?(search)
+                    }
+            }
+        }
     }
     
 }
@@ -50,6 +53,6 @@ struct SearchListView: View {
             searches: Array(Search.samples.prefix(2)),
             loadingState: LoadingState()
         )
-            .padding()
+        .padding()
     }
 }

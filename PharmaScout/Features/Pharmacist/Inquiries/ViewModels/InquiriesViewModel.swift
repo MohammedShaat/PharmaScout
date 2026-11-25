@@ -20,7 +20,7 @@ class InquiriesViewModel {
     
     private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
     
-    private var hasLoadedOnce: Bool = false
+    private var hasFinishedFirstLoading: Bool = false
     
     init(staffMembership: StaffMembership, inquiryService: InquiryService) {
         self.inquiryService = inquiryService
@@ -48,7 +48,7 @@ class InquiriesViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasLoadedOnce,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: {
                     try await inquiryService.subscribeToPharmacyInquiriesChanges(
                         pharmacyId: staffMembership.pharmacyId
@@ -104,7 +104,7 @@ class InquiriesViewModel {
                 return try await inquiryService.getInquiries(params)
                 
             } onSuccess: { newInquiries in
-                hasLoadedOnce = true
+                hasFinishedFirstLoading = true
                 
                 if refresh {
                     inquiries = newInquiries

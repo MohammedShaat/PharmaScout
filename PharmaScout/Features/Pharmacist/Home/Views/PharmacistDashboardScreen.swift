@@ -65,7 +65,8 @@ struct PharmacistDashboardScreen: View {
                 showMessage: vm.latestPendingInquiries.isEmpty,
                 emptyTitle: "No pending inquiries",
                 emptyMessage: "You're all caught up. New requests will appear here.",
-                errorTitle: "Couldn't load pending inquiries"
+                errorTitle: "Couldn't load pending inquiries",
+                emptyIcon: { emptyIcon }
             ) {
                 VStack(spacing: DesignSystem.Spacing.medium) {
                     ForEach(vm.latestPendingInquiries) { inquiry in
@@ -94,7 +95,8 @@ struct PharmacistDashboardScreen: View {
                 showMessage: vm.allTodaysInquiriesCount == 0,
                 emptyTitle: "No inquiries today",
                 emptyMessage: "New inquiries will show up here as they come in.",
-                errorTitle: "Couldn't load today's activity"
+                errorTitle: "Couldn't load today's activity",
+                emptyIcon: { emptyIcon }
             ) {
                 HStack(spacing: DesignSystem.Spacing.medium) {
                     Group {
@@ -108,6 +110,7 @@ struct PharmacistDashboardScreen: View {
                 }
             }
         }
+        .frame(minHeight: vm.latestPendingInquiriesLoadingState.status != .idle ? 250 : 0)
     }
     
     private func statisticCard(title: String, count: Int) -> some View {
@@ -121,6 +124,12 @@ struct PharmacistDashboardScreen: View {
                 .fontWeight(.heavy)
                 .foregroundStyle(.theme.textPrimary)
         }
+    }
+    
+    private var emptyIcon: some View {
+        Image(.pill)
+            .resizable()
+            .scaledToFit()
     }
 }
 

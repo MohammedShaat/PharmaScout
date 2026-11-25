@@ -94,8 +94,10 @@ struct InquiryDetailScreen: View {
             emptyMessage: "This inquiry can no longer be responded to.",
             errorTitle: "Couldn't check if you can respond"
         ) {
-            if vm.canCanResponse {
-                VStack(spacing: DesignSystem.Spacing.xxLarge) {
+            if vm.canResponse {
+                VStack(spacing: DesignSystem.Spacing.small) {
+                    hintText
+                    
                     InquiryResponseFlowView(
                         response: vm.response,
                         onResponseChanged: { vm.response = $0 },
@@ -125,6 +127,19 @@ struct InquiryDetailScreen: View {
                 .padding(.vertical, DesignSystem.Spacing.large)
             }
         }
+    }
+    
+    private var hintText: some View {
+        Text( vm.inquiry?.status == .pending
+              ? "Awaiting your response"
+              : "Choose your new reply to update"
+        )
+        .fontWeight(.bold)
+        .foregroundStyle( vm.inquiry?.status == .pending
+                          ? InquiryStatus.pending.color
+                          : .theme.textPrimary
+        )
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

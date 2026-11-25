@@ -20,7 +20,7 @@ struct EmptyIconView<Icon: View>: View {
                 emptyIcon
             }
         }
-        .frame(width: 34)
+        .frame(width: 34, height: 34)
         .padding(14)
         .roundedBackground(showBorder: true)
         .padding(6)

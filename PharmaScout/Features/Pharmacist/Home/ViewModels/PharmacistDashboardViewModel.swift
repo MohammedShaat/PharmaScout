@@ -25,6 +25,7 @@ class PharmacistDashboardViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(staffMembership: StaffMembership, inquiryService: InquiryService) {
         self.staffMembership = staffMembership
@@ -37,13 +38,14 @@ class PharmacistDashboardViewModel {
     
     func loadDataIfNeeded() {
         guard !hasStarted else { return }
+        hasStarted = true
         
         firstLoadTask = Task {
             async let pendingInquiries = loadPendingInquiries()
             async let numberOfTodaysInquiries = getNumberOfTodaysInquiries()
             
             _ = await (pendingInquiries, numberOfTodaysInquiries)
-            hasStarted = true
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -57,7 +59,7 @@ class PharmacistDashboardViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await inquiryService.subscribeToPharmacyInquiriesChanges(pharmacyId: staffMembership.pharmacyId) },
                 trigger: refreshData
             )

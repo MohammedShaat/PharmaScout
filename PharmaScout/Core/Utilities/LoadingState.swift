@@ -41,7 +41,7 @@ struct LoadingState {
         error = nil
     }
     
-    enum State {
+    enum State: String {
         case idle
         case loading
         case loadingMore

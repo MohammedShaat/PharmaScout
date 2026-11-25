@@ -49,7 +49,8 @@ class PatientTabViewModel {
     }
 }
 
-enum PatientTab {
+enum
+PatientTab {
     case home
     case search
     case recentSearches

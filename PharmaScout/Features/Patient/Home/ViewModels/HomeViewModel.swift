@@ -31,6 +31,7 @@ class HomeViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(
         userId: String,
@@ -59,6 +60,7 @@ class HomeViewModel {
             async let loadNearbyPharmacies = loadNearbyPharmacies()
             
             _ = await (loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -85,7 +87,7 @@ class HomeViewModel {
     func listenToSearchesChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
                 trigger: {
                     async let activeSearches = loadActiveSearches(refresh: true)
@@ -100,13 +102,13 @@ class HomeViewModel {
     }
     
     private func loadNearbyPharmacies(refresh: Bool = false) async {
+        nearbyPharmaciesLoadingState.startLoading(refresh: refresh)
+        defer { nearbyPharmaciesLoadingState.stopLoading() }
+        
         guard let locationCoordinate else {
             nearbyPharmaciesLoadingState.fail(LocationError.unableToDetermineLocation)
             return
         }
-        
-        nearbyPharmaciesLoadingState.startLoading(refresh: refresh)
-        defer { nearbyPharmaciesLoadingState.stopLoading() }
         
         do {
             var keepSearching = refresh
@@ -170,7 +172,7 @@ class HomeViewModel {
             let params = GetSearchesRequest(
                 limit: activeSearchesloadingState.pagination.pageSize,
                 offset: 0,
-                filter: .pending
+                filter: .active	
             )
             activeSearches = try await searchRequestService.getSearches(params)
             

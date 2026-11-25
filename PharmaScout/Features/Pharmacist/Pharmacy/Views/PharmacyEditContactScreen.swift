@@ -41,6 +41,7 @@ struct PharmacyEditContactScreen: View {
             saveButton
         }
         .customNavTitle("Contact")
+        .padding(DesignSystem.Spacing.xLarge)
         .scrollDisabled(isSwipingAnItem)
         .onDisappear {
             updateTask?.cancel()

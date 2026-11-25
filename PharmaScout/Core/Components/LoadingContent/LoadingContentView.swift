@@ -55,7 +55,7 @@ struct LoadingContentView<Content: View, Icon: View>: View {
         case .idle, .loadingMore, .refreshing:
             if !showMessage {
                 content
-            } else  {
+            } else if loadingState.hasStarted  {
                 errorOrEmptyContent
             }
         }
