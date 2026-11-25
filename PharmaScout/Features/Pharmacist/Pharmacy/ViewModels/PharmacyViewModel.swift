@@ -24,6 +24,7 @@ class PharmacyViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(pharmacyId: String, pharmacyService: PharmacyService) {
         self.pharmacyId = pharmacyId
@@ -36,6 +37,7 @@ class PharmacyViewModel {
     
     func loadDataIfNeeded() {
         guard !hasStarted else { return }
+        hasStarted = true
         
         firstLoadTask = Task {
             async let loadPharmacy = loadPharmacy()
@@ -44,7 +46,7 @@ class PharmacyViewModel {
             async let loadStaff = loadStaff()
             
             _ = await (loadPharmacy, loadContact, loadWorkingHours, loadStaff)
-            hasStarted = true
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -113,7 +115,7 @@ class PharmacyViewModel {
     func listenToPharmacyChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToPharmacyChanges(for: pharmacyId) },
                 trigger: { await loadPharmacy(refresh: true) }
             )
@@ -125,7 +127,7 @@ class PharmacyViewModel {
     func listenToContactChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToContactChanges(for: pharmacyId) },
                 trigger: { await loadContact(refresh: true) }
             )
@@ -137,7 +139,7 @@ class PharmacyViewModel {
     func listenToWokringHoursChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToWorkingHoursChanges(for: pharmacyId) },
                 trigger: { await loadWorkingHours(refresh: true) }
             )
@@ -149,7 +151,7 @@ class PharmacyViewModel {
     func listenToStaffChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToStaffChanges(for: pharmacyId) },
                 trigger: { await loadStaff(refresh: true) }
             )

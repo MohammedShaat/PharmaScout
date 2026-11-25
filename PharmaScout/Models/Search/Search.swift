@@ -71,6 +71,7 @@ enum SearchFilter: String, Codable, CaseIterable, Identifiable {
     case fulfilled = "fulfilled"
     case unfulfilled = "unfulfilled"
     case awaitingContinuation = "awaiting_continuation"
+    case active = "active"
 
     var id: String { rawValue }
 }

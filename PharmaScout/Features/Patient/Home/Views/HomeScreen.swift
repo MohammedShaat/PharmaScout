@@ -87,7 +87,10 @@ struct HomeScreen: View {
         } onSearchTapped: { search in
             patientTabViewModel.navigateToSearchDetailScreenBy(search)
         }
-        .frame(minHeight: 250, alignment: .top)
+        .frame(
+            minHeight: vm.recentSearchesloadingState.status != .idle ? 200 : 0,
+            alignment: .top
+        )
     }
     
     private var nearbyPharmaciesSection: some View {

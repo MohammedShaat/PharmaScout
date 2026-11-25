@@ -13,9 +13,9 @@ class InquiryDetailViewModel {
     private(set) var inquiryId: String
     private(set) var inquiry: Inquiry?
 
-    private(set) var canCanResponse: Bool = false
+    private(set) var canResponse: Bool = false
     var responseIsValid: Bool {
-        canCanResponse && response != nil && !(response == .substitute && substituteSelectedDrug == nil)
+        canResponse && response != nil && !(response == .substitute && substituteSelectedDrug == nil) && response != inquiry?.response
     }
     
     var response: InquiryResponse?
@@ -27,6 +27,7 @@ class InquiryDetailViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(inquiryService: InquiryService, inquiryId: String, inquiry: Inquiry?) {
         self.inquiryService = inquiryService
@@ -40,6 +41,7 @@ class InquiryDetailViewModel {
     
     func loadDataIfNeeded() {
         guard !hasStarted else { return }
+        hasStarted = true
         
         firstLoadTask = Task {
             let refreshing = inquiry != nil
@@ -47,7 +49,7 @@ class InquiryDetailViewModel {
             async let checkEditEligibility = checkEditEligibility()
             
             _ = await (getInquiry, checkEditEligibility)
-            hasStarted = true
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -61,7 +63,7 @@ class InquiryDetailViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await inquiryService.subscribeToInquiryChanges(inquiryId: inquiryId) },
                 trigger: refresh
             )
@@ -89,7 +91,7 @@ class InquiryDetailViewModel {
         defer { editEligibilityLoadingState.stopLoading() }
         
         do {
-            canCanResponse = try await inquiryService.canEditInquiry(forId: inquiryId)
+            canResponse = try await inquiryService.canEditInquiry(forId: inquiryId)
             
         } catch {
             editEligibilityLoadingState.fail(error)

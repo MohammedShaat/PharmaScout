@@ -18,6 +18,7 @@ class AdminPharmaciesViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(pharmacyService: PharmacyService) {
         self.pharmacyService = pharmacyService
@@ -29,10 +30,11 @@ class AdminPharmaciesViewModel {
     
     func loadPharmacyApplicationsaIfNeeded() {
         guard !hasStarted else { return }
+        hasStarted = true
         
         firstLoadTask = Task {
             await loadPharmacyApplications()
-            hasStarted = true
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -52,7 +54,7 @@ class AdminPharmaciesViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: pharmacyService.subscribeToPharmacyApplicationsChanges,
                 trigger: refresh
             )

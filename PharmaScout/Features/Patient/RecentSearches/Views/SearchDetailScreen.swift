@@ -17,6 +17,8 @@ struct SearchDetailScreen: View {
     @State private var vm: SearchDetailViewModel
     @State private var continueSearchTask: Task<Void, Never>?
     
+    private var isAwaitingContinuation: Bool { vm.search?.status == .awaitingContinuation }
+    
     init(
         searchRequestService: SearchRequestService,
         locationService: LocationService,
@@ -48,11 +50,12 @@ struct SearchDetailScreen: View {
             }
             .refreshable(action: vm.refresh)
             
-            if vm.search?.status == .awaitingContinuation {
+            if isAwaitingContinuation {
                 continuationSection
             }
         }
-        .ignoresSafeArea(edges: [.bottom])
+        .ignoresSafeArea(edges: isAwaitingContinuation ? .bottom : [])
+        .toolbarVisibility(isAwaitingContinuation ? .hidden : .automatic, for: .tabBar)
         .customNavTitle("Search Details")
         .onAppear {
             vm.loadSearchAndDetailIfNeeded()
@@ -151,14 +154,18 @@ struct SearchDetailScreen: View {
 #Preview {
     let search = Search.samples[3]
     
-    CustomNavStack {
-        SearchDetailScreen(
-            searchRequestService: MockSearchRequestService.sample,
-            locationService: MockLocationService.sample,
-            appConfigService: MockAppConfigService.sample,
-            patientTabViewModel: PatientTabViewModel.sample,
-            searchId: search.id,
-            search: search
-        )
+    TabView {
+        Tab {
+            CustomNavStack {
+                SearchDetailScreen(
+                    searchRequestService: MockSearchRequestService.sample,
+                    locationService: MockLocationService.sample,
+                    appConfigService: MockAppConfigService.sample,
+                    patientTabViewModel: PatientTabViewModel.sample,
+                    searchId: search.id,
+                    search: search
+                )
+            }
+        }
     }
 }

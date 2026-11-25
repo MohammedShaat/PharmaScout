@@ -40,6 +40,7 @@ class PharmacyApplicationDetailViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(pharmacyService: PharmacyService, pharmacyId: String, pharmacyApplication: PharmacyApplication?) {
         self.pharmacyService = pharmacyService
@@ -61,6 +62,7 @@ class PharmacyApplicationDetailViewModel {
             async let loadWorkingHours = loadWorkingHours()
             
             _ = await (getPharmacyApplication, loadContact, loadWorkingHours)
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -155,7 +157,7 @@ class PharmacyApplicationDetailViewModel {
     func listenToPharmacyChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToPharmacyChanges(for: pharmacyId) },
                 trigger: { await getPharmacyApplication(refresh: true) }
             )
@@ -167,7 +169,7 @@ class PharmacyApplicationDetailViewModel {
     func listenToContactChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToContactChanges(for: pharmacyId) },
                 trigger: { await loadContact(refresh: true) }
             )
@@ -179,7 +181,7 @@ class PharmacyApplicationDetailViewModel {
     func listenToWokringHoursChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: { try await pharmacyService.subscribeToWorkingHoursChanges(for: pharmacyId) },
                 trigger: { await loadWorkingHours(refresh: true) }
             )

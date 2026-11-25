@@ -39,7 +39,6 @@ struct PharmacyApplicationDetailScreen: View {
                     
                     reviewHistorySection
                 }
-                .padding(.vertical, DesignSystem.Spacing.xLarge)
             }
             .refreshable(action: vm.refresh)
             
@@ -47,7 +46,7 @@ struct PharmacyApplicationDetailScreen: View {
                 reviewSection
             }
         }
-        .padding(.horizontal, DesignSystem.Spacing.xLarge)
+        .padding(DesignSystem.Spacing.xLarge)
         .customNavTitle(vm.pharmacyApplication?.name ?? "")
         .errorAlert(
             title: "Failed to \(vm.activeReviewAction?.title.lowercased() ?? "")",

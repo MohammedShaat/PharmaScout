@@ -17,6 +17,7 @@ extension SearchFilter {
         case .fulfilled: "Fulfilled"
         case .unfulfilled: "Unfulfilled"
         case .awaitingContinuation: "Awaiting Continuation"
+        case .active: "Active"
         }
     }
     
@@ -29,6 +30,7 @@ extension SearchFilter {
         case .fulfilled: "No fulfilled searches"
         case .unfulfilled: "No unfulfilled searches"
         case .awaitingContinuation: "Nothing awaiting your input"
+        case .active: "No active searches"
         }
     }
 
@@ -48,6 +50,8 @@ extension SearchFilter {
             "Searches where no pharmacy had your medicine will appear here."
         case .awaitingContinuation:
             "Searches that need your input to continue will appear here."
+        case .active:
+            "Searches that are still in progress will appear here."
         }
     }
 }

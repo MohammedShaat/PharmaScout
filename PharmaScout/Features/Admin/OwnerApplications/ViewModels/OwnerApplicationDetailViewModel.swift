@@ -29,6 +29,7 @@ class OwnerApplicationDetailViewModel {
     
     private var hasStarted: Bool = false
     private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
     
     init(ownerApplicationService: OwnerApplicationService, ownerApplicationId: String, ownerApplication: OwnerApplication?) {
         self.ownerApplicationService = ownerApplicationService
@@ -46,6 +47,7 @@ class OwnerApplicationDetailViewModel {
         
         firstLoadTask = Task {
             await loadApplication(refresh: ownerApplication != nil)
+            hasFinishedFirstLoading = true
         }
     }
     
@@ -56,7 +58,7 @@ class OwnerApplicationDetailViewModel {
     func listenToChanges() async {
         do {
             try await changesListener(
-                needsCatchup: hasStarted,
+                needsCatchup: hasFinishedFirstLoading,
                 realtimeStream: {
                     try await ownerApplicationService
                         .subscribeToOwnerApplicationChanges(for: ownerApplicationId)
