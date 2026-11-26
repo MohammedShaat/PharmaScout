@@ -26,4 +26,5 @@ struct TextFieldView: View {
     
     TextFieldView(title: $title, placeholder: "Enter you name")
         .padding()
+        .previewTheme()
 }

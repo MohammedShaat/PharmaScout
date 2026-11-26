@@ -35,5 +35,6 @@ struct PrimaryButtonView: View {
         
         PrimaryButtonView(title: "Click me", isLoading: true)
     }
-        .padding()
+    .padding()
+    .previewTheme()
 }

@@ -8,10 +8,10 @@
 import SwiftUI
 
 struct RoundedBackground: ViewModifier {
-    var bgColor: Color = .theme.surface
-    var radius: Double = DesignSystem.CornerRadius.large
-    var showBorder: Bool = false
-    var borderColor: Color = .theme.disabledBackground
+    var bgColor: Color
+    var radius: Double
+    var showBorder: Bool
+    var borderColor: Color
     var borderWidth: Double
     
     func body(content: Content) -> some View {
@@ -33,7 +33,7 @@ extension View {
         background: Color = .theme.surface,
         radius: Double = DesignSystem.CornerRadius.large,
         showBorder: Bool = false,
-        borderColor: Color = .theme.disabledBackground,
+        borderColor: Color = .theme.surfaceBorder,
         borderWidth: Double = 1.5
     ) -> some View {
         modifier(

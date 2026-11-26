@@ -34,11 +34,12 @@ struct TextFieldContainer<TextField: View>: View {
             
             textField
                 .focused($isFocused)
-                .padding()
-                .background(.theme.surface)
-                .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                        .stroke(isFocused ? .theme.primary : .theme.border)
+                .padding(DesignSystem.Spacing.large)
+                .roundedBackground(
+                    background: .theme.surface,
+                    radius: DesignSystem.CornerRadius.small,
+                    showBorder: isFocused,
+                    borderColor: .theme.primary
                 )
                 .foregroundStyle(.theme.primary)
                 .fontWeight(.medium)
@@ -48,18 +49,15 @@ struct TextFieldContainer<TextField: View>: View {
 }
 
 #Preview {
-    ZStack {
-        Color.theme.background.ignoresSafeArea()
-        
-        VStack(spacing: 60) {
-            TextFieldContainer(label: "First name") {
-                TextField("Entery your first name", text: .constant(""))
-            }
-            
-            TextFieldContainer(label: "Second name") {
-                TextField("Entery your second name", text: .constant(""))
-            }
+    VStack(spacing: 60) {
+        TextFieldContainer(label: "First name") {
+            TextField("Entery your first name", text: .constant(""))
         }
-        .padding()
+        
+        TextFieldContainer(label: "Second name") {
+            TextField("Entery your second name", text: .constant(""))
+        }
     }
+    .padding()
+    .previewTheme()
 }
