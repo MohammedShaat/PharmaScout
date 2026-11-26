@@ -28,7 +28,7 @@ struct CodeRequestSuccessView: View {
                 HStack(spacing: DesignSystem.Spacing.medium) {
                     VStack(alignment: .leading, spacing: DesignSystem.Spacing.xxSmall) {
                         Text(copyableTitle)
-                            .foregroundStyle(.theme.primaryPressed)
+                            .foregroundStyle(.theme.staleGray)
                         
                         Text(copyableValue)
                             .fontWeight(.bold)

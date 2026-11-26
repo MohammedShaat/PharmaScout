@@ -18,7 +18,7 @@ struct TextFieldTintedPlaceholder: View {
             "",
             text: $title,
             prompt: Text(placeholder)
-                .foregroundStyle(.theme.textSecondary),
+                .foregroundStyle(.theme.blueGray),
             axis: axis
         )
         .frame(
@@ -33,4 +33,5 @@ struct TextFieldTintedPlaceholder: View {
     
     TextFieldTintedPlaceholder(title: $title, placeholder: "Enter text here")
         .padding()
+        .background(.theme.surface)
 }

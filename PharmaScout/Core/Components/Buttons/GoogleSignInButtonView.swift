@@ -29,7 +29,7 @@ struct GoogleSignInButtonView: View {
             .background(
                 RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
                     .stroke()
-                    .fill(.theme.borderFocused)
+                    .fill(.theme.staleGray)
             )
         }
         .buttonStyle(.plain)

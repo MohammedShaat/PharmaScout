@@ -21,27 +21,20 @@ struct PharmacyCardView: View {
             content
         }
         .foregroundStyle(.theme.textPrimary)
-        .padding(DesignSystem.Spacing.medium)
-        .background(.theme.surface)
-        .overlay {
-            RoundedRectangle(cornerRadius: DesignSystem.CornerRadius.small)
-                .stroke(lineWidth: 2)
-                .fill(.theme.borderFilled)
-        }
-        .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
+        .padding(DesignSystem.Spacing.large)
+        .roundedBackground(showBorder: true)
         .frame(maxWidth: .infinity)
     }
 
     private var healthIcon: some View {
-        Image(.pharmacy)
-            .renderingMode(.template)
-            .resizable()
-            .scaledToFit()
-            .frame(width: 35)
-            .foregroundStyle(.theme.secondaryStrong)
-            .padding(DesignSystem.Spacing.small)
-            .background(.theme.disabledBackground)
-            .clipShape(.rect(cornerRadius: DesignSystem.CornerRadius.small))
+        IconView(
+            size: 44,
+            iconColor: .theme.green
+        ) {
+            Image(.pharmacy)
+                .renderingMode(.template)
+                .resizable()
+        }
     }
     
     private var content: some View {
@@ -91,4 +84,5 @@ struct PharmacyCardView: View {
         )
     }
     .padding()
+    .previewTheme()
 }

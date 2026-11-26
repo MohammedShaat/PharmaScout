@@ -32,14 +32,14 @@ struct SignInWithProvidersView: View {
     private var orDivider: some View {
         HStack(spacing: DesignSystem.Spacing.large) {
             Rectangle()
-                .fill(.theme.borderFocused)
+                .fill(.theme.staleGray)
                 .frame(height: 0.5)
             
             Text("OR")
                 .foregroundStyle(.theme.textSecondary)
             
             Rectangle()
-                .fill(.theme.borderFocused)
+                .fill(.theme.staleGray)
                 .frame(height: 0.5)
         }
     }
