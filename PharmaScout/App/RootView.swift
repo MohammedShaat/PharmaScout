@@ -44,6 +44,7 @@ struct RootView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     let authService = MockAuthService.sample
     let router = AppRouter(authService: authService)
@@ -57,3 +58,4 @@ struct RootView: View {
         await router.subscribeToAuthStateChanges()
     }
 }
+#endif

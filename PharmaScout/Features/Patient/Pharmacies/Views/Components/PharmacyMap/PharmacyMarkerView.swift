@@ -17,7 +17,6 @@ struct PharmacyMarkerView<Label: View>: View {
         ZStack {
             pharmacyPin
                 .readFrame { pinSize = $0.size }
-                .offset(y: -16)
             
             label
                 .readFrame { labelSize = $0.size }

@@ -65,6 +65,7 @@ struct OwnerApplicantTabView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     OwnerApplicantTabView(
         user: .samples[0],
@@ -72,3 +73,4 @@ struct OwnerApplicantTabView: View {
         dependencies: .uiTesting()
     )
 }
+#endif

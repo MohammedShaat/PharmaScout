@@ -90,6 +90,7 @@ struct PharmacistTabView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     PharmacistTabView(
         user: .samples[0],
@@ -98,3 +99,4 @@ struct PharmacistTabView: View {
         dependencies: .uiTesting()
     )
 }
+#endif

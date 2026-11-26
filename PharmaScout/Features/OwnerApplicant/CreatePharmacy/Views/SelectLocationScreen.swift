@@ -77,6 +77,7 @@ struct SelectLocationScreen: View {
         }
         .overlay {
             PharmacyMarkerView {}
+                .offset(y: -16)
         }
     }
     

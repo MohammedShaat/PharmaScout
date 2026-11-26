@@ -36,38 +36,42 @@ struct DrugSelectionScreen: View {
     }
     
     var body: some View {
-        VStack(spacing: DesignSystem.Spacing.large) {
-            headerSection
+        ZStack {
+            Color.theme.background.ignoresSafeArea()
             
-            selectionChipsSection
-            Spacer()
-            
-            // Search (generic name and formulation selection)
-            if !vm.isDrugFormulationSelected {
-                searchFieldSection
+            VStack(spacing: DesignSystem.Spacing.large) {
+                headerSection
                 
-                ScrollView {
-                    if !vm.isGenericDrugSelected {
-                        genericDrugListSection
-                    } else {
-                        drugFormulationListSection
+                selectionChipsSection
+                Spacer()
+                
+                // Search (generic name and formulation selection)
+                if !vm.isDrugFormulationSelected {
+                    searchFieldSection
+                    
+                    ScrollView {
+                        if !vm.isGenericDrugSelected {
+                            genericDrugListSection
+                        } else {
+                            drugFormulationListSection
+                        }
                     }
+                    .refreshable(action: vm.refresh)
+                } else {
+                    // Save
+                    saveButton
                 }
-                .refreshable(action: vm.refresh)
-            } else {
-                // Save
-                saveButton
             }
-        }
-        .padding(DesignSystem.Spacing.xLarge)
-        .onAppear {
-            isSearchFocused = true
-        }
-        .task(id: vm.searchText) {
-            await vm.onSearchTextChanged()
-        }
-        .onDisappear {
-            selectionTask?.cancel()
+            .padding(DesignSystem.Spacing.xLarge)
+            .onAppear {
+                isSearchFocused = true
+            }
+            .task(id: vm.searchText) {
+                await vm.onSearchTextChanged()
+            }
+            .onDisappear {
+                selectionTask?.cancel()
+            }
         }
     }
     
@@ -104,7 +108,7 @@ struct DrugSelectionScreen: View {
             }
             .frame(maxWidth: .infinity)
             .padding(DesignSystem.Spacing.large)
-            .roundedBackground(background: .theme.mintTint, radius: DesignSystem.CornerRadius.small)
+            .roundedBackground(background: .theme.staleGrayBackground, radius: DesignSystem.CornerRadius.small)
         }
     }
     

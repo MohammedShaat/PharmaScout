@@ -52,9 +52,11 @@ struct AdminTabView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     AdminTabView(
         user: .samples[0],
         dependencies: .uiTesting()
     )
 }
+#endif

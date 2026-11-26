@@ -78,9 +78,11 @@ struct AuthenticationFlowView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     AuthenticationFlowView(
         dependencies: .uiTesting(),
         initialRoute: nil
     )
 }
+#endif

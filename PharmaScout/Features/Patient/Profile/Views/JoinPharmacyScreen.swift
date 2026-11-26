@@ -30,7 +30,7 @@ struct JoinPharmacyScreen: View {
                 
             } else {
                 CodeEntryView(
-                    title: "Ownership codes are issued personally. Ask the PharmaScout team for yours.",
+                    title: "Ownership codes are issued personally.",
                     subtitle: "Ask the pharmacy owner for their join code. They can find it in their Profile.",
                     code: $vm.code,
                     codeLength: vm.codeLength,
