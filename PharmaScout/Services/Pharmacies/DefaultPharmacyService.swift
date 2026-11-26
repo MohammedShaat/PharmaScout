@@ -193,12 +193,12 @@ class DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitaionCode? {
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitationCode? {
         let getActivePharmacyJoinCodeFunc = SupabaseManager.Database.Functions.getActivePharmacyJoinCode.self
         let params = getActivePharmacyJoinCodeFunc.Params.self
         
         do {
-            let joinCode: InvitaionCode? = try await supabase
+            let joinCode: InvitationCode? = try await supabase
                 .rpc(
                     getActivePharmacyJoinCodeFunc.name,
                     params: [params.pharmacyId: pharmacyId]
@@ -214,12 +214,12 @@ class DefaultPharmacyService: PharmacyService {
         }
     }
     
-    func generateJoinCode(for pharmacyId: String) async throws -> InvitaionCode {
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitationCode {
         let generatePharmacyJoinCodeFunc = SupabaseManager.Database.Functions.generatePharmacyJoinCode.self
         let params = generatePharmacyJoinCodeFunc.Params.self
         
         do {
-            let joinCode: InvitaionCode = try await supabase
+            let joinCode: InvitationCode = try await supabase
                 .rpc(
                     generatePharmacyJoinCodeFunc.name,
                     params: [params.pharmacyId: pharmacyId]

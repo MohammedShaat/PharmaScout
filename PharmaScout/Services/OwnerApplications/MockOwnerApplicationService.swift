@@ -8,7 +8,7 @@
 import Foundation
 
 struct MockOwnerApplicationService: OwnerApplicationService {
-    func generateCode() async throws -> InvitaionCode {
+    func generateCode() async throws -> InvitationCode {
         try? await Task.sleep(for: .seconds(2))
         
         return .sample

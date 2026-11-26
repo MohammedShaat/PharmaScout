@@ -13,7 +13,7 @@ class OwnerInvitationViewModel {
     
     let codeLength: Int  = AppConstants.Pharmacy.ownerApplicationCodeLength
     
-    private(set) var invitationCode: InvitaionCode?
+    private(set) var invitationCode: InvitationCode?
     private(set) var codeLoadingState = LoadingState()
     
     init(ownerApplicationService: OwnerApplicationService) {

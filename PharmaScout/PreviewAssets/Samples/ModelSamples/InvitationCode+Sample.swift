@@ -7,9 +7,9 @@
 
 import Foundation
 
-extension InvitaionCode {
-    static let sample: InvitaionCode = {
+extension InvitationCode {
+    static let sample: InvitationCode = {
         let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
-        return InvitaionCode(code: "A7K2M9", expiresAt: expirationDate)
+        return InvitationCode(code: "A7K2M9", expiresAt: expirationDate)
     }()
 }

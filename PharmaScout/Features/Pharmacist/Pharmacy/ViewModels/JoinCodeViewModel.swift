@@ -14,7 +14,7 @@ class JoinCodeViewModel {
     
     let codeLength: Int  = AppConstants.Pharmacy.ownerApplicationCodeLength
     
-    private(set) var joinCode: InvitaionCode?
+    private(set) var joinCode: InvitationCode?
     
     private(set) var loadingState = LoadingState()
     

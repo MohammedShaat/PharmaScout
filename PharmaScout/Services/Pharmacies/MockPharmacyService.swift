@@ -76,14 +76,14 @@ struct MockPharmacyService: PharmacyService {
         try? await Task.sleep(for: .seconds(2))
     }
     
-    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitaionCode? {
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitationCode? {
         try? await Task.sleep(for: .seconds(2))
         
         let expirationDate = Calendar.current.date(byAdding: .hour, value: 1, to: .now)!
-        return InvitaionCode(code: "A7K2M9", expiresAt: expirationDate)
+        return InvitationCode(code: "A7K2M9", expiresAt: expirationDate)
     }
     
-    func generateJoinCode(for pharmacyId: String) async throws -> InvitaionCode {
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitationCode {
         try? await Task.sleep(for: .seconds(2))
         
         return .sample
