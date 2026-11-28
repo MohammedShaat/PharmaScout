@@ -6,6 +6,14 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5D1FFF96309B1D430033E9A8 /* Sentry in Frameworks */ = {isa = PBXBuildFile; productRef = 5D1FFF95309B1D430033E9A8 /* Sentry */; };
+		5D381236304951B300F6BAD7 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 5D381235304951B300F6BAD7 /* GoogleSignIn */; };
+		5D381238304951B300F6BAD7 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 5D381237304951B300F6BAD7 /* GoogleSignInSwift */; };
+		5D6C82693042D925003017BF /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5D6C82683042D925003017BF /* Supabase */; };
+		5D7808E930754AAA00FFC868 /* Swipy in Frameworks */ = {isa = PBXBuildFile; productRef = 5D7808E830754AAA00FFC868 /* Swipy */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		5D5D0132303F1BC900B95EFC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +37,22 @@
 		5D5D013B303F1BC900B95EFC /* PharmaScoutUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PharmaScoutUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5D987A0C30457966000B30A9 /* Exceptions for "PharmaScout" folder in "PharmaScout" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5D5D0123303F1BC900B95EFC /* PharmaScout */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5D5D0126303F1BC900B95EFC /* PharmaScout */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5D987A0C30457966000B30A9 /* Exceptions for "PharmaScout" folder in "PharmaScout" target */,
+			);
 			path = PharmaScout;
 			sourceTree = "<group>";
 		};
@@ -52,6 +73,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5D1FFF96309B1D430033E9A8 /* Sentry in Frameworks */,
+				5D381238304951B300F6BAD7 /* GoogleSignInSwift in Frameworks */,
+				5D7808E930754AAA00FFC868 /* Swipy in Frameworks */,
+				5D6C82693042D925003017BF /* Supabase in Frameworks */,
+				5D381236304951B300F6BAD7 /* GoogleSignIn in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -102,6 +128,7 @@
 				5D5D0120303F1BC900B95EFC /* Sources */,
 				5D5D0121303F1BC900B95EFC /* Frameworks */,
 				5D5D0122303F1BC900B95EFC /* Resources */,
+				5D1FFF97309B4DF80033E9A8 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -112,6 +139,11 @@
 			);
 			name = PharmaScout;
 			packageProductDependencies = (
+				5D6C82683042D925003017BF /* Supabase */,
+				5D381235304951B300F6BAD7 /* GoogleSignIn */,
+				5D381237304951B300F6BAD7 /* GoogleSignInSwift */,
+				5D7808E830754AAA00FFC868 /* Swipy */,
+				5D1FFF95309B1D430033E9A8 /* Sentry */,
 			);
 			productName = PharmaScout;
 			productReference = 5D5D0124303F1BC900B95EFC /* PharmaScout.app */;
@@ -171,7 +203,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2660;
-				LastUpgradeCheck = 2660;
+				LastUpgradeCheck = 2700;
 				TargetAttributes = {
 					5D5D0123303F1BC900B95EFC = {
 						CreatedOnToolsVersion = 26.6;
@@ -195,6 +227,12 @@
 			);
 			mainGroup = 5D5D011B303F1BC900B95EFC;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				5D6C82673042D925003017BF /* XCRemoteSwiftPackageReference "supabase-swift" */,
+				5D381234304951B300F6BAD7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				5D7808E730754AAA00FFC868 /* XCRemoteSwiftPackageReference "Swipy" */,
+				5D1FFF94309B1D430033E9A8 /* XCRemoteSwiftPackageReference "sentry-cocoa" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 5D5D0125303F1BC900B95EFC /* Products */;
 			projectDirPath = "";
@@ -230,6 +268,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		5D1FFF97309B4DF80033E9A8 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nexport PATH=\"/opt/homebrew/bin:$PATH\"\nexport SENTRY_ORG=\"shaat\"\nexport SENTRY_PROJECT=\"pharmascout\"\n\nif [ \"$CONFIGURATION\" = \"Release\" ] && which sentry-cli >/dev/null; then\n  sentry-cli debug-files upload \"$DWARF_DSYM_FOLDER_PATH\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		5D5D0120303F1BC900B95EFC /* Sources */ = {
@@ -327,6 +387,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -383,6 +444,7 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
@@ -393,26 +455,37 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PharmaScout/PharmaScout.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = PharmaScout/PreviewAssets;
+				DEVELOPMENT_TEAM = F9Q795QPR4;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PharmaScout/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PharmaScout uses your location to find nearby pharmacies.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shaat.mohammed.PharmaScout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -424,26 +497,37 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = PharmaScout/PharmaScout.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = PharmaScout/PreviewAssets;
+				DEVELOPMENT_TEAM = F9Q795QPR4;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = PharmaScout/Info.plist;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "PharmaScout uses your location to find nearby pharmacies.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				IPHONEOS_DEPLOYMENT_TARGET = 18;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.shaat.mohammed.PharmaScout;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_APPROACHABLE_CONCURRENCY = YES;
 				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
 				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -570,6 +654,69 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5D1FFF94309B1D430033E9A8 /* XCRemoteSwiftPackageReference "sentry-cocoa" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/getsentry/sentry-cocoa";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.32.0;
+			};
+		};
+		5D381234304951B300F6BAD7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/google/GoogleSignIn-iOS.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 9.2.0;
+			};
+		};
+		5D6C82673042D925003017BF /* XCRemoteSwiftPackageReference "supabase-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/supabase-community/supabase-swift.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.5.1;
+			};
+		};
+		5D7808E730754AAA00FFC868 /* XCRemoteSwiftPackageReference "Swipy" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/rohanrhu/Swipy";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5D1FFF95309B1D430033E9A8 /* Sentry */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D1FFF94309B1D430033E9A8 /* XCRemoteSwiftPackageReference "sentry-cocoa" */;
+			productName = Sentry;
+		};
+		5D381235304951B300F6BAD7 /* GoogleSignIn */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D381234304951B300F6BAD7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignIn;
+		};
+		5D381237304951B300F6BAD7 /* GoogleSignInSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D381234304951B300F6BAD7 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
+			productName = GoogleSignInSwift;
+		};
+		5D6C82683042D925003017BF /* Supabase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D6C82673042D925003017BF /* XCRemoteSwiftPackageReference "supabase-swift" */;
+			productName = Supabase;
+		};
+		5D7808E830754AAA00FFC868 /* Swipy */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5D7808E730754AAA00FFC868 /* XCRemoteSwiftPackageReference "Swipy" */;
+			productName = Swipy;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 5D5D011C303F1BC900B95EFC /* Project object */;
 }

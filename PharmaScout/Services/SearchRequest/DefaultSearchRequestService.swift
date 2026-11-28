@@ -1,0 +1,159 @@
+//
+//  DefaultSearchRequestService.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/14/26.
+//
+
+import Foundation
+import Supabase
+
+class DefaultSearchRequestService: SearchRequestService {
+    private let supabase = SupabaseManager.shared.client
+    private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
+    
+    func createSearchRequest(request: SearchRequest) async throws -> String {
+        let createSeachFunc = SupabaseManager.Database.Functions.CreateSearch.self
+        
+        do {
+            let searchId: String = try await supabase
+                .rpc(createSeachFunc.name, params: request)
+                .execute()
+                .value
+            
+            return searchId
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getNumberOfActiveSearchs(userId: String) async throws -> Int {
+        let searchTable = SupabaseManager.Database.Table.Search.self
+        let column = searchTable.Column
+        
+        do {
+            let count = try await supabase
+                .from(searchTable.name)
+                .select(head: true, count: .exact)
+                .eq(column.userId, value: userId)
+                .in(column.status, values: [SearchStatus.pending.rawValue, SearchStatus.awaitingContinuation.rawValue])
+                .execute()
+                .count
+            
+            return count ?? 0
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getSearches(_ params: GetSearchesRequest) async throws -> [Search] {
+        let getSearchesFunc = SupabaseManager.Database.Functions.getSearches.self
+        
+        do {
+            let searches: [Search] = try await supabase
+                .rpc(getSearchesFunc.name, params: params)
+                .execute()
+                .value
+            
+            return searches
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getSearch(for searchId: String) async throws -> Search {
+        let getSearchFunc = SupabaseManager.Database.Functions.getSearch.self
+        let params = getSearchFunc.Params.self
+        
+        do {
+            let search: Search = try await supabase
+                .rpc(
+                    getSearchFunc.name,
+                    params: [params.searchId: searchId]
+                )
+                .single()
+                .execute()
+                .value
+            
+            return search
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getSearchDrugDetails(_ params: SearchDrugDetailsRequest) async throws -> [SearchDrugDetail] {
+        let getSearchDrugDetailsFunc = SupabaseManager.Database.Functions.getSearchDrugDetails.self
+
+        do {
+            let searchs: [SearchDrugDetail] = try await supabase
+                .rpc(getSearchDrugDetailsFunc.name, params: params)
+                .execute()
+                .value
+            
+            return searchs
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func continueSearch(request: ContinueSearchRequest) async throws -> Int {
+        let continueSearchFunc = SupabaseManager.Database.Functions.continueSearch.self
+        
+        do {
+            let pharmacyCount: Int = try await supabase
+                .rpc(continueSearchFunc.name, params: request)
+                .single()
+                .execute()
+                .value
+            
+            return pharmacyCount
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func subscribeToUserSearchsChanges(userId: String) async throws -> AsyncStream<Void> {
+        let searchTable = SupabaseManager.Database.Table.Search.self
+        let columns = searchTable.Column.self
+        let hub = realtimeHub(
+            for: "\(searchTable.name)-\(userId)",
+            tableName: searchTable.name,
+            filter: .eq(columns.userId, value: userId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToSearchChanges(searchId: String) async throws -> AsyncStream<Void> {
+        let searchTable = SupabaseManager.Database.Table.Search.self
+        let columns = searchTable.Column.self
+        let hub = realtimeHub(
+            for: "\(searchTable.name)-\(searchId)",
+            tableName: searchTable.name,
+            filter: .eq(columns.id, value: searchId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+
+    private func realtimeHub(for id: String, tableName: String, filter: RealtimePostgresFilter? = nil) -> SupabaseManager.SupabaseRealtimeHub {
+        if let existing = realtimeHubs[id] { return existing }
+        
+        let hub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "\(tableName)-\(id)",
+            tableName: tableName,
+            filter: filter,
+            onIdle: { [weak self] idleHub in
+                if self?.realtimeHubs[id] === idleHub {
+                    self?.realtimeHubs[id] = nil
+                }
+            }
+        )
+        realtimeHubs[id] = hub
+        return hub
+    }
+}

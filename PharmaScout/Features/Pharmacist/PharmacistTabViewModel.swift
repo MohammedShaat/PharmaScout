@@ -1,0 +1,73 @@
+//
+//  PharmacistTabViewModel.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/29/26.
+//
+
+import Foundation
+import SwiftUI
+
+@Observable
+class PharmacistTabViewModel {
+    private(set) var membership: StaffMembership
+    var selectedTab: PharmacistTab = .home
+    var inquiriesPath = NavigationPath()
+    var pharmacyPath = NavigationPath()
+    
+    var access: PharmacistAccess
+    
+    init(staffMembership: StaffMembership) {
+        self.membership = staffMembership
+        self.access = PharmacistAccess(membership: staffMembership)
+    }
+    
+    func navigateToInquiriesTab() {
+        guard access.canAccess(.inquiries) else {
+            print("Denied access to inquiries")
+            return
+        }
+        selectedTab = .inquiries
+    }
+    
+    func navigateToInquiryDetailScreenBy(_ inquiry: Inquiry) {
+        navigateToInquiriesTab()
+        inquiriesPath = NavigationPath([InquiryDetailRoute(inquiryId: inquiry.id, inquiry: inquiry)])
+    }
+    
+    func navigateToInquiryDetailScreenBy(_ inquiryId: String) {
+        navigateToInquiriesTab()
+        inquiriesPath = NavigationPath([InquiryDetailRoute(inquiryId: inquiryId)])
+    }
+    
+    func navigateToPharmacyTab() {
+        guard access.canAccess(.pharmacy) else {
+            print("Denied access to pharmacy")
+            return
+        }
+        selectedTab = .pharmacy
+    }
+    
+    func navigateToPharmacyEditStaffScreen(_ pharmacyId: String) {
+        navigateToPharmacyTab()
+        pharmacyPath = NavigationPath([PharmacyRoute.editStaff(pharmacyId: pharmacyId, staff: nil)])
+    }
+    
+    func handle(_ route: PharmacistNotificationRoute) {
+        switch route {
+        case .inquiries:
+            navigateToInquiriesTab()
+            
+        case .inquiryDetail(let inquiryId):
+            navigateToInquiryDetailScreenBy(inquiryId)
+            
+        case .staff(let pharmacyId):
+            navigateToPharmacyEditStaffScreen(pharmacyId)
+        }
+    }
+    
+    func onStaffMembershipChanged(_ membership: StaffMembership) {
+        self.membership = membership
+        access = PharmacistAccess(membership: membership)
+    }
+}

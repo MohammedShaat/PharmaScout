@@ -1,0 +1,58 @@
+//
+//  PharmacyService.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/15/26.
+//
+
+import Foundation
+
+protocol PharmacyService {
+    func findNearbyPharmacies(_ request: FindNearbyPharmaciesRequest) async throws -> [Pharmacy]
+    
+    func getContactInfo(for pharmacyId: String) async throws -> [PharmacyContact]
+    
+    func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour]
+    
+    func getPharmacy(_ params: GetPharmacyDetailsRequest) async throws -> Pharmacy
+    
+    func getStaff(for pharmacyId: String) async throws -> [PharmacyStaffMember]
+    
+    func updatePharmacy(for pharmacyId: String, request: UpdatePharmacyRequest) async throws
+    
+    func createOrUpdateContacts(contacts: [PharmacyContact]) async throws
+    
+    func deleteContacts(ids: [String]) async throws
+    
+    func createOrUpdateWokringHours(_ request: UpdateOrCreatePharmacyHoursRequest) async throws
+    
+    func deleteWokringHours(ids: [String]) async throws
+    
+    func manageStaffMember(request: ManagePharmacyStaffMemberRequest) async throws
+    
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitationCode?
+    
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitationCode
+    
+    func joinPharmacy(code: String) async throws -> String
+    
+    func createPharmacy(_ request: CreatePharmacyRequest) async throws -> String
+    
+    func getPharmacyApplications(_ request: PharmacyApplicationsRequest) async throws -> [PharmacyApplication]
+    
+    func getPharmacyApplication(for pharmacyId: String) async throws -> PharmacyApplication
+    
+    func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws
+    
+    func closePharmacy() async throws
+    
+    func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToWorkingHoursChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToPharmacyApplicationsChanges() async throws -> AsyncStream<Void>
+}

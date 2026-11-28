@@ -1,0 +1,412 @@
+//
+
+//  DefaultPharmacyService.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/15/26.
+//
+
+import Foundation
+import Supabase
+
+class DefaultPharmacyService: PharmacyService {
+    private let supabase = SupabaseManager.shared.client
+    
+    private var realtimeHubs: [String: SupabaseManager.SupabaseRealtimeHub] = [:]
+    
+    func findNearbyPharmacies(_ request: FindNearbyPharmaciesRequest) async throws -> [Pharmacy] {
+        
+        let findNearbyPharmaciesFunc = SupabaseManager.Database.Functions.findNearbyPharmacies.self
+        do {
+            let nearbyPharmacies: [Pharmacy] = try await supabase
+                .rpc(findNearbyPharmaciesFunc.name, params: request)
+                .execute()
+                .value
+            
+            return nearbyPharmacies
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getContactInfo(for pharmacyId: String) async throws -> [PharmacyContact] {
+        
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
+        let columns = pharmacyContactTable.Column.self
+        do {
+            let contacts: [PharmacyContact] = try await supabase
+                .from(pharmacyContactTable.name)
+                .select("\(columns.id), \(columns.pharmacyId), \(columns.title), \(columns.type), \(columns.value)")
+                .eq(columns.pharmacyId, value: pharmacyId)
+                .execute()
+                .value
+            
+            return contacts
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getWorkingHours(for pharmacyId: String) async throws -> [WorkingHour] {
+        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
+        let columns = pharmacyHoursTable.Column.self
+        
+        do {
+            let hours: [WorkingHour] = try await supabase
+                .from(pharmacyHoursTable.name)
+                .select("\(columns.id), \(columns.day), \(columns.opensAt), \(columns.closesAt)")
+                .eq(columns.pharmacyId, value: pharmacyId)
+                .execute()
+                .value
+            
+            return hours
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getPharmacy(_ params: GetPharmacyDetailsRequest) async throws -> Pharmacy {
+        let getPharmacyDetailsFunc = SupabaseManager.Database.Functions.getPharmacyDetails.self
+        
+        print(params.pharmacyId)
+        do {
+            let pharmacy: Pharmacy = try await supabase
+                .rpc(getPharmacyDetailsFunc.name, params: params)
+                .single()
+                .execute()
+                .value
+            
+            return pharmacy
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getStaff(for pharmacyId: String) async throws -> [PharmacyStaffMember] {
+        let getPharmacyStaffFunc = SupabaseManager.Database.Functions.getPharmacyStaff.self
+        let params = getPharmacyStaffFunc.Params.self
+        
+        do {
+            let staff: [PharmacyStaffMember] = try await supabase
+                .rpc(
+                    getPharmacyStaffFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .execute()
+                .value
+            
+            return staff
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func updatePharmacy( for pharmacyId: String, request: UpdatePharmacyRequest) async throws {
+        let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
+        let columns = pharmacyTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyTable.name)
+                .update(request)
+                .equals(columns.id, value: pharmacyId)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func createOrUpdateContacts(contacts: [PharmacyContact]) async throws {
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
+        
+        do {
+            try await supabase
+                .from(pharmacyContactTable.name)
+                .upsert(contacts)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func deleteContacts(ids: [String]) async throws {
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
+        let columns = pharmacyContactTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyContactTable.name)
+                .delete()
+                .in(columns.id, values: ids)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func createOrUpdateWokringHours(_ request: UpdateOrCreatePharmacyHoursRequest) async throws {
+        let table = SupabaseManager.Database.Table.PharmacyHours.self
+        
+        do {
+            try await supabase
+                .from(table.name)
+                .upsert(request.hours)
+                .execute()
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func deleteWokringHours(ids: [String]) async throws {
+        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
+        let columns = pharmacyHoursTable.Column.self
+        
+        do {
+            try await supabase
+                .from(pharmacyHoursTable.name)
+                .delete()
+                .in(columns.id, values: ids)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func manageStaffMember(request: ManagePharmacyStaffMemberRequest) async throws {
+        let managePharmacyStaffMemberFunc = SupabaseManager.Database.Functions.managePharmacyStaffMember.self
+        do {
+            try await supabase
+                .rpc(managePharmacyStaffMemberFunc.name, params: request)
+                .execute()
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getActiveJoinCode(for pharmacyId: String) async throws -> InvitationCode? {
+        let getActivePharmacyJoinCodeFunc = SupabaseManager.Database.Functions.getActivePharmacyJoinCode.self
+        let params = getActivePharmacyJoinCodeFunc.Params.self
+        
+        do {
+            let joinCode: InvitationCode? = try await supabase
+                .rpc(
+                    getActivePharmacyJoinCodeFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .maybeSingle()
+                .execute()
+                .value
+            
+            return joinCode
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func generateJoinCode(for pharmacyId: String) async throws -> InvitationCode {
+        let generatePharmacyJoinCodeFunc = SupabaseManager.Database.Functions.generatePharmacyJoinCode.self
+        let params = generatePharmacyJoinCodeFunc.Params.self
+        
+        do {
+            let joinCode: InvitationCode = try await supabase
+                .rpc(
+                    generatePharmacyJoinCodeFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .single()
+                .execute()
+                .value
+            
+            return joinCode
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func joinPharmacy(code: String) async throws -> String {
+        let joinPharmacyFunc = SupabaseManager.Database.Functions.joinPharmacy.self
+        let params = joinPharmacyFunc.Params.self
+        
+        do {
+            let pharmacyId: String = try await supabase
+                .rpc(
+                    joinPharmacyFunc.name,
+                    params: [params.code: code]
+                )
+                .execute()
+                .value
+            
+            return pharmacyId
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func createPharmacy(_ request: CreatePharmacyRequest) async throws -> String {
+        let createPharmacyFunc = SupabaseManager.Database.Functions.createPharmacy.self
+        
+        do {
+            let pharmacyId: String = try await supabase
+                .rpc(createPharmacyFunc.name, params: request)
+                .execute()
+                .value
+            
+            return pharmacyId
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getPharmacyApplications(_ request: PharmacyApplicationsRequest) async throws -> [PharmacyApplication] {
+        let getPharmacyApplicationsFunc = SupabaseManager.Database.Functions.getPharmacyApplications.self
+        
+        do {
+            let pharmacyApplications: [PharmacyApplication] = try await supabase
+                .rpc(getPharmacyApplicationsFunc.name, params: request)
+                .execute()
+                .value
+            
+            return pharmacyApplications
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func getPharmacyApplication(for pharmacyId: String) async throws -> PharmacyApplication {
+        let getPharmacyApplicationFunc = SupabaseManager.Database.Functions.getPharmacyApplication.self
+        let params = getPharmacyApplicationFunc.Params.self
+        
+        do {
+            let pharmacyApplication: PharmacyApplication = try await supabase
+                .rpc(
+                    getPharmacyApplicationFunc.name,
+                    params: [params.pharmacyId: pharmacyId]
+                )
+                .single()
+                .execute()
+                .value
+            
+            return pharmacyApplication
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func reviewPharmacy(_ request: ReviewPharmacyRequest) async throws {
+        let reviewPharmacyFunc = SupabaseManager.Database.Functions.reviewPharmacy.self
+        
+        do {
+            try await supabase
+                .rpc(reviewPharmacyFunc.name, params: request)
+                .execute()
+                .value
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+    
+    func closePharmacy() async throws {
+        let reviewPharmacyFunc = SupabaseManager.Database.Functions.ClosePharmacy.self
+        
+        do {
+            try await supabase
+                .rpc(reviewPharmacyFunc.name)
+                .execute()
+                .value
+            
+        } catch {
+            throw SupabaseErrorMapper.mapDatabseError(error)
+        }
+    }
+}
+
+
+extension DefaultPharmacyService {
+    func subscribeToPharmacyChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
+        let contactColumns = pharmacyTable.Column.self
+        let hub = realtimeHub(
+            for: "\(pharmacyTable.name)-\(pharmacyId)",
+            tableName: pharmacyTable.name,
+            filter: .eq(contactColumns.id, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToContactChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let pharmacyContactTable = SupabaseManager.Database.Table.PharmacyContacts.self
+        let columns = pharmacyContactTable.Column.self
+        let hub = realtimeHub(
+            for: "\(pharmacyContactTable.name)-\(pharmacyId)",
+            tableName: pharmacyContactTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToWorkingHoursChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let pharmacyHoursTable = SupabaseManager.Database.Table.PharmacyHours.self
+        let columns = pharmacyHoursTable.Column.self
+        let hub = realtimeHub(
+            for: "\(pharmacyHoursTable.name)-\(pharmacyId)",
+            tableName: pharmacyHoursTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToPharmacyApplicationsChanges() async throws -> AsyncStream<Void> {
+        let pharmacyTable = SupabaseManager.Database.Table.Pharmacy.self
+        let hub = realtimeHub(
+            for: pharmacyTable.name,
+            tableName: pharmacyTable.name,
+        )
+        return try await hub.subscribeToChanges()
+    }
+    
+    func subscribeToStaffChanges(for pharmacyId: String) async throws -> AsyncStream<Void> {
+        let staffTable = SupabaseManager.Database.Table.PharmacyStaff.self
+        let columns = staffTable.Column.self
+        let hub = realtimeHub(
+            for: "\(staffTable.name)-\(pharmacyId)",
+            tableName: staffTable.name,
+            filter: .eq(columns.pharmacyId, value: pharmacyId)
+        )
+        return try await hub.subscribeToChanges()
+    }
+
+    private func realtimeHub(for id: String, tableName: String, filter: RealtimePostgresFilter? = nil) -> SupabaseManager.SupabaseRealtimeHub {
+        if let existing = realtimeHubs[id] { return existing }
+        
+        let hub = SupabaseManager.SupabaseRealtimeHub(
+            channelName: "\(tableName)-\(id)",
+            tableName: tableName,
+            filter: filter,
+            onIdle: { [weak self] idleHub in
+                if self?.realtimeHubs[id] === idleHub {
+                    self?.realtimeHubs[id] = nil
+                }
+            }
+        )
+        realtimeHubs[id] = hub
+        return hub
+    }
+
+}

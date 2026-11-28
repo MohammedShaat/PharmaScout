@@ -1,0 +1,35 @@
+//
+//  CornerRadius.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 8/27/26.
+//
+
+import SwiftUI
+
+enum DesignSystem {
+    enum CornerRadius {
+        static let small: CGFloat = 12
+        static let large: CGFloat = 24
+    }
+
+    enum Spacing {
+        static let xxSmall: CGFloat = 2
+        static let xSmall: CGFloat = 4
+        static let small: CGFloat = 8
+        static let medium: CGFloat = 12
+        static let large: CGFloat = 16
+        static let xLarge: CGFloat = 24
+        static let xxLarge: CGFloat = 32
+        static let xxxLarge: CGFloat = 48
+    }
+    
+    enum Distance {
+        static let step: Double = 1_000
+    }
+    
+    enum DrugFormatting {
+        /// Separates active ingredients/components of a combination drug, e.g. "Amoxicillin + Clavulanate"
+        static let separator = " + "
+    }
+}

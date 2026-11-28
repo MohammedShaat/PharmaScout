@@ -1,0 +1,77 @@
+//
+//  Search.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/21/26.
+//
+
+import Foundation
+
+struct Search: nonisolated Codable, Identifiable, Hashable {
+    let id: String
+    let fulfilmentMode: FulfilmentMode
+    let acceptSubstitute: Bool
+    let drugsCount: Int
+    let fulfilledDrugsCount: Int
+    let status: SearchStatus
+    let drugs: [SearchDrug]
+    let radiusMeters: Double
+    let createdAt: Date
+    
+    enum CodingKeys: String, CodingKey {
+        case id, fulfilmentMode, acceptSubstitute, drugsCount, fulfilledDrugsCount, status, createdAt, radiusMeters
+        case drugs = "items"
+    }
+}
+
+struct SearchDrug: Codable, Identifiable, Hashable {
+    let id: String
+    let genericName: String
+    let strength: String
+}
+
+
+enum FulfilmentMode: String, CaseIterable, Codable, Identifiable {
+    case singlePharmacy = "single_pharmacy"
+    case multiPharmacy = "multi_pharmacy"
+    
+    var id: Self { self }
+    
+    var title: String {
+        switch self {
+        case .singlePharmacy: "Single pharmacy"
+        case .multiPharmacy: "Multi pharmacy"
+        }
+    }
+}
+
+enum SearchStatus: String, Codable {
+    case pending = "pending"
+    case partiallyFulfilled = "partially_fulfilled"
+    case fulfilled = "fulfilled"
+    case unfulfilled = "unfulfilled"
+    case awaitingContinuation = "awaiting_continuation"
+    
+    var title: String {
+        switch self {
+        case .pending: "Pending"
+        case .partiallyFulfilled: "Partially Fulfilled"
+        case .fulfilled: "Fulfilled"
+        case .unfulfilled: "Unfulfilled"
+        case .awaitingContinuation: "Awaiting Continuation"
+        }
+    }
+}
+
+enum SearchFilter: String, Codable, CaseIterable, Identifiable {
+    case all = "all"
+    case pending = "pending"
+    case nonPending = "non_pending"
+    case partiallyFulfilled = "partially_fulfilled"
+    case fulfilled = "fulfilled"
+    case unfulfilled = "unfulfilled"
+    case awaitingContinuation = "awaiting_continuation"
+    case active = "active"
+
+    var id: String { rawValue }
+}

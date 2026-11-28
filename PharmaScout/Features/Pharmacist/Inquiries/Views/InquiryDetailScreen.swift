@@ -1,0 +1,157 @@
+//
+//  InquiryDetailScreen.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 10/3/26.
+//
+
+import SwiftUI
+
+struct InquiryDetailRoute: Hashable {
+    let inquiryId: String
+    var inquiry: Inquiry? = nil
+}
+
+struct InquiryDetailScreen: View {
+    private let drugService: DrugService
+    
+    @State private var vm: InquiryDetailViewModel
+    @State private var responseTask: Task<Void, Never>?
+    
+    @State private var showingDrugSelection: Bool = false
+    @State private var selectedDrugToEdit: SelectedDrug?
+    
+    init(
+        inquiryService: InquiryService,
+        drugService: DrugService,
+        inquiryId: String,
+        inquiry: Inquiry?
+    ) {
+        self.drugService = drugService
+        let viewModel = InquiryDetailViewModel(
+            inquiryService: inquiryService,
+            inquiryId: inquiryId,
+            inquiry: inquiry
+        )
+        self._vm = State(wrappedValue: viewModel)
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(spacing: DesignSystem.Spacing.large) {
+                infoSection
+                
+                responseSection
+            }
+            .padding(DesignSystem.Spacing.xLarge)
+        }
+        .customNavTitle("Inquiry Details")
+        .sheet(isPresented: $showingDrugSelection) {
+            if let inquiry = vm.inquiry {
+                DrugSelectionScreen(
+                    drugService: drugService,
+                    selectedFormulationIds: [inquiry.drugFormulation.id]) { selectedDrug in
+                        vm.onSubstituteSelected(selectedDrug)
+                    }
+            }
+        }
+        .sheet(item: $selectedDrugToEdit) { selectedDrug in
+            if let inquiry = vm.inquiry {
+                DrugSelectionScreen(
+                    drugService: drugService,
+                    editingSelectedDrug: selectedDrug,
+                    selectedFormulationIds: [inquiry.drugFormulation.id]
+                )
+            }
+        }
+        .refreshable(action: vm.refresh)
+        .onAppear(perform: vm.loadDataIfNeeded)
+        .onDisappear {
+            responseTask?.cancel()
+        }
+        .task(vm.listenToChanges)
+    }
+    
+    private var infoSection: some View {
+        LoadingContentView(
+            loadingState: vm.inquiryLoadingState,
+            showMessage: vm.inquiry == nil,
+            emptyTitle: "Inquiry not found",
+            emptyMessage: "This inquiry may have been removed or is no longer available.",
+            errorTitle: "Couldn't load the inquiry"
+        ) {
+            if let inquiry = vm.inquiry {
+                InquiryDetailInfoView(inquiry: inquiry)
+            }
+        }
+    }
+    
+    private var responseSection: some View {
+        LoadingContentView(
+            loadingState: vm.editEligibilityLoadingState,
+            showMessage: vm.editEligibilityLoadingState.error != nil,
+            emptyTitle: "Response unavailable",
+            emptyMessage: "This inquiry can no longer be responded to.",
+            errorTitle: "Couldn't check if you can respond"
+        ) {
+            if vm.canResponse {
+                VStack(spacing: DesignSystem.Spacing.small) {
+                    hintText
+                    
+                    InquiryResponseFlowView(
+                        response: vm.response,
+                        onResponseChanged: { vm.response = $0 },
+                        substituteSelectedDrug: vm.substituteSelectedDrug,
+                        onChooseSubstituteTapped: { showingDrugSelection = true },
+                        onSubstituteSelectedDrugTapped: { selectedDrugToEdit = vm.substituteSelectedDrug }
+                    )
+                    
+                    // MARK: Response error
+                    if let responseError = vm.responseLoadingState.error {
+                        ErrorView(title: "Couldn't send your response.", description: responseError.errorDescription)
+                    }
+                    
+                    // MARK: Response button
+                    if let inquiry = vm.inquiry{
+                        PrimaryButtonView(
+                            title: inquiry.status == .pending ? "Respond" : "Update",
+                            isDisabled: !vm.responseIsValid,
+                            isLoading: vm.responseLoadingState.status != .idle) {
+                                responseTask?.cancel()
+                                responseTask = Task {
+                                    await vm.sendResponse()
+                                }
+                            }
+                    }
+                }
+                .padding(.vertical, DesignSystem.Spacing.large)
+            }
+        }
+    }
+    
+    private var hintText: some View {
+        Text( vm.inquiry?.status == .pending
+              ? "Awaiting your response"
+              : "Choose your new reply to update"
+        )
+        .fontWeight(.bold)
+        .foregroundStyle( vm.inquiry?.status == .pending
+                          ? InquiryStatus.pending.color
+                          : .theme.textPrimary
+        )
+        .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+#Preview {
+    let inquiry = Inquiry.samples[0]
+    
+    CustomNavStack {
+        InquiryDetailScreen(
+            inquiryService: MockInquiryService.sample,
+            drugService: MockDrugService.sample,
+            inquiryId: inquiry.id,
+            inquiry: inquiry
+        )
+    }
+}

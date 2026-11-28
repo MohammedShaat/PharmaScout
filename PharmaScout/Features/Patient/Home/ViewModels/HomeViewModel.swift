@@ -1,0 +1,191 @@
+//
+//  HomeViewModel.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/6/26.
+//
+
+import Foundation
+
+@Observable
+class HomeViewModel {
+    private let userId: String
+    private let locationService: LocationService
+    private let pharmacyService: PharmacyService
+    private let searchRequestService: SearchRequestService
+    
+    private(set) var nearbyPharmacies: [Pharmacy] = []
+    
+    private var locationCoordinate: Coordinate?
+    var locationError: AppError?
+    private(set) var nearbyPharmaciesLoadingState: LoadingState = .init(pageSize: 3)
+    
+    private(set) var radiusMeters: Double = AppConstants.Search.minBrowseDistanceMeters
+    private let maxRadiusMeters: Double = AppConstants.Search.maxBrowseDistanceMeters
+    
+    private(set) var recentSearches: [Search] = []
+    private(set) var recentSearchesloadingState = LoadingState(pageSize: 3)
+    
+    private(set) var activeSearches: [Search] = []
+    private(set) var activeSearchesloadingState = LoadingState(pageSize: 2)
+    
+    private var hasStarted: Bool = false
+    private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
+    
+    init(
+        userId: String,
+        locationService: LocationService,
+        pharmacyService: PharmacyService,
+        searchRequestService: SearchRequestService
+    ) {
+        self.userId = userId
+        self.locationService = locationService
+        self.pharmacyService = pharmacyService
+        self.searchRequestService = searchRequestService
+    }
+    
+    deinit {
+        firstLoadTask?.cancel()
+    }
+    
+    func loadDataIfNeeded() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        
+        firstLoadTask = Task {
+            getLocation()
+            async let loadActiveSearches = loadActiveSearches()
+            async let loadRecentSearches = loadRecentSearches()
+            async let loadNearbyPharmacies = loadNearbyPharmacies()
+            
+            _ = await (loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
+            hasFinishedFirstLoading = true
+        }
+    }
+    
+    func refresh() async {
+        getLocation()
+        async let loadActiveSearches = loadActiveSearches(refresh: true)
+        async let loadRecentSearches = loadRecentSearches(refresh: true)
+        async let loadNearbyPharmacies = loadNearbyPharmacies(refresh: true)
+        
+        _ = await (loadActiveSearches, loadRecentSearches, loadNearbyPharmacies)
+    }
+    
+    private func getLocation() {
+        locationService.requestPermission()
+        do {
+            locationCoordinate = try locationService.getCurrentLocation()
+            
+        } catch {
+            locationError = ErrorHandler.handle(error)
+            print("Failed to get location\n", error)
+        }
+    }
+    
+    func listenToSearchesChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasFinishedFirstLoading,
+                realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
+                trigger: {
+                    async let activeSearches = loadActiveSearches(refresh: true)
+                    async let recentSearches = loadRecentSearches(refresh: true)
+                    _ = await (activeSearches, recentSearches)
+                }
+            )
+            
+        } catch {
+            print("Failed to subscribe to searches chagnes")
+        }
+    }
+    
+    private func loadNearbyPharmacies(refresh: Bool = false) async {
+        nearbyPharmaciesLoadingState.startLoading(refresh: refresh)
+        defer { nearbyPharmaciesLoadingState.stopLoading() }
+        
+        guard let locationCoordinate else {
+            nearbyPharmaciesLoadingState.fail(LocationError.unableToDetermineLocation)
+            return
+        }
+        
+        do {
+            var keepSearching = refresh
+            let limit = nearbyPharmaciesLoadingState.pagination.pageSize
+            
+            while (nearbyPharmacies.count < limit && radiusMeters <= maxRadiusMeters)
+                    || keepSearching {
+                let request = FindNearbyPharmaciesRequest(
+                    latitude: locationCoordinate.latitude,
+                    longitude: locationCoordinate.longitude,
+                    radiusMeters: radiusMeters,
+                    limit: limit,
+                    offset: refresh ? 0 : nearbyPharmacies.count
+                )
+                
+                let newPharmacies = try await pharmacyService.findNearbyPharmacies(request)
+                
+                if refresh {
+                    nearbyPharmacies = newPharmacies
+                    keepSearching = nearbyPharmacies.count < limit
+                } else {
+                    nearbyPharmacies.append(
+                        contentsOf: newPharmacies.prefix(limit - nearbyPharmacies.count)
+                    )
+                }
+                
+                if nearbyPharmacies.count < limit {
+                    expandRadius()
+                }
+            }
+            
+        } catch {
+            nearbyPharmaciesLoadingState.fail(error)
+            print("failed to get nearest pharmacies\n", error)
+        }
+    }
+    
+    private func loadRecentSearches(refresh: Bool = false) async {
+        recentSearchesloadingState.startLoading(refresh: refresh)
+        defer { recentSearchesloadingState.stopLoading() }
+        
+        do {
+            let params = GetSearchesRequest(
+                limit: recentSearchesloadingState.pagination.pageSize,
+                offset: 0,
+                filter: .nonPending
+            )
+            recentSearches = try await searchRequestService.getSearches(params)
+            
+        } catch {
+            recentSearchesloadingState.fail(error)
+            print("Failed to load recent searches\n", error)
+        }
+    }
+    
+    private func loadActiveSearches(refresh: Bool = false) async {
+        activeSearchesloadingState.startLoading(refresh: refresh)
+        defer { activeSearchesloadingState.stopLoading() }
+        
+        do {
+            let params = GetSearchesRequest(
+                limit: activeSearchesloadingState.pagination.pageSize,
+                offset: 0,
+                filter: .active	
+            )
+            activeSearches = try await searchRequestService.getSearches(params)
+            
+        } catch {
+            activeSearchesloadingState.fail(error)
+            print("Failed to load active searches\n", error)
+        }
+    }
+    
+    private func expandRadius() {
+        switch radiusMeters.meterToKilometer {
+        case 0...20: radiusMeters *= 2
+        default: radiusMeters += 10
+        }
+    }
+}

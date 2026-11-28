@@ -1,0 +1,101 @@
+//
+//  RecentSearchesViewModel.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/26/26.
+//
+
+import Foundation
+
+@Observable
+class RecentSearchesViewModel {
+    private let userId: String
+    private let searchRequestService: SearchRequestService
+    
+    private(set) var searches: [Search] = []
+    var filter: SearchFilter = .all
+    
+    private(set) var loadingState = LoadingState(pageSize: AppConstants.Network.pageSize)
+    
+    private var hasStarted: Bool = false
+    private var firstLoadTask: Task<Void, Never>?
+    private var hasFinishedFirstLoading: Bool = false
+    
+    init(userId: String, searchRequestService: SearchRequestService) {
+        self.userId = userId
+        self.searchRequestService = searchRequestService
+    }
+    
+    deinit {
+        firstLoadTask?.cancel()
+    }
+    
+    func loadSearchesIfNeeded() {
+        guard !hasStarted else { return }
+        hasStarted = true
+        
+        firstLoadTask = Task {
+            await loadSearches()
+            hasFinishedFirstLoading = true
+        }
+    }
+    
+    func loadMore() async {
+        await loadSearches()
+    }
+    
+    func refresh() async {
+        await loadSearches(refresh: true)
+    }
+    
+    func onFilterChanged() async {
+        loadingState.pagination.reset()
+        await loadSearches()
+    }
+    
+    func listenToChanges() async {
+        do {
+            try await changesListener(
+                needsCatchup: hasFinishedFirstLoading,
+                realtimeStream: { try await searchRequestService.subscribeToUserSearchsChanges(userId: userId) },
+                trigger: refresh
+            )
+            
+        } catch {
+            print("Failed to subscribe to searches chagnes")
+        }
+    }
+    
+    private func loadSearches(refresh: Bool = false) async {
+        loadingState.startLoading(refresh: refresh)
+        defer { loadingState.stopLoading() }
+        
+        do {
+            let params = GetSearchesRequest(
+                limit: refresh ? max(searches.count, loadingState.pagination.pageSize) : loadingState.pagination.pageSize,
+                offset: refresh || !loadingState.pagination.hasPreviousPage ? 0 : searches.count,
+                filter: filter
+            )
+            let newSearchs = try await searchRequestService.getSearches(params)
+            
+            if refresh {
+                searches = newSearchs
+            } else {
+                if loadingState.pagination.hasPreviousPage {
+                    searches.append(contentsOf: newSearchs)
+                } else {
+                    searches = newSearchs
+                }
+    
+                if newSearchs.isNotEmpty {
+                    loadingState.pagination.nextPage()
+                }
+            }
+            
+            
+        } catch {
+            loadingState.fail(error)
+            print("Failed to load searches\n", error)
+        }
+    }
+}

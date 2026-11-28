@@ -1,0 +1,31 @@
+//
+//  DateFormatters.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 10/7/26.
+//
+
+import Foundation
+
+enum DateFormatters {
+    static let time: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "HH:mm:ss"
+        return formatter
+    }()
+    
+    static let hourMinute: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "HH:mm"
+        return formatter
+    }()
+    
+    static let dayMonthHourMinute: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.dateFormat = "d MMM, hh:mm a"
+        return formatter
+    }()
+}

@@ -1,0 +1,95 @@
+//
+//  ForgotPasswordScreen.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/1/26.
+//
+
+import SwiftUI
+
+struct ForgotPasswordScreen: View {
+    @State private var vm: ResetPasswordViewModel
+    @Environment(\.dismiss) private var dismiss
+    
+    init(authSerivce: AuthService) {
+        self._vm = State(wrappedValue: ResetPasswordViewModel(authService: authSerivce))
+    }
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            descriptionSection
+            
+            formSection
+            
+            Spacer()
+            
+            doNotHaveAnAccountSection
+        }
+        .padding(.horizontal, DesignSystem.Spacing.xxLarge)
+        .errorAlert(title: "Request Failed", loadingState: $vm.requestLoadingState)
+        .navigationDestination(isPresented: $vm.emailSent) {
+            destination
+        }
+    }
+    
+    private var descriptionSection: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.medium) {
+            CircularIconView(image: .lock)
+            
+            Text("Forgot Password?")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .foregroundStyle(.theme.primary)
+            
+            Text("Enter the email address associated with your PharmaScout account and we'll send you a link to reset your password.")
+                .foregroundStyle(.textSecondary)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, DesignSystem.Spacing.xLarge)
+    }
+    
+    private var formSection: some View {
+        VStack(alignment: .leading, spacing: DesignSystem.Spacing.large) {
+            LabeledTextFieldView(title: $vm.email, label: "Email", placeholder: "name@email.com")
+            
+            PrimaryButtonView(
+                title: "Send Reset Link",
+                isDisabled: !vm.areEmailRequestFieldsFilled,
+                isLoading: vm.requestLoadingState.status != .idle
+            ) {
+                Task {
+                    await vm.sendResetLink()
+                }
+            }
+            .padding(.vertical, DesignSystem.Spacing.medium)
+        }
+        .padding(.vertical, DesignSystem.Spacing.xxLarge)
+    }
+    
+    private var doNotHaveAnAccountSection: some View {
+        ActionPromptView(text: "Remembered it?", actionTitle: "Back to Sign Up") {
+            dismiss()
+        }
+        .padding(.top, DesignSystem.Spacing.xLarge)
+    }
+    
+    private var destination: some View {
+        CheckEmailView(
+            emailPurposeText: "We sent a password reset link to",
+            instructionText: "Open the link to reset your password and create a new one.",
+            email: vm.email,
+            resendAvailableAfter: vm.resendAvailableAfter ?? .now,
+            canResend: { vm.canResend }) {
+                Task {
+                    await vm.resend()
+                }
+            }
+            .errorAlert(title: "Resend Failed", loadingState: $vm.requestLoadingState)
+    }
+}
+
+#Preview {
+    CustomNavStack {
+        ForgotPasswordScreen(authSerivce: MockAuthService.sample)
+    }
+}

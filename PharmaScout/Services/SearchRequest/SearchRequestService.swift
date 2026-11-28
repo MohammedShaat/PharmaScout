@@ -1,0 +1,26 @@
+//
+//  SearchRequestService.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/14/26.
+//
+
+import Foundation
+
+protocol SearchRequestService {
+    func createSearchRequest(request: SearchRequest) async throws -> String
+    
+    func getNumberOfActiveSearchs(userId: String) async throws -> Int
+    
+    func getSearches(_ params: GetSearchesRequest) async throws -> [Search]
+    
+    func getSearch(for searchId: String) async throws -> Search
+    
+    func getSearchDrugDetails(_ params: SearchDrugDetailsRequest) async throws -> [SearchDrugDetail]
+    
+    func continueSearch(request: ContinueSearchRequest) async throws -> Int
+    
+    func subscribeToUserSearchsChanges(userId: String) async throws -> AsyncStream<Void>
+    
+    func subscribeToSearchChanges(searchId: String) async throws -> AsyncStream<Void>
+}

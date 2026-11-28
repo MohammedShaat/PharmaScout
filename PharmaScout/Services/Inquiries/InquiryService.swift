@@ -1,0 +1,27 @@
+//
+//  InquiryService.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 10/3/26.
+//
+
+import Foundation
+
+protocol InquiryService {
+    func getInquiries(_ params: GetInquiriesRequest) async throws -> [Inquiry]
+    
+    func getInquiry(forId inquiryId: String) async throws -> Inquiry
+    
+    func respondToInquiry(_ params: RespondToInquiryRequest) async throws
+    
+    func getNumberOfAllTodaysInquiries(for pharmacyId: String) async throws -> Int
+    
+    func getNumberOfAnsweredTodaysInquiries(for pharmacyId: String) async throws -> Int
+    
+    func canEditInquiry(forId inquiryId: String) async throws -> Bool
+    
+    func subscribeToPharmacyInquiriesChanges(pharmacyId: String) async throws -> AsyncStream<Void>
+    
+    
+    func subscribeToInquiryChanges(inquiryId: String) async throws -> AsyncStream<Void>
+}

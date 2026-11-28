@@ -1,0 +1,53 @@
+//
+//  Pharmacy.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 9/22/26.
+//
+
+import Foundation
+
+struct Pharmacy: nonisolated Codable, Identifiable, Hashable {
+    let id: String
+    let name: String
+    let latitude: Double
+    let longitude: Double
+    let address: String
+    let timezone: String
+    let distanceMeters: Double
+    let isOpen: Bool
+
+    enum CodingKeys: String, CodingKey {
+        case id, name, latitude, longitude, address, timezone, isOpen
+        case distanceMeters = "distance"
+    }
+    
+    var coordinate: Coordinate {
+        Coordinate(latitude: latitude, longitude: longitude)
+    }
+}
+
+enum PharmacyStatus: String, Codable {
+    case pending
+    case approved
+    case rejected
+    case suspended
+    case closed
+
+    var title: String {
+        switch self {
+        case .pending: "Pending"
+        case .approved: "Approved"
+        case .rejected: "Rejected"
+        case .suspended: "Suspended"
+        case .closed: "closed"
+        }
+    }
+}
+
+enum PharmacyFilter: String, Codable, CaseIterable, Identifiable {
+    case all
+    case open
+    
+    var id: String { rawValue }
+}

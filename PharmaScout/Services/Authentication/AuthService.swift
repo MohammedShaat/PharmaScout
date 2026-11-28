@@ -1,0 +1,37 @@
+//
+//  AuthService.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 8/29/26.
+//
+
+import Foundation
+
+
+
+protocol AuthService {
+    var resendIntervalSec: Double { get }
+
+    func signUp(email: String, password: String, fullName: String, redirectTo url: URL?) async throws
+    
+    func handle(url: URL, passwordReset: Bool)  async throws
+
+    func signIn(email: String, password: String) async throws
+    
+    func signOut() async throws
+    
+    func sendPasswordResetRequest(email: String, redirectTo url: URL?) async throws
+    
+    func resetPassword(newPassword: String) async throws
+    
+    func signInWithCredential(_ credential: OAuthCredential) async throws
+    
+    func authStateStream() async -> AsyncStream<AuthState>
+    
+    func getProviders() async throws -> [AuthProvider]
+    
+    func deleteAccount(reauth reauthCredential: ReauthCredential?) async throws
+    
+    func clearLocalSession() async throws
+}
+

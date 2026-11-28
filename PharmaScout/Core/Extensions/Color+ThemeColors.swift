@@ -1,0 +1,63 @@
+//
+//  Color+ThemeColors.swift
+//  PharmaScout
+//
+//  Created by Mohammed on 8/26/26.
+//
+
+import SwiftUI
+
+extension ShapeStyle where Self == Color {
+    static var theme: ThemeColors {
+        ThemeColors()
+    }
+}
+
+struct ThemeColors {
+    // Core
+    let primary = Color("primaryBrandColor")
+    let onPrimary = Color("onPrimary")
+    let secondary = Color("secondaryBrand")
+    let secondaryStrong = Color("secondaryStrong")
+    let background = Color("background")
+    let canvas = Color("canvas")
+    let surface = Color("surface")
+    let surfaceBorder = Color("surfaceBorder")
+    
+    // State
+    let error = Color("error")
+    let errorText = Color("errorText")
+    let success = Color("success")
+    let disabledBackground = Color("disabledBackground")
+    let disabledContent = Color("disabledContent")
+    let mintTint = Color("mintTint")
+    let yellow = Color("yellowBrand")
+    let goldenBrown = Color("goldenBrown")
+    let goldenBrownBackground = Color("goldenBrownBackground")
+    let green = Color("greenBrand")
+    let greenBackground = Color("greenBackground")
+    let red = Color("redBrand")
+    let redBackground = Color("redBackground")
+    let blue = Color("blueBrand")
+    let blueBackground = Color("blueBackground")
+    let brown = Color("brownBrand")
+    let brownBackground = Color("brownBackground")
+    let brightBlue = Color("brightBlue")
+    let white = Color("whiteBrand")
+    let amber = Color("amber")
+    let goldenYellow = Color("goldenYellow")
+    let mutedLavender = Color("mutedLavender")
+    let orange = Color("orangeBrand")
+    let orangeBackground = Color("orangeBackground")
+    let staleGray = Color("staleGray")
+    let staleGrayBackground = Color("staleGrayBackground")
+    let offWhite = Color("offWhite")
+    let blueGray = Color("blueGray")
+    
+    
+    // Text
+    let textPrimary = Color("textPrimary")
+    let textSecondary = Color("textSecondary")
+    let textLabel = Color("textLabel")
+    let textTertiary = Color("textTertiary")
+}
